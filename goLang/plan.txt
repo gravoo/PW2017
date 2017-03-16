@@ -1,1 +1,2 @@
-1.Train can "travel" from nodeA to nodeB
+1.Add routes to train
+2.Train can "travel" from nodeA to nodeB
