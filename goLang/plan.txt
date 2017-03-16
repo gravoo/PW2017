@@ -1,0 +1,1 @@
+1.Train can "travel" from nodeA to nodeB
