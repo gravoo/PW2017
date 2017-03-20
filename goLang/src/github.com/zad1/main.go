@@ -1,7 +1,8 @@
 package main
 
 import "fmt"
-
+import "time"
+import "github.com/twmb/algoimpl/go/graph" 
 
 type Train struct {
         velocity int
@@ -24,6 +25,7 @@ type Track struct {
 
 type Steering struct {
         tracks []int
+
 }
 
 func (steering *Steering) assignTrack(train Train) {
@@ -31,9 +33,19 @@ func (steering *Steering) assignTrack(train Train) {
 }
 
 func main() {
+	trainGraph := graph.New(graph.Undirected)
+	nodes := make(map[string]graph.Node, 0)
+	nodes["steeringA"] = trainGraph.MakeNode()
+	nodes["steeringB"] = trainGraph.MakeNode()
+	nodes["steeringC"] = trainGraph.MakeNode()
+	nodes["steeringD"] = trainGraph.MakeNode()
+	trainGraph.MakeEdge(nodes["steeringA"], nodes["stationC"])
+	trainGraph.MakeEdge(nodes["steeringB"], nodes["stationC"])
+	trainGraph.MakeEdge(nodes["steeringC"], nodes["stationD"])
         trainA := Train{1,2,[]Track{{1,2}, {1,2}, {1,2}, {1,2}},1}
         steeringA := Steering{[]int{1,2,3}}
-        trainA.drive()
+        go trainA.drive()
         steeringA.assignTrack(trainA)
+	time.Sleep(10000)
 
 }
