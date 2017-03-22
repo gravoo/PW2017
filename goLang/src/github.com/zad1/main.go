@@ -2,50 +2,56 @@ package main
 
 import "fmt"
 import "time"
-import "github.com/twmb/algoimpl/go/graph" 
 
-type Train struct {
-        velocity int
-        capacity int
-        route []Track
-        currentTrack int
+func train(trainCh, steeringCh chan int, d time.Duration, val int){
+	for {
+		time.Sleep(d)
+		trainCh <- val
+		fmt.Println(<-steeringCh)
+	}
 }
-func (train *Train) drive() {
-	fmt.Println("I am going throu tarck", train.currentTrack, "with speed", train.route[train.currentTrack].maxVelocity)
-}
-
-type StationaryTrack struct {
-        restTime int
+type Steering struct{
+	timeToReconfig time.Duration
 }
 
-type Track struct {
-        maxVelocity int
-        length int
+func (s* Steering) assignTrainToTrack(trainCh, steeringCh, trackCh chan int, steeringName string){
+	for x:= range trainCh {
+		switch x{
+		case 1:
+			fmt.Println("train", x, "is going to route", x, "in steering", steeringName)
+				steeringCh<-10
+				trackCh<-10
+				time.Sleep(s.timeToReconfig)
+		case 2:
+			fmt.Println("train", x, "is going to route", x, "in steering", steeringName)
+				steeringCh<-20
+				trackCh<-20
+				time.Sleep(s.timeToReconfig)
+		}
+
+	}
 }
 
-type Steering struct {
-        tracks []int
-
-}
-
-func (steering *Steering) assignTrack(train Train) {
-	fmt.Println("Assigned", train.currentTrack + 1, "To train")
+func track(trackCh chan int){
+	for{
+		fmt.Println("Track is free, ok", <-trackCh)
+		time.Sleep(5000*time.Millisecond)
+	}
 }
 
 func main() {
-	trainGraph := graph.New(graph.Undirected)
-	nodes := make(map[string]graph.Node, 0)
-	nodes["steeringA"] = trainGraph.MakeNode()
-	nodes["steeringB"] = trainGraph.MakeNode()
-	nodes["steeringC"] = trainGraph.MakeNode()
-	nodes["steeringD"] = trainGraph.MakeNode()
-	trainGraph.MakeEdge(nodes["steeringA"], nodes["stationC"])
-	trainGraph.MakeEdge(nodes["steeringB"], nodes["stationC"])
-	trainGraph.MakeEdge(nodes["steeringC"], nodes["stationD"])
-        trainA := Train{1,2,[]Track{{1,2}, {1,2}, {1,2}, {1,2}},1}
-        steeringA := Steering{[]int{1,2,3}}
-        go trainA.drive()
-        steeringA.assignTrack(trainA)
-	time.Sleep(10000)
+	trainCh := make(chan int)
+	steeringCh := make(chan int)
+	trackCh := make(chan int)
+    steering := Steering{4*time.Second}
+	go train(trainCh, steeringCh, 2000*time.Millisecond, 1)
+	go train(trainCh, steeringCh, 4000*time.Millisecond, 2)
+	go steering.assignTrainToTrack(trainCh, steeringCh, trackCh, "steeringA")
+	go track(trackCh)
+	time.Sleep(20000*time.Millisecond)
+
+	var input string
+	fmt.Scanln(&input)
+	fmt.Println("done")
 
 }
