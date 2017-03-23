@@ -15,14 +15,15 @@ func(t* Train)  travelTrough(d time.Duration){
 	for {
         t.track = t.track.Next()
         fmt.Println("Train is going to track", t.track.Value)
-		time.Sleep(d)
 		t.currentPosition <-t.track.Value.(int)
+		time.Sleep(d)
 		fmt.Println("Received value form steeringA", <-t.currentPosition)
 	}
 }
 type Steering struct{
 	timeToReconfig time.Duration
     trains chan int
+    track chan int
 }
 
 func (s* Steering) assignTrainToTrack(steeringName string){
@@ -30,10 +31,12 @@ func (s* Steering) assignTrainToTrack(steeringName string){
 		switch x{
 		case 1:
 			fmt.Println("train", x, "is going to route", x, "in steering", steeringName)
-				s.trains<-1
+                s.track <- x
+				s.trains <- 1
 				time.Sleep(s.timeToReconfig)
 		case 2:
 			fmt.Println("train", x, "is going to route", x, "in steering", steeringName)
+                s.track <- x
 				s.trains<-2
 				time.Sleep(s.timeToReconfig)
 		}
@@ -59,7 +62,7 @@ func main() {
     trainATrack.Value = 1
     trainATrack = trainATrack.Next()
     trainATrack.Value = 2
-    steeringA := Steering{4*time.Second, trainCh}
+    steeringA := Steering{4*time.Second, trainCh, trackCh}
     trainA:= Train{5, 5, trainCh, trainATrack}
     trackA := Track{1, trackCh}
 
