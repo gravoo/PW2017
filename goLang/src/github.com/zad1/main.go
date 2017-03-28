@@ -38,8 +38,8 @@ func(t* Train)  travelTrough(){
                 return t.maxVelocity
             }
         }
-        timeToTravel := velocity()/responseFromTrack.trackLength
-        time.Sleep(5*time.Second)
+        timeToTravel := responseFromTrack.trackLength/velocity()
+        time.Sleep(time.Duration(timeToTravel)*time.Second)
         connectMsg = t.assignTrainToSteering()
         responseFromTrack.resp <- t.trainName + "has finished trace"
         responseFromTrack = <-connectMsg.resp
@@ -115,8 +115,8 @@ func main() {
     trackAChanel := make(chan *trackToTrainMsg)
     trackBChanel := make(chan *trackToTrainMsg)
 
-    trackA := Track{1, trackAChanel, 50, 90}
-    trackB := Track{2, trackBChanel, 50, 90}
+    trackA := Track{1, trackAChanel, 180, 90}
+    trackB := Track{2, trackBChanel, 180, 90}
 
     steeringInputChannels := [3] chan *steeringToTrainMsg{make(chan *steeringToTrainMsg),
                                                                 make(chan *steeringToTrainMsg),
@@ -135,14 +135,14 @@ func main() {
     trainATrack = trainATrack.Next()
     trainATrack.Value = steeringChanelId{"steeringA", steeringInputChannels[1]}
     trainATrack = trainATrack.Next()
-    trainA:= Train{80, 5, trainATrack, "trainA"}
+    trainA:= Train{90, 5, trainATrack, "trainA"}
 
     trainBTrack := ring.New(2)
     trainBTrack.Value = steeringChanelId{"steeringB", steeringInputChannels[2]}
     trainBTrack = trainBTrack.Next()
     trainBTrack.Value = steeringChanelId{"steeringC", steeringInputChannels[1]}
     trainBTrack = trainBTrack.Next()
-    trainB:= Train{40, 5, trainBTrack, "trainB"}
+    trainB:= Train{45, 5, trainBTrack, "trainB"}
 
 	go trainA.travelTrough()
 	go trainB.travelTrough()
