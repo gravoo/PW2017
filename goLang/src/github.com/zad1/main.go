@@ -42,12 +42,13 @@ type Steering struct{
 	timeToReconfig time.Duration
     inputChanel chan *steeringToTrainAssignMsg
     tracks map[string] chan *trackToTrainAssignMsg
+    steeringName string
 }
 
-func (s* Steering) assignTrainToTrack(steeringName string){
+func (s* Steering) assignTrainToTrack(){
     for {
         trainMsg := <-s.inputChanel
-        fmt.Println("Received msg on", steeringName, "to ", trainMsg.targetSteering ," pushing to track", s.tracks[trainMsg.targetSteering])
+        fmt.Println("Received msg on", s.steeringName, "to ", trainMsg.targetSteering ," pushing to track", s.tracks[trainMsg.targetSteering])
         connectMsg := &trackToTrainAssignMsg{}
         s.tracks[trainMsg.targetSteering] <- connectMsg
         trackResp := <-s.tracks[trainMsg.targetSteering]
@@ -110,9 +111,9 @@ func main() {
     steeringBtracks := map[string] chan *trackToTrainAssignMsg {"steeringA":trackAChanel, "steeringC":trackBChanel}
     steeringCtracks := map[string] chan *trackToTrainAssignMsg {"steeringB":trackBChanel}
 
-    steeringA := Steering{4*time.Second, steeringInputChannels[0], steeringAtracks}
-    steeringB := Steering{4*time.Second, steeringInputChannels[1], steeringBtracks}
-    steeringC := Steering{4*time.Second, steeringInputChannels[2], steeringCtracks}
+    steeringA := Steering{4*time.Second, steeringInputChannels[0], steeringAtracks, "steeringA"}
+    steeringB := Steering{4*time.Second, steeringInputChannels[1], steeringBtracks, "steeringB"}
+    steeringC := Steering{4*time.Second, steeringInputChannels[2], steeringCtracks, "steeringC"}
 
     trainATrack := ring.New(3)
     trainATrack.Value = steeringChanelId{"steeringB", steeringInputChannels[0]}
@@ -138,9 +139,9 @@ func main() {
 
 	go trainA.travelTrough()
 	go trainB.travelTrough()
-	go steeringA.assignTrainToTrack("steeringA")
-	go steeringB.assignTrainToTrack("steeringB")
-	go steeringC.assignTrainToTrack("steeringC")
+	go steeringA.assignTrainToTrack()
+	go steeringB.assignTrainToTrack()
+	go steeringC.assignTrainToTrack()
 	go trackA.track()
 	go trackB.track()
 	time.Sleep(20000*time.Millisecond)
