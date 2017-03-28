@@ -22,14 +22,14 @@ func(t* Train)  travelTrough(){
         fmt.Println("Sending msg to steering")
         t.track.Value.(steeringChanelId).currentSteeringCh<-connectMsg
         responseFromTrain := <-connectMsg.resp
-        fmt.Println("Received value form steering, assign track to train with speed:", responseFromTrain.maxAllowedVelocity)
         velocity := func() int {
-            if responseFromTrain.maxAllowedVelocity <= t.maxVelocity {
+            if responseFromTrain.maxAllowedVelocity < t.maxVelocity {
                 return responseFromTrain.maxAllowedVelocity
             } else {
                 return t.maxVelocity
             }
         }
+        fmt.Println("Received value form steering, assign track to train with speed:",velocity())
         timeToTravel := velocity()/responseFromTrain.trackLength
         fmt.Println("track is blocked for", timeToTravel, "h")
         time.Sleep(5*time.Second)
@@ -73,7 +73,6 @@ func (tr* Track) track(){
             maxAllowedVelocity:tr.maxAllowedVelocity,
             trackLength : tr.length}
         tr.in <- connectMsg
-        //time.Sleep(2*time.Second)
         fmt.Println(<-connectMsg.resp)
         close(connectMsg.resp)
 	}
@@ -98,27 +97,53 @@ type steeringChanelId struct{
 
 func main() {
     trackAChanel := make(chan *trackToTrainAssignMsg)
+    trackBChanel := make(chan *trackToTrainAssignMsg)
+
     trackA := Track{1, trackAChanel, 50, 90}
-    steeringInputChannels := [2] chan *steeringToTrainAssignMsg{make(chan *steeringToTrainAssignMsg), make(chan *steeringToTrainAssignMsg)}
+    trackB := Track{2, trackBChanel, 50, 90}
+
+    steeringInputChannels := [3] chan *steeringToTrainAssignMsg{make(chan *steeringToTrainAssignMsg),
+                                                                make(chan *steeringToTrainAssignMsg),
+                                                                make(chan *steeringToTrainAssignMsg)}
+
     steeringAtracks := map[string] chan *trackToTrainAssignMsg {"steeringB":trackAChanel}
-    steeringBtracks := map[string] chan *trackToTrainAssignMsg {"steeringA":trackAChanel}
+    steeringBtracks := map[string] chan *trackToTrainAssignMsg {"steeringA":trackAChanel, "steeringC":trackBChanel}
+    steeringCtracks := map[string] chan *trackToTrainAssignMsg {"steeringB":trackBChanel}
 
     steeringA := Steering{4*time.Second, steeringInputChannels[0], steeringAtracks}
     steeringB := Steering{4*time.Second, steeringInputChannels[1], steeringBtracks}
+    steeringC := Steering{4*time.Second, steeringInputChannels[2], steeringCtracks}
 
-    trainATrack := ring.New(2)
+    trainATrack := ring.New(3)
     trainATrack.Value = steeringChanelId{"steeringB", steeringInputChannels[0]}
+    trainATrack = trainATrack.Next()
+    trainATrack.Value = steeringChanelId{"steeringC", steeringInputChannels[1]}
+    trainATrack = trainATrack.Next()
+    trainATrack.Value = steeringChanelId{"steeringB", steeringInputChannels[2]}
     trainATrack = trainATrack.Next()
     trainATrack.Value = steeringChanelId{"steeringA", steeringInputChannels[1]}
     trainATrack = trainATrack.Next()
-
     trainA:= Train{80, 5, trainATrack, "trainA"}
 
+    trainBTrack := ring.New(3)
+    trainBTrack.Value = steeringChanelId{"steeringB", steeringInputChannels[2]}
+    trainBTrack = trainBTrack.Next()
+    trainBTrack.Value = steeringChanelId{"steeringA", steeringInputChannels[1]}
+    trainBTrack = trainBTrack.Next()
+    trainBTrack.Value = steeringChanelId{"steeringB", steeringInputChannels[0]}
+    trainBTrack = trainBTrack.Next()
+    trainBTrack.Value = steeringChanelId{"steeringC", steeringInputChannels[1]}
+    trainBTrack = trainBTrack.Next()
+    trainB:= Train{80, 5, trainBTrack, "trainB"}
+
 	go trainA.travelTrough()
+	go trainB.travelTrough()
 	go steeringA.assignTrainToTrack("steeringA")
 	go steeringB.assignTrainToTrack("steeringB")
+	go steeringC.assignTrainToTrack("steeringC")
 	go trackA.track()
-	time.Sleep(10000*time.Millisecond)
+	go trackB.track()
+	time.Sleep(20000*time.Millisecond)
 
 	var input string
 	fmt.Scanln(&input)
