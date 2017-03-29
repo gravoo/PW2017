@@ -14,7 +14,7 @@ type Train struct{
 func(t *Train) buildSteeringToTrainMsg() *steeringToTrainMsg {
     return &steeringToTrainMsg{
         targetSteering : t.track.Value.(steeringChanelId).nextSteeringId,
-        resp :  make(chan *trackToTrainMsg) }
+        resp :  make(chan interface{}) }
 }
 
 
@@ -30,20 +30,52 @@ func(t* Train)  travelTrough(){
     connectMsg := t.assignTrainToSteering()
     responseFromTrack := <-connectMsg.resp
 	for {
-        fmt.Println("Source goRoutine ", t.trainName, ": received msg from track", responseFromTrack.trackId)
-        velocity := func() int {
-            if responseFromTrack.maxAllowedVelocity < t.maxVelocity {
-                return responseFromTrack.maxAllowedVelocity
-            } else {
-                return t.maxVelocity
+        switch msg := responseFromTrack.(type){
+        case *trackToTrainMsg:
+            fmt.Println("Source goRoutine ", t.trainName, ": received msg from track", msg.trackId)
+            velocity := func() int {
+                if msg.maxAllowedVelocity < t.maxVelocity {
+                    return msg.maxAllowedVelocity
+                } else {
+                    return t.maxVelocity
+                }
             }
+            timeToTravel := msg.trackLength/velocity()
+            time.Sleep(time.Duration(timeToTravel)*time.Second)
+            fmt.Println("Source goRoutine ",t.trainName,": has finidhed route after", timeToTravel)
+            connectMsg = t.assignTrainToSteering()
+            msg.resp <- t.trainName + "has finished trace"
+        case *stationToTrainMsg:
+            fmt.Println("Source goRoutine ", t.trainName, ": received msg from track", msg.trackId)
+            velocity := func() int {
+                if msg.maxAllowedVelocity < t.maxVelocity {
+                    return msg.maxAllowedVelocity
+                } else {
+                    return t.maxVelocity
+                }
+            }
+            timeToTravel := msg.trackLength/velocity()
+            time.Sleep(time.Duration(timeToTravel)*time.Second)
+            fmt.Println("Source goRoutine ",t.trainName,": has finidhed route after", timeToTravel)
+            connectMsg = t.assignTrainToSteering()
+            msg.resp <- t.trainName + "has finished trace"
+        case *:
+            fmt.Println("Source goRoutine ", t.trainName, ": received msg from track", msg.trackId)
+            velocity := func() int {
+                if msg.maxAllowedVelocity < t.maxVelocity {
+                    return msg.maxAllowedVelocity
+                } else {
+                    return t.maxVelocity
+                }
+            }
+            timeToTravel := msg.trackLength/velocity()
+            time.Sleep(time.Duration(timeToTravel)*time.Second)
+            fmt.Println("Source goRoutine ",t.trainName,": has finidhed route after", timeToTravel)
+            connectMsg = t.assignTrainToSteering()
+            msg.resp <- t.trainName + "has finished trace"
         }
-        timeToTravel := responseFromTrack.trackLength/velocity()
-        time.Sleep(time.Duration(timeToTravel)*time.Second)
-        connectMsg = t.assignTrainToSteering()
-        responseFromTrack.resp <- t.trainName + "has finished trace"
         responseFromTrack = <-connectMsg.resp
-        fmt.Println("Source goRoutine ",t.trainName,": has finidhed route after", timeToTravel)
+        fmt.Println("Source goRoutine ", t.trainName, "has finished route")
 	}
 }
 
@@ -96,9 +128,14 @@ func (tr* Track) track(){
 
 type steeringToTrainMsg struct{
     targetSteering string
-    resp chan *trackToTrainMsg
+    resp chan interface{}
 }
 
+type stationToTrainMsg struct{
+    trackId int
+    resp chan string
+    timeToRest time.Duration
+}
 type trackToTrainMsg struct{
     trackId int
     resp chan string
