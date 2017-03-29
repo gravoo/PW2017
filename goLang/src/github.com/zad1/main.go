@@ -46,33 +46,10 @@ func(t* Train)  travelTrough(){
             connectMsg = t.assignTrainToSteering()
             msg.resp <- t.trainName + "has finished trace"
         case *stationToTrainMsg:
-            fmt.Println("Source goRoutine ", t.trainName, ": received msg from track", msg.trackId)
-            velocity := func() int {
-                if msg.maxAllowedVelocity < t.maxVelocity {
-                    return msg.maxAllowedVelocity
-                } else {
-                    return t.maxVelocity
-                }
-            }
-            timeToTravel := msg.trackLength/velocity()
-            time.Sleep(time.Duration(timeToTravel)*time.Second)
-            fmt.Println("Source goRoutine ",t.trainName,": has finidhed route after", timeToTravel)
+            fmt.Println("Source goRoutine ", t.trainName, ": received msg from station", msg.trackId)
             connectMsg = t.assignTrainToSteering()
-            msg.resp <- t.trainName + "has finished trace"
-        case *:
-            fmt.Println("Source goRoutine ", t.trainName, ": received msg from track", msg.trackId)
-            velocity := func() int {
-                if msg.maxAllowedVelocity < t.maxVelocity {
-                    return msg.maxAllowedVelocity
-                } else {
-                    return t.maxVelocity
-                }
-            }
-            timeToTravel := msg.trackLength/velocity()
-            time.Sleep(time.Duration(timeToTravel)*time.Second)
-            fmt.Println("Source goRoutine ",t.trainName,": has finidhed route after", timeToTravel)
-            connectMsg = t.assignTrainToSteering()
-            msg.resp <- t.trainName + "has finished trace"
+            time.Sleep(msg.timeToRest)
+            msg.resp <- t.trainName + "has finished waiting on station"
         }
         responseFromTrack = <-connectMsg.resp
         fmt.Println("Source goRoutine ", t.trainName, "has finished route")
@@ -105,6 +82,30 @@ type Track struct{
     steeringChan chan *trackToTrainMsg
     length int
     maxAllowedVelocity int
+}
+
+type Station struct{
+    trackId int
+    steeringChan chan *stationToTrainMsg
+    timeToRest time.Duration
+}
+
+func(st *Station) buildStationToTrainMsg() *stationToTrainMsg{
+    return &stationToTrainMsg{
+        trackId : st.trackId,
+        resp : make( chan string),
+        timeToRest : st.timeToRest}
+}
+
+func (st* Station) track(){
+	for{
+        <-st.steeringChan
+        fmt.Println("Source goRoutine ", st.trackId, ": received msg from steering")
+        connectMsg := st.buildStationToTrainMsg()
+        st.steeringChan <- connectMsg
+        fmt.Println("Source goRoutine ", st.trackId, ": received msg from train on finish", <-connectMsg.resp)
+        close(connectMsg.resp)
+	}
 }
 
 func(tr *Track) buildTrackToTrainMsg() *trackToTrainMsg{
@@ -152,12 +153,13 @@ func main() {
     trackAChanel := make(chan *trackToTrainMsg)
     trackBChanel := make(chan *trackToTrainMsg)
 
+    //stationAChanel := make(chan *stationToTrainMsg)
+
     trackA := Track{1, trackAChanel, 180, 90}
     trackB := Track{2, trackBChanel, 180, 90}
+    //stationA := Station{1, stationAChanel, 120}
 
-    steeringInputChannels := [3] chan *steeringToTrainMsg{make(chan *steeringToTrainMsg),
-                                                                make(chan *steeringToTrainMsg),
-                                                                make(chan *steeringToTrainMsg)}
+    steeringInputChannels := [3] chan *steeringToTrainMsg{make(chan *steeringToTrainMsg), make(chan *steeringToTrainMsg), make(chan *steeringToTrainMsg)}
 
     steeringAtracks := map[string] chan *trackToTrainMsg {"steeringB":trackAChanel}
     steeringBtracks := map[string] chan *trackToTrainMsg {"steeringA":trackAChanel, "steeringC":trackBChanel}
