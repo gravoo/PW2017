@@ -79,21 +79,21 @@ func (s* Steering) assignTrainToTrack(){
 
 type Track struct{
     trackId int
-    steeringChan chan *trackToTrainMsg
+    steeringChan chan interface{}
     length int
     maxAllowedVelocity int
 }
 
 type Station struct{
     trackId int
-    steeringChan chan *stationToTrainMsg
+    steeringChan chan interface{}
     timeToRest time.Duration
 }
 
 func(st *Station) buildStationToTrainMsg() *stationToTrainMsg{
     return &stationToTrainMsg{
         trackId : st.trackId,
-        resp : make( chan string),
+        resp : make(chan string),
         timeToRest : st.timeToRest}
 }
 
@@ -153,8 +153,8 @@ func main() {
     //trackAChanel := make(chan *trackToTrainMsg)
     //trackBChanel := make(chan *trackToTrainMsg)
 
-    stationAChanel := make(chan *stationToTrainMsg)
-    stationBChanel := make(chan *stationToTrainMsg)
+    stationAChanel := make(chan interface{})
+    stationBChanel := make(chan interface{})
 
     //trackA := Track{1, trackAChanel, 180, 90}
     //trackB := Track{2, trackBChanel, 180, 90}
@@ -164,7 +164,7 @@ func main() {
     steeringInputChannels := [3] chan *steeringToTrainMsg{make(chan *steeringToTrainMsg), make(chan *steeringToTrainMsg), make(chan *steeringToTrainMsg)}
 
     dupa := make( map[string] chan interface{})
-    dupa["dupa"] = make(chan string)
+    dupa["dupa"] = make(chan interface{})
 
     steeringAtracks := make(map[string] chan interface{})
     steeringAtracks["steeringB"] = stationAChanel
@@ -197,6 +197,8 @@ func main() {
 	go steeringA.assignTrainToTrack()
 	go steeringB.assignTrainToTrack()
 	go steeringC.assignTrainToTrack()
+    go stationA.track()
+    go stationB.track()
 	//go trackA.track()
 	//go trackB.track()
 	time.Sleep(9000*time.Millisecond)
