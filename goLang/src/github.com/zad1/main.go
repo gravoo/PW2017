@@ -59,7 +59,7 @@ func(t* Train)  travelTrough(){
 type Steering struct{
 	timeToReconfig time.Duration
     inputChanel chan *steeringToTrainMsg
-    tracks map[string] chan *trackToTrainMsg
+    tracks map[string] chan interface{}
     steeringName string
 }
 
@@ -71,7 +71,7 @@ func (s* Steering) assignTrainToTrack(){
         fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
         s.tracks[trainMsg.targetSteering] <- connectMsg
         trackResp := <-s.tracks[trainMsg.targetSteering]
-        fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track", trackResp.trackId, " time to reconfig")
+        //fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track", trackResp.trackId, " time to reconfig")
 		time.Sleep(s.timeToReconfig)
         trainMsg.resp <-trackResp
     }
@@ -150,20 +150,29 @@ type steeringChanelId struct{
 }
 
 func main() {
-    trackAChanel := make(chan *trackToTrainMsg)
-    trackBChanel := make(chan *trackToTrainMsg)
+    //trackAChanel := make(chan *trackToTrainMsg)
+    //trackBChanel := make(chan *trackToTrainMsg)
 
-    //stationAChanel := make(chan *stationToTrainMsg)
+    stationAChanel := make(chan *stationToTrainMsg)
+    stationBChanel := make(chan *stationToTrainMsg)
 
-    trackA := Track{1, trackAChanel, 180, 90}
-    trackB := Track{2, trackBChanel, 180, 90}
-    //stationA := Station{1, stationAChanel, 120}
+    //trackA := Track{1, trackAChanel, 180, 90}
+    //trackB := Track{2, trackBChanel, 180, 90}
+    stationA := Station{1, stationAChanel, 120}
+    stationB := Station{1, stationBChanel, 120}
 
     steeringInputChannels := [3] chan *steeringToTrainMsg{make(chan *steeringToTrainMsg), make(chan *steeringToTrainMsg), make(chan *steeringToTrainMsg)}
 
-    steeringAtracks := map[string] chan *trackToTrainMsg {"steeringB":trackAChanel}
-    steeringBtracks := map[string] chan *trackToTrainMsg {"steeringA":trackAChanel, "steeringC":trackBChanel}
-    steeringCtracks := map[string] chan *trackToTrainMsg {"steeringB":trackBChanel}
+    dupa := make( map[string] chan interface{})
+    dupa["dupa"] = make(chan string)
+
+    steeringAtracks := make(map[string] chan interface{})
+    steeringAtracks["steeringB"] = stationAChanel
+    steeringBtracks := make(map[string] chan interface{})
+    steeringBtracks["steeringA"] = stationAChanel
+    steeringBtracks["steeringC"] = stationBChanel
+    steeringCtracks := make(map[string] chan interface{})
+    steeringAtracks["steeringB"] = stationBChanel
 
     steeringA := Steering{4*time.Second, steeringInputChannels[0], steeringAtracks, "steeringA"}
     steeringB := Steering{4*time.Second, steeringInputChannels[1], steeringBtracks, "steeringB"}
@@ -188,8 +197,8 @@ func main() {
 	go steeringA.assignTrainToTrack()
 	go steeringB.assignTrainToTrack()
 	go steeringC.assignTrainToTrack()
-	go trackA.track()
-	go trackB.track()
+	//go trackA.track()
+	//go trackB.track()
 	time.Sleep(9000*time.Millisecond)
 
 	var input string
