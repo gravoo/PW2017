@@ -48,7 +48,7 @@ func(t* Train)  travelTrough(){
         case *stationToTrainMsg:
             fmt.Println("Source goRoutine ", t.trainName, ": received msg from station", msg.trackId)
             connectMsg = t.assignTrainToSteering()
-            time.Sleep(msg.timeToRest)
+            time.Sleep(msg.timeToRest*time.Second)
             msg.resp <- t.trainName + "has finished waiting on station"
         }
         responseFromTrack = <-connectMsg.resp
@@ -71,7 +71,7 @@ func (s* Steering) assignTrainToTrack(){
         fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
         s.tracks[trainMsg.targetSteering] <- connectMsg
         trackResp := <-s.tracks[trainMsg.targetSteering]
-        //fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track", trackResp.trackId, " time to reconfig")
+        fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfig")
 		time.Sleep(s.timeToReconfig)
         trainMsg.resp <-trackResp
     }
@@ -94,8 +94,7 @@ func(st *Station) buildStationToTrainMsg() *stationToTrainMsg{
     return &stationToTrainMsg{
         trackId : st.trackId,
         resp : make(chan string),
-        timeToRest : st.timeToRest}
-}
+        timeToRest : st.timeToRest} }
 
 func (st* Station) track(){
 	for{
@@ -111,7 +110,7 @@ func (st* Station) track(){
 func(tr *Track) buildTrackToTrainMsg() *trackToTrainMsg{
     return &trackToTrainMsg{
         trackId : tr.trackId,
-        resp : make( chan string) ,
+        resp : make( chan string ) ,
         maxAllowedVelocity:tr.maxAllowedVelocity,
         trackLength : tr.length}
 }
@@ -149,30 +148,36 @@ type steeringChanelId struct{
     currentSteeringCh chan *steeringToTrainMsg
 }
 
+func generateChannelsForSteerings(numOfSteering int) [] chan *steeringToTrainMsg{
+    inputSteringChan := make([] chan *steeringToTrainMsg, numOfSteering)
+    for i, _ := range inputSteringChan {
+        inputSteringChan[i] = make(chan *steeringToTrainMsg)
+    }
+    return inputSteringChan
+}
+
+func generateChannelsForTrack(numOfTracks int) [] chan interface{}{
+    tracks := make([] chan interface{}, numOfTracks)
+    for i, _ := range tracks {
+        tracks[i] = make(chan interface{})
+    }
+    return tracks
+}
+
 func main() {
-    //trackAChanel := make(chan *trackToTrainMsg)
-    //trackBChanel := make(chan *trackToTrainMsg)
+    trackAndStations := generateChannelsForTrack(2)
+    steeringInputChannels := generateChannelsForSteerings(3)
 
-    stationAChanel := make(chan interface{})
-    stationBChanel := make(chan interface{})
-
-    //trackA := Track{1, trackAChanel, 180, 90}
-    //trackB := Track{2, trackBChanel, 180, 90}
-    stationA := Station{1, stationAChanel, 120}
-    stationB := Station{1, stationBChanel, 120}
-
-    steeringInputChannels := [3] chan *steeringToTrainMsg{make(chan *steeringToTrainMsg), make(chan *steeringToTrainMsg), make(chan *steeringToTrainMsg)}
-
-    dupa := make( map[string] chan interface{})
-    dupa["dupa"] = make(chan interface{})
+    stationA := Station{1, trackAndStations[0], 120}
+    stationB := Station{1, trackAndStations[1], 120}
 
     steeringAtracks := make(map[string] chan interface{})
-    steeringAtracks["steeringB"] = stationAChanel
+    steeringAtracks["steeringB"] = trackAndStations[0]
     steeringBtracks := make(map[string] chan interface{})
-    steeringBtracks["steeringA"] = stationAChanel
-    steeringBtracks["steeringC"] = stationBChanel
+    steeringBtracks["steeringA"] = trackAndStations[0]
+    steeringBtracks["steeringC"] = trackAndStations[1]
     steeringCtracks := make(map[string] chan interface{})
-    steeringAtracks["steeringB"] = stationBChanel
+    steeringAtracks["steeringB"] = trackAndStations[1]
 
     steeringA := Steering{4*time.Second, steeringInputChannels[0], steeringAtracks, "steeringA"}
     steeringB := Steering{4*time.Second, steeringInputChannels[1], steeringBtracks, "steeringB"}
