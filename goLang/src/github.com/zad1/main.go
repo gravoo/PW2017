@@ -21,7 +21,7 @@ func(t *Train) buildSteeringToTrainMsg() *steeringToTrainMsg {
 func(t* Train) assignTrainToSteering() *steeringToTrainMsg {
     t.track = t.track.Next()
     connectMsg := t.buildSteeringToTrainMsg()
-    fmt.Println("Source goRoutine", t.trainName,": traget ",connectMsg.targetSteering)
+    fmt.Println("Source goRoutine ", t.trainName,": traget ",connectMsg.targetSteering)
     t.track.Value.(steeringChanelId).currentSteeringCh<-connectMsg
     return connectMsg
 }
@@ -45,8 +45,9 @@ func(t* Train)  travelTrough(){
             fmt.Println("Source goRoutine ",t.trainName,": has finidhed route after", timeToTravel)
             connectMsg = t.assignTrainToSteering()
             msg.resp <- t.trainName + "has finished trace"
+
         case *stationToTrainMsg:
-            fmt.Println("Source goRoutine ", t.trainName, ": received msg from station", msg.trackId)
+            fmt.Println("Source goRoutine ", t.trainName, ": received msg from station, time to wait", msg.timeToRest)
             connectMsg = t.assignTrainToSteering()
             time.Sleep(msg.timeToRest*time.Second)
             msg.resp <- t.trainName + "has finished waiting on station"
@@ -71,7 +72,7 @@ func (s* Steering) assignTrainToTrack(){
         fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
         s.tracks[trainMsg.targetSteering] <- connectMsg
         trackResp := <-s.tracks[trainMsg.targetSteering]
-        fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfig")
+        fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfig", s.timeToReconfig)
 		time.Sleep(s.timeToReconfig)
         trainMsg.resp <-trackResp
     }
@@ -165,47 +166,86 @@ func generateChannelsForTrack(numOfTracks int) [] chan interface{}{
 }
 
 func main() {
-    trackAndStations := generateChannelsForTrack(2)
-    steeringInputChannels := generateChannelsForSteerings(3)
+    steeringToTrackChannels := generateChannelsForTrack(5)
+    steeringInputChannels := generateChannelsForSteerings(6)
 
-    stationA := Station{1, trackAndStations[0], 120}
-    stationB := Station{1, trackAndStations[1], 120}
+    stationTrack0 := Station{0, steeringToTrackChannels[0], 12*time.Second}
+    stationTrack1 := Station{1, steeringToTrackChannels[1], 12*time.Second}
+    stationTrack2 := Station{2, steeringToTrackChannels[2], 12*time.Second}
+    stationTrack3 := Station{3, steeringToTrackChannels[3], 12*time.Second}
+    driveTrack0 := Track{10, steeringToTrackChannels[4], 900, 90}
 
     steeringAtracks := make(map[string] chan interface{})
-    steeringAtracks["steeringB"] = trackAndStations[0]
+    steeringAtracks["steeringC"] = steeringToTrackChannels[0]
+
     steeringBtracks := make(map[string] chan interface{})
-    steeringBtracks["steeringA"] = trackAndStations[0]
-    steeringBtracks["steeringC"] = trackAndStations[1]
+    steeringBtracks["steeringC"] = steeringToTrackChannels[1]
+
     steeringCtracks := make(map[string] chan interface{})
-    steeringAtracks["steeringB"] = trackAndStations[1]
+    steeringCtracks["steeringA"] = steeringToTrackChannels[0]
+    steeringCtracks["steeringB"] = steeringToTrackChannels[1]
+    steeringCtracks["steeringD"] = steeringToTrackChannels[4]
+
+    steeringDtracks := make(map[string] chan interface{})
+    steeringDtracks["steeringC"] = steeringToTrackChannels[4]
+    steeringDtracks["steeringE"] = steeringToTrackChannels[2]
+    steeringDtracks["steeringF"] = steeringToTrackChannels[3]
+
+    steeringEtracks := make(map[string] chan interface{})
+    steeringEtracks["steeringD"] = steeringToTrackChannels[2]
+
+    steeringFtracks := make(map[string] chan interface{})
+    steeringFtracks["steeringD"] = steeringToTrackChannels[3]
 
     steeringA := Steering{4*time.Second, steeringInputChannels[0], steeringAtracks, "steeringA"}
     steeringB := Steering{4*time.Second, steeringInputChannels[1], steeringBtracks, "steeringB"}
     steeringC := Steering{4*time.Second, steeringInputChannels[2], steeringCtracks, "steeringC"}
+    steeringD := Steering{4*time.Second, steeringInputChannels[3], steeringDtracks, "steeringD"}
+    steeringE := Steering{4*time.Second, steeringInputChannels[4], steeringEtracks, "steeringE"}
+    steeringF := Steering{4*time.Second, steeringInputChannels[5], steeringFtracks, "steeringF"}
 
-    trainATrack := ring.New(2)
-    trainATrack.Value = steeringChanelId{"steeringB", steeringInputChannels[0]}
+    trainATrack := ring.New(6)
+    trainATrack.Value = steeringChanelId{"steeringC", steeringInputChannels[0]}
     trainATrack = trainATrack.Next()
-    trainATrack.Value = steeringChanelId{"steeringA", steeringInputChannels[1]}
+    trainATrack.Value = steeringChanelId{"steeringD", steeringInputChannels[2]}
     trainATrack = trainATrack.Next()
+    trainATrack.Value = steeringChanelId{"steeringE", steeringInputChannels[3]}
+    trainATrack = trainATrack.Next()
+    trainATrack.Value = steeringChanelId{"steeringD", steeringInputChannels[4]}
+    trainATrack = trainATrack.Next()
+    trainATrack.Value = steeringChanelId{"steeringC", steeringInputChannels[3]}
+    trainATrack = trainATrack.Next()
+    trainATrack.Value = steeringChanelId{"steeringA", steeringInputChannels[2]}
     trainA:= Train{90, 5, trainATrack, "trainA"}
 
-    trainBTrack := ring.New(2)
+    trainBTrack := ring.New(6)
+    trainBTrack.Value = steeringChanelId{"steeringD", steeringInputChannels[5]}
+    trainBTrack = trainBTrack.Next()
+    trainBTrack.Value = steeringChanelId{"steeringC", steeringInputChannels[3]}
+    trainBTrack = trainBTrack.Next()
     trainBTrack.Value = steeringChanelId{"steeringB", steeringInputChannels[2]}
     trainBTrack = trainBTrack.Next()
     trainBTrack.Value = steeringChanelId{"steeringC", steeringInputChannels[1]}
     trainBTrack = trainBTrack.Next()
-    trainB:= Train{45, 5, trainBTrack, "trainB"}
+    trainBTrack.Value = steeringChanelId{"steeringD", steeringInputChannels[2]}
+    trainBTrack = trainBTrack.Next()
+    trainBTrack.Value = steeringChanelId{"steeringF", steeringInputChannels[3]}
+    trainB := Train{45, 5, trainBTrack, "trainB"}
+
 
 	go trainA.travelTrough()
 	go trainB.travelTrough()
 	go steeringA.assignTrainToTrack()
 	go steeringB.assignTrainToTrack()
 	go steeringC.assignTrainToTrack()
-    go stationA.track()
-    go stationB.track()
-	//go trackA.track()
-	//go trackB.track()
+	go steeringD.assignTrainToTrack()
+	go steeringE.assignTrainToTrack()
+	go steeringF.assignTrainToTrack()
+    go stationTrack0.track()
+    go stationTrack1.track()
+    go stationTrack2.track()
+    go stationTrack3.track()
+    go driveTrack0.track()
 	time.Sleep(9000*time.Millisecond)
 
 	var input string
