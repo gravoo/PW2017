@@ -72,14 +72,16 @@ type steeringToTrackMsg struct {
 func (s* Steering) assignTrainToTrack(){
     for {
         trainMsg := <-s.inputChanel
-        fmt.Println("Source goRoutine ", s.steeringName, ": received msg from train with req travel to", trainMsg.targetSteering)
-        connectMsg := &steeringToTrackMsg{resp:make (chan interface{})}
-        fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
-        s.tracks[trainMsg.targetSteering] <- connectMsg
-        respFromTrack := <-connectMsg.resp
-        fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfig", s.timeToReconfig)
-		time.Sleep(s.timeToReconfig)
-        trainMsg.resp <- respFromTrack
+        go func (){
+            fmt.Println("Source goRoutine ", s.steeringName, ": received msg from train with req travel to", trainMsg.targetSteering)
+            connectMsg := &steeringToTrackMsg{resp:make (chan interface{})}
+            fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
+            s.tracks[trainMsg.targetSteering] <- connectMsg
+            respFromTrack := <-connectMsg.resp
+            fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfig", s.timeToReconfig)
+            time.Sleep(s.timeToReconfig)
+            trainMsg.resp <- respFromTrack
+        }()
     }
 }
 
@@ -165,7 +167,7 @@ func generateChannelsForSteerings(numOfSteering int) [] chan *steeringToTrainMsg
 func generateChannelsForTrack(numOfTracks int) [] chan interface{}{
     tracks := make([] chan interface{}, numOfTracks)
     for i, _ := range tracks {
-        tracks[i] = make(chan interface{})
+        tracks[i] = make(chan interface{}, 2)
     }
     return tracks
 }
