@@ -44,15 +44,16 @@ func(t* Train)  travelTrough(){
             time.Sleep(time.Duration(timeToTravel)*time.Second)
             fmt.Println("Source goRoutine ",t.trainName,": has finidhed route after", timeToTravel)
             connectMsg = t.assignTrainToSteering()
+            responseFromTrack = <-connectMsg.resp
             msg.resp <- t.trainName + "has finished trace"
 
         case *stationToTrainMsg:
             fmt.Println("Source goRoutine ", t.trainName, ": received msg from station, time to wait", msg.timeToRest)
             connectMsg = t.assignTrainToSteering()
             time.Sleep(msg.timeToRest*time.Second)
+            responseFromTrack = <-connectMsg.resp
             msg.resp <- t.trainName + "has finished waiting on station"
         }
-        responseFromTrack = <-connectMsg.resp
         fmt.Println("Source goRoutine ", t.trainName, "has finished route")
 	}
 }
@@ -64,17 +65,21 @@ type Steering struct{
     steeringName string
 }
 
+type steeringToTrackMsg struct {
+    resp chan interface{}
+}
+
 func (s* Steering) assignTrainToTrack(){
     for {
         trainMsg := <-s.inputChanel
         fmt.Println("Source goRoutine ", s.steeringName, ": received msg from train with req travel to", trainMsg.targetSteering)
-        connectMsg := &trackToTrainMsg{}
+        connectMsg := &steeringToTrackMsg{resp:make (chan interface{})}
         fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
         s.tracks[trainMsg.targetSteering] <- connectMsg
-        trackResp := <-s.tracks[trainMsg.targetSteering]
+        respFromTrack := <-connectMsg.resp
         fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfig", s.timeToReconfig)
 		time.Sleep(s.timeToReconfig)
-        trainMsg.resp <-trackResp
+        trainMsg.resp <- respFromTrack
     }
 }
 
@@ -99,10 +104,10 @@ func(st *Station) buildStationToTrainMsg() *stationToTrainMsg{
 
 func (st* Station) track(){
 	for{
-        <-st.steeringChan
+        msgFromSteering := <-st.steeringChan
         fmt.Println("Source goRoutine ", st.trackId, ": received msg from steering")
         connectMsg := st.buildStationToTrainMsg()
-        st.steeringChan <- connectMsg
+        msgFromSteering.(*steeringToTrackMsg).resp <- connectMsg
         fmt.Println("Source goRoutine ", st.trackId, ": received msg from train on finish", <-connectMsg.resp)
         close(connectMsg.resp)
 	}
@@ -118,10 +123,10 @@ func(tr *Track) buildTrackToTrainMsg() *trackToTrainMsg{
 
 func (tr* Track) track(){
 	for{
-        <-tr.steeringChan
+        msgFromSteering := <-tr.steeringChan
         fmt.Println("Source goRoutine ", tr.trackId, ": received msg from steering")
         connectMsg := tr.buildTrackToTrainMsg()
-        tr.steeringChan <- connectMsg
+        msgFromSteering.(*steeringToTrackMsg).resp <- connectMsg
         fmt.Println("Source goRoutine ", tr.trackId, ": received msg from train on finish", <-connectMsg.resp)
         close(connectMsg.resp)
 	}
