@@ -173,20 +173,25 @@ func generateChannelsForTrack(numOfTracks int) [] chan interface{}{
 }
 
 func main() {
-    steeringToTrackChannels := generateChannelsForTrack(5)
+    steeringToTrackChannels := generateChannelsForTrack(8)
     steeringInputChannels := generateChannelsForSteerings(6)
 
     stationTrack0 := Station{0, steeringToTrackChannels[0], 12*time.Second}
     stationTrack1 := Station{1, steeringToTrackChannels[1], 12*time.Second}
     stationTrack2 := Station{2, steeringToTrackChannels[2], 12*time.Second}
     stationTrack3 := Station{3, steeringToTrackChannels[3], 12*time.Second}
-    driveTrack0 := Track{10, steeringToTrackChannels[4], 900, 90}
+    driveTrack10 := Track{10, steeringToTrackChannels[4], 900, 90}
+    driveTrack11 := Track{11, steeringToTrackChannels[5], 90, 9}
+    driveTrack12 := Track{12, steeringToTrackChannels[6], 90, 9}
+    driveTrack13 := Track{13, steeringToTrackChannels[7], 90, 9}
 
     steeringAtracks := make(map[string] chan interface{})
     steeringAtracks["steeringC"] = steeringToTrackChannels[0]
+    steeringAtracks["steeringA"] = steeringToTrackChannels[5]
 
     steeringBtracks := make(map[string] chan interface{})
     steeringBtracks["steeringC"] = steeringToTrackChannels[1]
+    steeringBtracks["steeringB"] = steeringToTrackChannels[4]
 
     steeringCtracks := make(map[string] chan interface{})
     steeringCtracks["steeringA"] = steeringToTrackChannels[0]
@@ -200,9 +205,11 @@ func main() {
 
     steeringEtracks := make(map[string] chan interface{})
     steeringEtracks["steeringD"] = steeringToTrackChannels[2]
+    steeringEtracks["steeringE"] = steeringToTrackChannels[6]
 
     steeringFtracks := make(map[string] chan interface{})
     steeringFtracks["steeringD"] = steeringToTrackChannels[3]
+    steeringFtracks["steeringF"] = steeringToTrackChannels[7]
 
     steeringA := Steering{4*time.Second, steeringInputChannels[0], steeringAtracks, "steeringA"}
     steeringB := Steering{4*time.Second, steeringInputChannels[1], steeringBtracks, "steeringB"}
@@ -211,32 +218,40 @@ func main() {
     steeringE := Steering{4*time.Second, steeringInputChannels[4], steeringEtracks, "steeringE"}
     steeringF := Steering{4*time.Second, steeringInputChannels[5], steeringFtracks, "steeringF"}
 
-    trainATrack := ring.New(6)
+    trainATrack := ring.New(8)
     trainATrack.Value = steeringChanelId{"steeringC", steeringInputChannels[0]}
     trainATrack = trainATrack.Next()
     trainATrack.Value = steeringChanelId{"steeringD", steeringInputChannels[2]}
     trainATrack = trainATrack.Next()
     trainATrack.Value = steeringChanelId{"steeringE", steeringInputChannels[3]}
     trainATrack = trainATrack.Next()
+    trainATrack.Value = steeringChanelId{"steeringE", steeringInputChannels[4]}
+    trainATrack = trainATrack.Next()
     trainATrack.Value = steeringChanelId{"steeringD", steeringInputChannels[4]}
     trainATrack = trainATrack.Next()
     trainATrack.Value = steeringChanelId{"steeringC", steeringInputChannels[3]}
     trainATrack = trainATrack.Next()
     trainATrack.Value = steeringChanelId{"steeringA", steeringInputChannels[2]}
+    trainATrack = trainATrack.Next()
+    trainATrack.Value = steeringChanelId{"steeringA", steeringInputChannels[0]}
     trainA:= Train{90, 5, trainATrack, "trainA"}
 
-    trainBTrack := ring.New(6)
+    trainBTrack := ring.New(8)
     trainBTrack.Value = steeringChanelId{"steeringD", steeringInputChannels[5]}
     trainBTrack = trainBTrack.Next()
     trainBTrack.Value = steeringChanelId{"steeringC", steeringInputChannels[3]}
     trainBTrack = trainBTrack.Next()
     trainBTrack.Value = steeringChanelId{"steeringB", steeringInputChannels[2]}
     trainBTrack = trainBTrack.Next()
+    trainBTrack.Value = steeringChanelId{"steeringB", steeringInputChannels[1]}
+    trainBTrack = trainBTrack.Next()
     trainBTrack.Value = steeringChanelId{"steeringC", steeringInputChannels[1]}
     trainBTrack = trainBTrack.Next()
     trainBTrack.Value = steeringChanelId{"steeringD", steeringInputChannels[2]}
     trainBTrack = trainBTrack.Next()
     trainBTrack.Value = steeringChanelId{"steeringF", steeringInputChannels[3]}
+    trainBTrack = trainBTrack.Next()
+    trainBTrack.Value = steeringChanelId{"steeringF", steeringInputChannels[5]}
     trainB := Train{45, 5, trainBTrack, "trainB"}
 
 
@@ -252,7 +267,10 @@ func main() {
     go stationTrack1.track()
     go stationTrack2.track()
     go stationTrack3.track()
-    go driveTrack0.track()
+    go driveTrack10.track()
+    go driveTrack11.track()
+    go driveTrack12.track()
+    go driveTrack13.track()
 	time.Sleep(9000*time.Millisecond)
 
 	var input string
