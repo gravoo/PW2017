@@ -13,7 +13,7 @@ type Train struct {
 
 func (t *Train) buildSteeringToTrainMsg() *SteeringToTrainMsg {
 	return &SteeringToTrainMsg{
-		targetSteering: t.track.Value.(steeringChanelId).nextSteeringId,
+		targetSteering: t.track.Value.(CurrentAndTargetSteering).nextSteeringId,
 		resp:           make(chan interface{})}
 }
 
@@ -21,7 +21,7 @@ func (t *Train) assignTrainToSteering() *SteeringToTrainMsg {
 	t.track = t.track.Next()
 	connectMsg := t.buildSteeringToTrainMsg()
 	fmt.Println("Source goRoutine ", t.trainName, ": traget ", connectMsg.targetSteering)
-	t.track.Value.(steeringChanelId).currentSteeringCh <- connectMsg
+	t.track.Value.(CurrentAndTargetSteering).currentSteeringCh <- connectMsg
 	return connectMsg
 }
 
@@ -167,7 +167,7 @@ type DriveTrackToTrainMsg struct {
 	trackLength        int
 }
 
-type steeringChanelId struct {
+type CurrentAndTargetSteering struct {
 	nextSteeringId    string
 	currentSteeringCh chan *SteeringToTrainMsg
 }
@@ -188,6 +188,36 @@ func generateChannelsForTrack(numOfTracks int) []chan interface{} {
 	return tracks
 }
 
-func main() {
+func generateStopTracks(numOfStopTracks int, inputChannels []chan interface{}) []StopTrack {
+	tracks := make([]StopTrack, numOfStopTracks)
+	for i, _ := range tracks {
+		tracks[i] = StopTrack{i, inputChannels[i], 12 * time.Second}
+	}
+	return tracks
+}
 
+func generateDriveTracks(numOfDriveTracks int, inputChannels []chan interface{}) []DriveTrack {
+	tracks := make([]DriveTrack, numOfDriveTracks)
+	for i, _ := range tracks {
+		tracks[i] = DriveTrack{i + 100, inputChannels[i], 900, 90}
+	}
+	return tracks
+}
+
+func assignRouteToSteering(steeringRoute map[string]chan interface{}, steeringName string, inputChannel chan *SteeringToTrainMsg) Steering {
+	return Steering{4 * time.Second, inputChannel, steeringRoute, steeringName}
+}
+
+func main() {
+	const numOfSteerings = 14
+	const numOfTracks = 20
+	const numOfStopTracks = 14
+	const numOfDriveTracks = 6
+	tracksInputChannels := generateChannelsForTrack(numOfTracks)
+	steeringsInputChannels := generateChannelsForSteerings(numOfSteerings)
+	stopTracks := generateStopTracks(numOfStopTracks, tracksInputChannels[0:numOfStopTracks])
+	driveTracks := generateDriveTracks(numOfDriveTracks, tracksInputChannels[numOfStopTracks:])
+	steeringA := assignRouteToSteering(map[string]chan interface{}{"steeringA": stopTracks[0].steeringChan, "steeringC": stopTracks[1].steeringChan},
+		"steeringA", steeringsInputChannels[0])
+	fmt.Println(tracksInputChannels, "\n", steeringsInputChannels, "\n", stopTracks, "\n", driveTracks, "\n", steeringA)
 }
