@@ -167,49 +167,49 @@ func generateChannelsForSteerings(numOfSteering int) [] chan *steeringToTrainMsg
 func generateChannelsForTrack(numOfTracks int) [] chan interface{}{
     tracks := make([] chan interface{}, numOfTracks)
     for i, _ := range tracks {
-        tracks[i] = make(chan interface{}, 2)
+        tracks[i] = make(chan interface{}, 4)
     }
     return tracks
 }
 
 func main() {
-    steeringToTrackChannels := generateChannelsForTrack(8)
+    trackInputChannels := generateChannelsForTrack(8)
     steeringInputChannels := generateChannelsForSteerings(6)
 
-    stationTrack0 := Station{0, steeringToTrackChannels[0], 12*time.Second}
-    stationTrack1 := Station{1, steeringToTrackChannels[1], 12*time.Second}
-    stationTrack2 := Station{2, steeringToTrackChannels[2], 12*time.Second}
-    stationTrack3 := Station{3, steeringToTrackChannels[3], 12*time.Second}
-    driveTrack10 := Track{10, steeringToTrackChannels[4], 900, 90}
-    driveTrack11 := Track{11, steeringToTrackChannels[5], 90, 9}
-    driveTrack12 := Track{12, steeringToTrackChannels[6], 90, 9}
-    driveTrack13 := Track{13, steeringToTrackChannels[7], 90, 9}
+    stationTrack0 := Station{0, trackInputChannels[0], 12*time.Second}
+    stationTrack1 := Station{1, trackInputChannels[1], 12*time.Second}
+    stationTrack2 := Station{2, trackInputChannels[2], 12*time.Second}
+    stationTrack3 := Station{3, trackInputChannels[3], 12*time.Second}
+    driveTrack10 := Track{10, trackInputChannels[4], 900, 90}
+    driveTrack11 := Track{11, trackInputChannels[5], 90, 9}
+    driveTrack12 := Track{12, trackInputChannels[6], 90, 9}
+    driveTrack13 := Track{13, trackInputChannels[7], 90, 9}
 
     steeringAtracks := make(map[string] chan interface{})
-    steeringAtracks["steeringC"] = steeringToTrackChannels[0]
-    steeringAtracks["steeringA"] = steeringToTrackChannels[5]
+    steeringAtracks["steeringC"] = stationTrack0.steeringChan
+    steeringAtracks["steeringA"] = driveTrack11.steeringChan
 
     steeringBtracks := make(map[string] chan interface{})
-    steeringBtracks["steeringC"] = steeringToTrackChannels[1]
-    steeringBtracks["steeringB"] = steeringToTrackChannels[4]
+    steeringBtracks["steeringC"] = trackInputChannels[1]
+    steeringBtracks["steeringB"] = trackInputChannels[4]
 
     steeringCtracks := make(map[string] chan interface{})
-    steeringCtracks["steeringA"] = steeringToTrackChannels[0]
-    steeringCtracks["steeringB"] = steeringToTrackChannels[1]
-    steeringCtracks["steeringD"] = steeringToTrackChannels[4]
+    steeringCtracks["steeringA"] = trackInputChannels[0]
+    steeringCtracks["steeringB"] = trackInputChannels[1]
+    steeringCtracks["steeringD"] = trackInputChannels[4]
 
     steeringDtracks := make(map[string] chan interface{})
-    steeringDtracks["steeringC"] = steeringToTrackChannels[4]
-    steeringDtracks["steeringE"] = steeringToTrackChannels[2]
-    steeringDtracks["steeringF"] = steeringToTrackChannels[3]
+    steeringDtracks["steeringC"] = trackInputChannels[4]
+    steeringDtracks["steeringE"] = trackInputChannels[2]
+    steeringDtracks["steeringF"] = trackInputChannels[3]
 
     steeringEtracks := make(map[string] chan interface{})
-    steeringEtracks["steeringD"] = steeringToTrackChannels[2]
-    steeringEtracks["steeringE"] = steeringToTrackChannels[6]
+    steeringEtracks["steeringD"] = trackInputChannels[2]
+    steeringEtracks["steeringE"] = trackInputChannels[6]
 
     steeringFtracks := make(map[string] chan interface{})
-    steeringFtracks["steeringD"] = steeringToTrackChannels[3]
-    steeringFtracks["steeringF"] = steeringToTrackChannels[7]
+    steeringFtracks["steeringD"] = trackInputChannels[3]
+    steeringFtracks["steeringF"] = trackInputChannels[7]
 
     steeringA := Steering{4*time.Second, steeringInputChannels[0], steeringAtracks, "steeringA"}
     steeringB := Steering{4*time.Second, steeringInputChannels[1], steeringBtracks, "steeringB"}
@@ -219,21 +219,21 @@ func main() {
     steeringF := Steering{4*time.Second, steeringInputChannels[5], steeringFtracks, "steeringF"}
 
     trainATrack := ring.New(8)
-    trainATrack.Value = steeringChanelId{"steeringC", steeringInputChannels[0]}
+    trainATrack.Value = steeringChanelId{currentSteeringCh:steeringA.inputChanel, nextSteeringId:"steeringC"}
     trainATrack = trainATrack.Next()
-    trainATrack.Value = steeringChanelId{"steeringD", steeringInputChannels[2]}
+    trainATrack.Value = steeringChanelId{"steeringD", steeringC.inputChanel}
     trainATrack = trainATrack.Next()
-    trainATrack.Value = steeringChanelId{"steeringE", steeringInputChannels[3]}
+    trainATrack.Value = steeringChanelId{"steeringE", steeringD.inputChanel}
     trainATrack = trainATrack.Next()
-    trainATrack.Value = steeringChanelId{"steeringE", steeringInputChannels[4]}
+    trainATrack.Value = steeringChanelId{"steeringE", steeringE.inputChanel}
     trainATrack = trainATrack.Next()
-    trainATrack.Value = steeringChanelId{"steeringD", steeringInputChannels[4]}
+    trainATrack.Value = steeringChanelId{"steeringD", steeringE.inputChanel}
     trainATrack = trainATrack.Next()
-    trainATrack.Value = steeringChanelId{"steeringC", steeringInputChannels[3]}
+    trainATrack.Value = steeringChanelId{"steeringC", steeringD.inputChanel}
     trainATrack = trainATrack.Next()
-    trainATrack.Value = steeringChanelId{"steeringA", steeringInputChannels[2]}
+    trainATrack.Value = steeringChanelId{"steeringA", steeringC.inputChanel}
     trainATrack = trainATrack.Next()
-    trainATrack.Value = steeringChanelId{"steeringA", steeringInputChannels[0]}
+    trainATrack.Value = steeringChanelId{"steeringA", steeringA.inputChanel}
     trainA:= Train{90, 5, trainATrack, "trainA"}
 
     trainBTrack := ring.New(8)
