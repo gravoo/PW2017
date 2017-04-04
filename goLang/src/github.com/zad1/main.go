@@ -80,7 +80,7 @@ type Steering struct {
 	steeringName   string
 }
 
-type steeringToTrackMsg struct {
+type SteeringToTrackMsg struct {
 	resp chan interface{}
 }
 
@@ -89,7 +89,7 @@ func (s *Steering) assignTrainToTrack() {
 		trainMsg := <-s.inputChanel
 		go func() {
 			fmt.Println("Source goRoutine ", s.steeringName, ": received msg from train with req travel to", trainMsg.targetSteering)
-			connectMsg := &steeringToTrackMsg{resp: make(chan interface{})}
+			connectMsg := &SteeringToTrackMsg{resp: make(chan interface{})}
 			fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
 			s.tracks[trainMsg.targetSteering] <- connectMsg
 			respFromTrack := <-connectMsg.resp
@@ -125,7 +125,7 @@ func (st *StopTrack) track() {
 		msgFromSteering := <-st.steeringChan
 		fmt.Println("Source goRoutine ", st.trackId, ": received msg from steering")
 		connectMsg := st.buildTrainMsg()
-		msgFromSteering.(*steeringToTrackMsg).resp <- connectMsg
+		msgFromSteering.(*SteeringToTrackMsg).resp <- connectMsg
 		fmt.Println("Source goRoutine ", st.trackId, ": received msg from train on finish", <-connectMsg.resp)
 		close(connectMsg.resp)
 	}
@@ -144,7 +144,7 @@ func (tr *DriveTrack) track() {
 		msgFromSteering := <-tr.steeringChan
 		fmt.Println("Source goRoutine ", tr.trackId, ": received msg from steering")
 		connectMsg := tr.buildTrainMsg()
-		msgFromSteering.(*steeringToTrackMsg).resp <- connectMsg
+		msgFromSteering.(*SteeringToTrackMsg).resp <- connectMsg
 		fmt.Println("Source goRoutine ", tr.trackId, ": received msg from train on finish", <-connectMsg.resp)
 		close(connectMsg.resp)
 	}
@@ -227,11 +227,12 @@ func main() {
 	steerings["steeringC"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringA": stopTracks[1].steeringChan, "steeringB": stopTracks[2].steeringChan, "steeringD": driveTracks[0].steeringChan},
 		"steeringC", steeringsInputChannels[2])
-	steerings["steeringD"] = assignRouteToSteering(map[string]chan interface{}{
+	/*steerings["steeringD"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringE": stopTracks[4].steeringChan, "steeringE": stopTracks[5].steeringChan, "steeringC": driveTracks[0].steeringChan},
 		"steeringD", steeringsInputChannels[3])
 	steerings["steeringE"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringD": stopTracks[4].steeringChan, "steeringD": stopTracks[5].steeringChan},
 		"steeringE", steeringsInputChannels[4])
+	*/
 	fmt.Println(tracksInputChannels, "\n", steeringsInputChannels, "\n", stopTracks, "\n", driveTracks, "\n", steerings)
 }
