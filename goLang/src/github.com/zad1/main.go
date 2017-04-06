@@ -198,20 +198,33 @@ func assignRouteToSteering(steeringRoute map[string]chan interface{}, steeringNa
 }
 
 func generateTrackForTrain(trackTab []sourceTargetSteeringPair, steerings map[string]*Steering) *ring.Ring {
-	tracks := ring.New(len(trackTab))
+	tracks := ring.New(len(trackTab) * 2)
 	for _, value := range trackTab {
 		tracks.Value = CurrentAndTargetSteering{
 			currentSteeringCh: steerings[value.sourceSteering].inputChanel, nextSteeringId: steerings[value.targetSteering].steeringName}
+		fmt.Println(
+			CurrentAndTargetSteering{
+				currentSteeringCh: steerings[value.sourceSteering].inputChanel, nextSteeringId: steerings[value.targetSteering].steeringName})
+		tracks = tracks.Next()
+	}
+	for i := len(trackTab) - 1; i >= 0; i-- {
+		tracks.Value = CurrentAndTargetSteering{
+			currentSteeringCh: steerings[trackTab[i].targetSteering].inputChanel, nextSteeringId: steerings[trackTab[i].sourceSteering].steeringName}
+		fmt.Println(CurrentAndTargetSteering{
+			currentSteeringCh: steerings[trackTab[i].targetSteering].inputChanel, nextSteeringId: steerings[trackTab[i].sourceSteering].steeringName})
 		tracks = tracks.Next()
 	}
 	return tracks
 }
 
+func generateReverseTrackRouteForTrain(trackTab []sourceTargetSteeringPair, steerings map[string]*Steering) {
+}
+
 func main() {
-	const numOfSteerings = 14
-	const numOfTracks = 20
-	const numOfStopTracks = 14
-	const numOfDriveTracks = 6
+	const numOfSteerings = 22
+	const numOfTracks = 30
+	const numOfStopTracks = 24
+	const numOfDriveTracks = 9
 	stopTracks := generateStopTracks(numOfStopTracks)
 	driveTracks := generateDriveTracks(numOfDriveTracks)
 	steerings := make(map[string]*Steering)
@@ -226,13 +239,14 @@ func main() {
 	steerings["steeringE"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringD": stopTracks[5].steeringChan, "steeringF": driveTracks[1].steeringChan}, "steeringE")
 	steerings["steeringF"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringE": driveTracks[1].steeringChan, "steeringG": driveTracks[2].steeringChan}, "steeringF")
+		"steeringE": driveTracks[1].steeringChan, "steeringG": driveTracks[2].steeringChan, "steeringU": driveTracks[8].steeringChan}, "steeringF")
 	steerings["steeringG"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringF": driveTracks[2].steeringChan, "steeringH": stopTracks[6].steeringChan}, "steeringG")
 	steerings["steeringH"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringG": stopTracks[7].steeringChan, "steeringI": driveTracks[3].steeringChan}, "steeringH")
 	steerings["steeringI"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringH": driveTracks[3].steeringChan, "steeringJ": driveTracks[4].steeringChan}, "steeringI")
+		"steeringH": driveTracks[3].steeringChan, "steeringJ": driveTracks[4].steeringChan,
+		"steeringO": driveTracks[6].steeringChan}, "steeringI")
 	steerings["steeringJ"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringI": driveTracks[4].steeringChan, "steeringK": stopTracks[8].steeringChan}, "steeringJ")
 	steerings["steeringK"] = assignRouteToSteering(map[string]chan interface{}{
@@ -243,18 +257,83 @@ func main() {
 		"steeringL": stopTracks[10].steeringChan, "steeringM": stopTracks[11].steeringChan}, "steeringM")
 	steerings["steeringN"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringL": stopTracks[12].steeringChan, "steeringN": stopTracks[13].steeringChan}, "steeringN")
+	steerings["steeringO"] = assignRouteToSteering(map[string]chan interface{}{
+		"steeringI": driveTracks[6].steeringChan, "steeringP": stopTracks[14].steeringChan}, "steeringO")
+	steerings["steeringP"] = assignRouteToSteering(map[string]chan interface{}{
+		"steeringO": stopTracks[15].steeringChan, "steeringR": driveTracks[7].steeringChan}, "steeringP")
+	steerings["steeringR"] = assignRouteToSteering(map[string]chan interface{}{
+		"steeringS": stopTracks[16].steeringChan, "steeringT": stopTracks[18].steeringChan, "steeringP": driveTracks[7].steeringChan}, "steeringR")
+	steerings["steeringS"] = assignRouteToSteering(map[string]chan interface{}{
+		"steeringR": stopTracks[16].steeringChan, "steeringS": stopTracks[17].steeringChan}, "steeringS")
+	steerings["steeringT"] = assignRouteToSteering(map[string]chan interface{}{
+		"steeringR": stopTracks[18].steeringChan, "steeringT": stopTracks[19].steeringChan}, "steeringT")
+	steerings["steeringU"] = assignRouteToSteering(map[string]chan interface{}{
+		"steeringW": stopTracks[20].steeringChan, "steeringX": stopTracks[21].steeringChan, "steeringF": driveTracks[8].steeringChan}, "steeringU")
+	steerings["steeringW"] = assignRouteToSteering(map[string]chan interface{}{
+		"steeringU": stopTracks[20].steeringChan, "steeringW": stopTracks[22].steeringChan}, "steeringW")
+	steerings["steeringX"] = assignRouteToSteering(map[string]chan interface{}{
+		"steeringU": stopTracks[21].steeringChan, "steeringX": stopTracks[23].steeringChan}, "steeringX")
 
-	tracksA := generateTrackForTrain([]sourceTargetSteeringPair{
-		{"steeringA", "steeringC"}, {"steeringC", "steeringD"}, {"steeringD", "steeringE"},
-		{"steeringE", "steeringD"}, {"steeringD", "steeringC"}, {"steeringC", "steeringA"},
-		{"steeringA", "steeringA"}}, steerings)
-	trainA := Train{90, 5, tracksA, "trainA"}
+	routes := make(map[string]*ring.Ring)
 
-	tracksB := generateTrackForTrain([]sourceTargetSteeringPair{
-		{"steeringB", "steeringC"}, {"steeringC", "steeringD"}, {"steeringD", "steeringE"},
-		{"steeringE", "steeringD"}, {"steeringD", "steeringC"}, {"steeringC", "steeringB"},
+	routes["trainAroute"] = generateTrackForTrain([]sourceTargetSteeringPair{
+		{"steeringA", "steeringA"},
+		{"steeringA", "steeringC"},
+		{"steeringC", "steeringD"},
+		{"steeringD", "steeringE"},
+		{"steeringE", "steeringF"},
+		{"steeringF", "steeringG"},
+		{"steeringG", "steeringH"},
+		{"steeringH", "steeringI"},
+		{"steeringI", "steeringJ"},
+		{"steeringJ", "steeringK"},
+		{"steeringK", "steeringL"},
+		{"steeringL", "steeringM"},
+		{"steeringM", "steeringM"}}, steerings)
+
+	routes["trainBroute"] = generateTrackForTrain([]sourceTargetSteeringPair{
+		{"steeringN", "steeringN"},
+		{"steeringN", "steeringL"},
+		{"steeringL", "steeringK"},
+		{"steeringK", "steeringJ"},
+		{"steeringJ", "steeringI"},
+		{"steeringI", "steeringH"},
+		{"steeringH", "steeringG"},
+		{"steeringG", "steeringF"},
+		{"steeringF", "steeringE"},
+		{"steeringE", "steeringD"},
+		{"steeringD", "steeringC"},
+		{"steeringC", "steeringB"},
 		{"steeringB", "steeringB"}}, steerings)
-	trainB := Train{90, 5, tracksB, "trainB"}
+
+	routes["trainCroute"] = generateTrackForTrain([]sourceTargetSteeringPair{
+		{"steeringS", "steeringS"},
+		{"steeringS", "steeringR"},
+		{"steeringR", "steeringP"},
+		{"steeringP", "steeringO"},
+		{"steeringO", "steeringI"},
+		{"steeringI", "steeringH"},
+		{"steeringH", "steeringG"},
+		{"steeringG", "steeringF"},
+		{"steeringF", "steeringE"},
+		{"steeringE", "steeringD"}}, steerings)
+
+	routes["trainDroute"] = generateTrackForTrain([]sourceTargetSteeringPair{
+		{"steeringJ", "steeringK"},
+		{"steeringK", "steeringJ"},
+		{"steeringJ", "steeringI"},
+		{"steeringI", "steeringO"},
+		{"steeringO", "steeringP"},
+		{"steeringP", "steeringR"},
+		{"steeringR", "steeringT"},
+		{"steeringT", "steeringT"}}, steerings)
+
+	trains := make(map[string]*Train)
+	trains["trainA"] = &Train{90, 5, routes["trainAroute"], "trainA"}
+	trains["trainB"] = &Train{45, 5, routes["trainBroute"], "trainB"}
+	trains["trainC"] = &Train{45, 5, routes["trainCroute"], "trainC"}
+	trains["trainD"] = &Train{45, 5, routes["trainDroute"], "trainD"}
+
 	for _, val := range stopTracks {
 		go val.track()
 	}
@@ -264,9 +343,9 @@ func main() {
 	for _, val := range steerings {
 		go val.assignTrainToTrack()
 	}
-
-	go trainA.travelTrough()
-	go trainB.travelTrough()
+	for _, val := range trains {
+		go val.travelTrough()
+	}
 
 	var input string
 	fmt.Scanln(&input)
