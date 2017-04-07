@@ -188,36 +188,25 @@ func generateDriveTracks(numOfDriveTracks int) []*DriveTrack {
 	return tracks
 }
 
-type sourceTargetSteeringPair struct {
-	sourceSteering string
-	targetSteering string
-}
-
 func assignRouteToSteering(steeringRoute map[string]chan interface{}, steeringName string) *Steering {
 	return &Steering{4 * time.Second, make(chan *SteeringToTrainMsg), steeringRoute, steeringName}
 }
 
-func generateTrackForTrain(trackTab []sourceTargetSteeringPair, steerings map[string]*Steering) *ring.Ring {
-	tracks := ring.New(len(trackTab) * 2)
+func generateTrackForTrain(trackTab []string, steerings map[string]*Steering) *ring.Ring {
+	tracks := ring.New(len(trackTab))
+	firstSteering := trackTab[0]
 	for _, value := range trackTab {
 		tracks.Value = CurrentAndTargetSteering{
-			currentSteeringCh: steerings[value.sourceSteering].inputChanel, nextSteeringId: steerings[value.targetSteering].steeringName}
-		fmt.Println(
-			CurrentAndTargetSteering{
-				currentSteeringCh: steerings[value.sourceSteering].inputChanel, nextSteeringId: steerings[value.targetSteering].steeringName})
-		tracks = tracks.Next()
-	}
-	for i := len(trackTab) - 1; i >= 0; i-- {
-		tracks.Value = CurrentAndTargetSteering{
-			currentSteeringCh: steerings[trackTab[i].targetSteering].inputChanel, nextSteeringId: steerings[trackTab[i].sourceSteering].steeringName}
+			currentSteeringCh: steerings["steering"+firstSteering].inputChanel, nextSteeringId: steerings["steering"+value].steeringName}
 		fmt.Println(CurrentAndTargetSteering{
-			currentSteeringCh: steerings[trackTab[i].targetSteering].inputChanel, nextSteeringId: steerings[trackTab[i].sourceSteering].steeringName})
+			currentSteeringCh: steerings["steering"+firstSteering].inputChanel, nextSteeringId: steerings["steering"+value].steeringName})
+		firstSteering = value
 		tracks = tracks.Next()
 	}
 	return tracks
 }
 
-func generateReverseTrackRouteForTrain(trackTab []sourceTargetSteeringPair, steerings map[string]*Steering) {
+func generateReverseTrackRouteForTrain(trackTab []string, steerings map[string]*Steering) {
 }
 
 func main() {
@@ -276,22 +265,9 @@ func main() {
 
 	routes := make(map[string]*ring.Ring)
 
-	routes["trainAroute"] = generateTrackForTrain([]sourceTargetSteeringPair{
-		{"steeringA", "steeringA"},
-		{"steeringA", "steeringC"},
-		{"steeringC", "steeringD"},
-		{"steeringD", "steeringE"},
-		{"steeringE", "steeringF"},
-		{"steeringF", "steeringG"},
-		{"steeringG", "steeringH"},
-		{"steeringH", "steeringI"},
-		{"steeringI", "steeringJ"},
-		{"steeringJ", "steeringK"},
-		{"steeringK", "steeringL"},
-		{"steeringL", "steeringM"},
-		{"steeringM", "steeringM"}}, steerings)
+	routes["trainAroute"] = generateTrackForTrain([]string{"A", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "M", "L", "K", "J", "I", "H", "G", "F", "E", "D", "C", "A"}, steerings)
 
-	routes["trainBroute"] = generateTrackForTrain([]sourceTargetSteeringPair{
+	/*routes["trainBroute"] = generateTrackForTrain([]sourceTargetSteeringPair{
 		{"steeringN", "steeringN"},
 		{"steeringN", "steeringL"},
 		{"steeringL", "steeringK"},
@@ -327,12 +303,14 @@ func main() {
 		{"steeringP", "steeringR"},
 		{"steeringR", "steeringT"},
 		{"steeringT", "steeringT"}}, steerings)
+	*/
 
 	trains := make(map[string]*Train)
 	trains["trainA"] = &Train{90, 5, routes["trainAroute"], "trainA"}
-	trains["trainB"] = &Train{45, 5, routes["trainBroute"], "trainB"}
-	trains["trainC"] = &Train{45, 5, routes["trainCroute"], "trainC"}
-	trains["trainD"] = &Train{45, 5, routes["trainDroute"], "trainD"}
+	fmt.Println(*routes["trainAroute"])
+	//	trains["trainB"] = &Train{45, 5, routes["trainBroute"], "trainB"}
+	//	trains["trainC"] = &Train{45, 5, routes["trainCroute"], "trainC"}
+	//	trains["trainD"] = &Train{45, 5, routes["trainDroute"], "trainD"}
 
 	for _, val := range stopTracks {
 		go val.track()
@@ -343,9 +321,7 @@ func main() {
 	for _, val := range steerings {
 		go val.assignTrainToTrack()
 	}
-	for _, val := range trains {
-		go val.travelTrough()
-	}
+	trains["trainA"].travelTrough()
 
 	var input string
 	fmt.Scanln(&input)
