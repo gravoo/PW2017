@@ -95,7 +95,6 @@ func (s *Steering) assignTrainToTrack() {
 			respFromTrack := <-connectMsg.resp
 			fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfig", s.timeToReconfig)
 			time.Sleep(s.timeToReconfig)
-			fmt.Println("sending msg to", trainMsg.resp)
 			trainMsg.resp <- respFromTrack
 		}()
 	}
@@ -176,7 +175,7 @@ type CurrentAndTargetSteering struct {
 func generateStopTracks(numOfStopTracks int) []*StopTrack {
 	tracks := make([]*StopTrack, numOfStopTracks)
 	for i, _ := range tracks {
-		tracks[i] = &StopTrack{i, make(chan interface{}, 4), 1 * time.Second}
+		tracks[i] = &StopTrack{i, make(chan interface{}, 4), 10 * time.Second}
 	}
 	return tracks
 }
@@ -190,7 +189,7 @@ func generateDriveTracks(numOfDriveTracks int) []*DriveTrack {
 }
 
 func assignRouteToSteering(steeringRoute map[string]chan interface{}, steeringName string) *Steering {
-	return &Steering{1 * time.Second, make(chan *SteeringToTrainMsg), steeringRoute, steeringName}
+	return &Steering{5 * time.Second, make(chan *SteeringToTrainMsg), steeringRoute, steeringName}
 }
 
 func generateTrackForTrain(trackTab []string, steerings map[string]*Steering) *ring.Ring {
@@ -209,12 +208,9 @@ func main() {
 	const numOfSteerings = 22
 	const numOfTracks = 30
 	const numOfStopTracks = 24
-	const numOfDriveTracks = 10
+	const numOfDriveTracks = 9
 	stopTracks := generateStopTracks(numOfStopTracks)
 	driveTracks := generateDriveTracks(numOfDriveTracks)
-	//driveTracks[5].length = 2700
-	//driveTracks[6].length = 2700
-	//stopTracks[16].timeToRest = 25 * time.Second
 	steerings := make(map[string]*Steering)
 	steerings["steeringA"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringA": stopTracks[0].steeringChan,
@@ -232,23 +228,23 @@ func main() {
 	steerings["steeringE"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringD": stopTracks[5].steeringChan,
 		"steeringG": driveTracks[1].steeringChan,
-		"steeringU": driveTracks[8].steeringChan}, "steeringE")
+		"steeringU": driveTracks[6].steeringChan}, "steeringE")
 	steerings["steeringG"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringE": driveTracks[9].steeringChan,
+		"steeringE": driveTracks[8].steeringChan,
 		"steeringH": stopTracks[6].steeringChan}, "steeringG")
 	steerings["steeringH"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringG": stopTracks[7].steeringChan,
-		"steeringJ": driveTracks[3].steeringChan,
-		"steeringO": driveTracks[6].steeringChan}, "steeringH")
+		"steeringJ": driveTracks[2].steeringChan,
+		"steeringO": driveTracks[4].steeringChan}, "steeringH")
 	steerings["steeringJ"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringH": driveTracks[4].steeringChan,
+		"steeringH": driveTracks[7].steeringChan,
 		"steeringK": stopTracks[8].steeringChan,
 		"steeringO": driveTracks[6].steeringChan}, "steeringJ")
 	steerings["steeringK"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringL": driveTracks[5].steeringChan,
+		"steeringL": driveTracks[3].steeringChan,
 		"steeringJ": stopTracks[9].steeringChan}, "steeringK")
 	steerings["steeringL"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringK": driveTracks[5].steeringChan,
+		"steeringK": driveTracks[3].steeringChan,
 		"steeringM": stopTracks[10].steeringChan,
 		"steeringN": stopTracks[11].steeringChan}, "steeringL")
 	steerings["steeringM"] = assignRouteToSteering(map[string]chan interface{}{
@@ -266,7 +262,7 @@ func main() {
 	steerings["steeringR"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringS": stopTracks[16].steeringChan,
 		"steeringT": stopTracks[17].steeringChan,
-		"steeringP": driveTracks[7].steeringChan}, "steeringR")
+		"steeringP": driveTracks[5].steeringChan}, "steeringR")
 	steerings["steeringS"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringR": stopTracks[16].steeringChan,
 		"steeringS": stopTracks[18].steeringChan}, "steeringS")
@@ -276,7 +272,7 @@ func main() {
 	steerings["steeringU"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringW": stopTracks[20].steeringChan,
 		"steeringX": stopTracks[21].steeringChan,
-		"steeringE": driveTracks[8].steeringChan}, "steeringU")
+		"steeringE": driveTracks[6].steeringChan}, "steeringU")
 	steerings["steeringW"] = assignRouteToSteering(map[string]chan interface{}{
 		"steeringU": stopTracks[20].steeringChan,
 		"steeringW": stopTracks[22].steeringChan}, "steeringW")
@@ -300,9 +296,9 @@ func main() {
 
 	trains := make(map[string]*Train)
 	trains["trainA"] = &Train{90, 5, routes["trainAroute"], "trainA"}
-	//trains["trainB"] = &Train{90, 5, routes["trainBroute"], "trainB"}
-	//trains["trainC"] = &Train{90, 5, routes["trainCroute"], "trainC"}
-	//trains["trainD"] = &Train{90, 5, routes["trainDroute"], "trainD"}
+	trains["trainB"] = &Train{90, 5, routes["trainBroute"], "trainB"}
+	trains["trainC"] = &Train{90, 5, routes["trainCroute"], "trainC"}
+	trains["trainD"] = &Train{90, 5, routes["trainDroute"], "trainD"}
 
 	for _, val := range stopTracks {
 		go val.track()
@@ -314,13 +310,9 @@ func main() {
 		go val.assignTrainToTrack()
 	}
 
-	//go trains["trainA"].travelTrough()
-	//go trains["trainB"].travelTrough()
-	//fmt.Println(routes["trainCroute"])
-	go trains["trainA"].travelTrough()
-	//for _, val := range trains {
-	//go val.travelTrough()
-	//}
+	for _, val := range trains {
+		go val.travelTrough()
+	}
 
 	var input string
 	fmt.Scanln(&input)
