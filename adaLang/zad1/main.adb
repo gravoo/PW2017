@@ -1,37 +1,22 @@
 with Ada.Text_IO;
+with Ada.Strings.Unbounded;
 
 procedure Main is
-    task type Steering is
-        entry AssignTrainToTrack;
-    end Steering;
+    package SU renames Ada.Strings.Unbounded;
     task type Train is 
-        entry AssignTrain (An_Steering : in Steering);
+        entry Inicialize(An_Name : in SU.Unbounded_String);
     end Train;
-
-    task body Steering is
-        SteeringName : String := "SteeringA";
-    begin 
-        loop
-            accept AssignTrainToTrack do
-                Ada.Text_IO.Put_Line("received msg from train with req travel to");
-            end AssignTrainToTrack;
-        end loop;
-    end Steering;
 
     task body Train is
-        TrainName : String := "TrainA";
+        TrainName : SU.Unbounded_String;
     begin
-        loop
-            select 
-            accept AssignTrain(An_Steering : in Steering) do
-                Ada.Text_IO.Put_Line("traget");
-                An_Steering.AssignTrainToTrack;
-            end AssignTrain;
-            end select;
-        end loop;
+        accept Inicialize(An_Name : SU.Unbounded_String) do 
+            TrainName := An_Name;
+            Ada.Text_IO.Put("Inicialize ");
+            Ada.Text_IO.Put_Line(SU.To_String(TrainName));
+        end Inicialize;
     end Train;
-    SteeringA, SteeringB: Steering;
-    TrainA, TrainB: Train;
+    TrainA: Train;
 begin
-    TrainA.AssignTrain(SteeringA);
+    TrainA.Inicialize(SU.To_Unbounded_String("TrainA"));
 end Main;

@@ -1,64 +1,82 @@
 V "GNAT Lib v6"
 M P W=b
-P ZX
+P SS ZX
 
 RN
 RV NO_EXCEPTION_HANDLERS
 RV NO_EXCEPTIONS
 RV NO_IO
 RV NO_IMPLICIT_DYNAMIC_CODE
-RV NO_SELECT_STATEMENTS
+RV NO_NESTED_FINALIZATION
+RV NO_SECONDARY_STACK
 RV NO_STANDARD_STORAGE_POOLS
 RV NO_TASK_HIERARCHY
 RV NO_TASKING
 RV NO_DEFAULT_INITIALIZATION
 RV SPARK_05
-RV MAX_SELECT_ALTERNATIVES=1
 RV MAX_TASK_ENTRIES=1
 RV MAX_TASKS=1+
 
-U main%b		main.adb		b2a9c611 NE OO SU
+U main%b		main.adb		6ce78aac NE OO SU
 W ada%s			ada.ads			ada.ali
+W ada.exceptions%s	a-except.adb		a-except.ali
 W ada.real_time%s	a-reatim.adb		a-reatim.ali
+W ada.strings%s		a-string.ads		a-string.ali
+W ada.strings.unbounded%s  a-strunb.adb		a-strunb.ali
 W ada.tags%s		a-tags.adb		a-tags.ali
 W ada.text_io%s		a-textio.adb		a-textio.ali
 W system%s		system.ads		system.ali
 W system.parameters%s	s-parame.adb		s-parame.ali
+W system.secondary_stack%s  s-secsta.adb	s-secsta.ali
 W system.soft_links%s	s-soflin.adb		s-soflin.ali
+W system.standard_library%s  s-stalib.adb	s-stalib.ali
 W system.task_info%s	s-tasinf.adb		s-tasinf.ali
 W system.tasking%s	s-taskin.adb		s-taskin.ali
 W system.tasking.rendezvous%s  s-tasren.adb	s-tasren.ali
 W system.tasking.stages%s  s-tassta.adb		s-tassta.ali
 
 D ada.ads		20170306114746 3ffc8e18 ada%s
+D a-charac.ads		20170306114743 2d3ec45b ada.characters%s
+D a-chlat1.ads		20170306114743 66457d31 ada.characters.latin_1%s
 D a-except.ads		20170306114743 291912d5 ada.exceptions%s
 D a-finali.ads		20170306114743 bf4f806b ada.finalization%s
 D a-ioexce.ads		20170306114743 e4a01f64 ada.io_exceptions%s
 D a-reatim.ads		20170306114746 428ef5f7 ada.real_time%s
 D a-stream.ads		20170306114743 119b8fb3 ada.streams%s
+D a-string.ads		20170306114743 90ac6797 ada.strings%s
+D a-strmap.ads		20170306114743 e8bb714a ada.strings.maps%s
+D a-strunb.ads		20170306114746 3f91d4c5 ada.strings.unbounded%s
 D a-tags.ads		20170306114743 01f5e3ef ada.tags%s
 D a-textio.ads		20170306114743 386df5d4 ada.text_io%s
 D a-unccon.ads		20170306114746 f9eb8f06 ada.unchecked_conversion%s
 D interfac.ads		20170306114746 4be8ce1b interfaces%s
 D i-c.ads		20170306114743 5421119b interfaces.c%s
 D i-cstrea.ads		20170306114743 e53d8b8e interfaces.c_streams%s
-D main.adb		20170414134453 8ac433c5 main%b
+D main.adb		20170414163700 6b1babbd main%b
 D system.ads		20170306114746 6326c08a system%s
 D s-atacco.ads		20170306114743 4c36d12f system.address_to_access_conversions%s
+D s-atocou.ads		20170306114743 b45c2d8d system.atomic_counters%s
 D s-crtl.ads		20170306114743 0ebbdb71 system.crtl%s
 D s-exctab.ads		20170306114743 54135002 system.exception_table%s
 D s-ficobl.ads		20170306114743 078245e4 system.file_control_block%s
+D s-finmas.ads		20170306114743 7811a767 system.finalization_masters%s
 D s-finroo.ads		20170306114743 4ff27390 system.finalization_root%s
 D s-linux.ads		20170306114743 2fda6ad1 system.linux%s
+D s-memory.ads		20170306114746 597d6634 system.memory%s
 D s-multip.ads		20170306114743 38ac9f73 system.multiprocessors%s
 D s-oscons.ads		20170306121712 4bd50652 system.os_constants%s
 D s-osinte.ads		20170306114746 64f6e3c7 system.os_interface%s
 D s-parame.ads		20170306114743 7e2a0d7f system.parameters%s
+D s-secsta.ads		20170306114746 86a2856d system.secondary_stack%s
 D s-soflin.ads		20170306114743 14e1eb6c system.soft_links%s
 D s-stache.ads		20170306114743 a37c21ec system.stack_checking%s
 D s-stausa.ads		20170306114743 017a0a05 system.stack_usage%s
 D s-stalib.ads		20170306114743 09bd3940 system.standard_library%s
+D s-stalib.adb		20170306114743 f2fe2716 system.standard_library%b
 D s-stoele.ads		20170306114743 2dc34a04 system.storage_elements%s
+D s-stopoo.ads		20170306114743 b16154c2 system.storage_pools%s
+D s-stposu.ads		20170306114743 97a6219c system.storage_pools.subpools%s
+D s-stratt.ads		20170306114743 aedef97e system.stream_attributes%s
 D s-tasinf.ads		20170306114743 2b3f8252 system.task_info%s
 D s-taspri.ads		20170306114743 e3ab4429 system.task_primitives%s
 D s-taprop.ads		20170306114743 1dd2e1b6 system.task_primitives.operations%s
@@ -71,25 +89,36 @@ D s-traent.ads		20170306114743 005bf670 system.traceback_entries%s
 D s-unstyp.ads		20170306114746 9d58a4c0 system.unsigned_types%s
 D s-wchcon.ads		20170306114743 1b7d22d2 system.wch_con%s
 X 1 ada.ads
-16K9*Ada 19e8 13|1r6 16r17 27r17
-X 8 a-textio.ads
-49K13*Text_IO 471e16 13|1w10 16r21 27r21
-263U14*Put_Line 13|16s29 27s29
-X 13 main.adb
-3U11*Main 3b11 37l5 37t9
-4T15 Steering 6l9 6e17 8r45 11b15 19l9 19t17 26r49 33r27
-5Y15 AssignTrainToTrack 15b20 17l17 17t35 28s29
-7T15 Train 9l9 9e14 21b15 32l9 32t14 34r21
-8Y15 AssignTrain 8>28 26b20 29l17 29t28 36s12
-8t28 An_Steering{4T15} 28r17
-12a9 SteeringName{string}
-22a9 TrainName{string}
-26t32 An_Steering{4T15}
-33t5 SteeringA{4T15} 36r24
-33t16 SteeringB{4T15}
-34t5 TrainA{7T15} 36r5
-34t13 TrainB{7T15}
-X 27 s-stausa.ads
+16K9*Ada 19e8 18|1r6 2r6 5r24 15r13 16r13
+X 9 a-string.ads
+16K13*Strings 35e16 18|2r10 5r28
+X 11 a-strunb.ads
+76K21*Unbounded 489e26 18|2w18 5r36
+79R9*Unbounded_String<5|43R9> 473e14 18|7r42 11r24 13r40
+94V13*To_Unbounded_String{79R9} 18|21s26
+100V13*To_String{string} 18|16s37
+X 13 a-textio.ads
+49K13*Text_IO 471e16 18|1w10 15r17 16r17
+242U14*Put 18|15s25
+263U14*Put_Line 18|16s25
+X 18 main.adb
+4U11*Main 4b11 22l5 22t9
+5K13 SU=5:36 7r39 11r21 13r37 16r34 21r23
+6T15 Train 8l9 8e14 10b15 18l9 18t14 19r13
+7Y15 Inicialize 7>26 13b16 17l13 17t23 21s12
+7r26 An_Name{11|79R9} 14r26
+11r9 TrainName{11|79R9} 14m13 16r47
+13r27 An_Name{11|79R9}
+19t5 TrainA{6T15} 21r5
+X 19 system.ads
+67M9*Address
+X 28 s-memory.ads
+53V13*Alloc{19|67M9} 103i<c,__gnat_malloc>22
+68U14*Free 104i<c,__gnat_free>22
+76V13*Realloc{19|67M9} 105i<c,__gnat_realloc>22
+X 36 s-stausa.ads
 203U14*Initialize 204i<c,__gnat_stack_usage_initialize>22
 268U14*Output_Results 272i<c,__gnat_stack_usage_output_results>22
+X 38 s-stalib.adb
+93U14 Break_Start 94i<c,__gnat_break_start>22
 
