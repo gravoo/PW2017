@@ -33,7 +33,7 @@ RV SPARK_05
 RV MAX_TASK_ENTRIES=1
 RV MAX_TASKS=1+
 
-U main%b		main.adb		6bf8c004 NE OO SU
+U main%b		main.adb		a5f27d3b NE OO SU
 W ada%s			ada.ads			ada.ali
 W ada.containers%s	a-contai.ads		a-contai.ali
 Z ada.containers.generic_array_sort%s
@@ -95,7 +95,7 @@ D a-uncdea.ads		20170306114743 f15a5ed1 ada.unchecked_deallocation%s
 D interfac.ads		20170306114746 4be8ce1b interfaces%s
 D i-c.ads		20170306114743 5421119b interfaces.c%s
 D i-cstrea.ads		20170306114743 e53d8b8e interfaces.c_streams%s
-D main.adb		20170417130854 e464676e main%b
+D main.adb		20170417142849 2a6eda51 main%b
 D system.ads		20170306114746 6326c08a system%s
 D s-addima.ads		20170306114743 a1ec9d3a system.address_image%s
 D s-atacco.ads		20170306114743 4c36d12f system.address_to_access_conversions%s
@@ -137,17 +137,17 @@ D s-traent.ads		20170306114743 005bf670 system.traceback_entries%s
 D s-unstyp.ads		20170306114746 9d58a4c0 system.unsigned_types%s
 D s-wchcon.ads		20170306114743 1b7d22d2 system.wch_con%s
 X 1 ada.ads
-16K9*Ada 19e8 28|1r6 2r6 3r6 4r6 5r5 9r24 36r13 37r13 38r13 39r25 40r13 50r13
-. 51r13 54r13 55r13 56r25 57r13 58r13 59r13 67r13
+16K9*Ada 19e8 28|1r6 2r6 3r6 4r6 5r5 9r24 40r13 41r13 42r13 43r25 44r13 55r13
+. 56r13 59r13 60r25 61r13 62r25 63r13 64r13 72r13
 X 4 a-contai.ads
 16K13*Containers 24e19 28|3r10 5r9
 X 8 a-convec.ads
 46k24*Vectors 518e27 28|3w21 8r36
-57R9 Vector<11|43R9> 28|12r97[8] 27r48[8] 31r42[8] 33r95[8]
-245U14 Append 28|71s30[8] 72s30[8]
-289V13 First_Element{integer} 28|39s65[8] 41s39[8] 41s89[8]
+57R9 Vector<11|43R9> 28|13r46[8] 28r48[8] 32r42[8] 35r95[8]
+245U14 Append 28|76s30[8] 77s30[8]
+289V13 First_Element{integer} 28|43s65[8] 45s39[8] 45s89[8]
 X 12 a-inteio.ads
-18K13*Integer_Text_IO[22|46] 28|4w10 39r29 56r29
+18K13*Integer_Text_IO[22|46] 28|4w10 43r29 60r29 62r29
 X 14 a-iteint.ads
 24h9 Forward_Iterator
 32h9 Reversible_Iterator<24R9[8|72]>
@@ -155,46 +155,49 @@ X 17 a-string.ads
 16K13*Strings 35e16 28|2r10 9r28
 X 19 a-strunb.ads
 76K21*Unbounded 489e26 28|2w18 9r36
-79R9*Unbounded_String<11|43R9> 473e14 28|12r42 16r42 17r80 30r24 33r40 46r27
-. 48r40 53r81
-94V13*To_Unbounded_String{79R9} 28|73s32 74s29
-100V13*To_String{string} 28|37s37 51s37 55s32 58s37
+79R9*Unbounded_String<11|43R9> 473e14 28|12r42 17r42 31r24 35r40 51r27 53r40
+94V13*To_Unbounded_String{79R9} 28|78s32 79s29
+100V13*To_String{string} 28|41s37 56s37
 X 21 a-textio.ads
-49K13*Text_IO 471e16 28|1w10 36r17 37r17 38r17 40r17 50r17 51r17 54r17 55r17
-. 57r17 58r17 59r17 67r17
-242U14*Put 28|36s25 38s25 50s25 54s25 55s25 57s25
-263U14*Put_Line 28|37s25 40s25 51s25 58s25 59s25 67s25
+49K13*Text_IO 471e16 28|1w10 40r17 41r17 42r17 44r17 55r17 56r17 59r17 61r17
+. 63r17 64r17 72r17
+242U14*Put 28|40s25 42s25 55s25 59s25 63s25
+263U14*Put_Line 28|41s25 44s25 56s25 61s25 64s25 72s25
 X 22 a-tiinio.ads
-66U14*Put 28|39s45[12|18] 56s45[12|18]
+66U14*Put 28|43s45[12|18] 60s45[12|18] 62s45[12|18]
 X 28 main.adb
-7U11*Main 7b11 75l5 75t9
-8K13 Integer_Vectors[8|46] 12r81 27r32 31r26 33r79
-9K13 SU=9:36 12r39 16r39 17r77 30r21 33r37 37r34 46r24 48r37 51r34 53r78
-. 55r29 58r34 73r29 74r26
-11T15 Train 13l9 13e14 25r30 29b15 43l9 43t14
-12Y15 Inicialize 12>26 12>60 33b16 42l13 42t23 74s15
-12r26 An_Name{19|79R9} 34r26
-12r60 An_SteeringIndexes{8|57R9[8]} 35r32
-15T15 Steering 18l9 18e17 24r33 45b15 62l9 62t17
-16Y15 Inicialize 16>26 48b16 52l13 52t23 73s18
-16r26 An_Name{19|79R9} 49r29
-17Y15 AssignTrainToTrack 17>34 17>59 41s54 53b16 61l13 61t31
-17i34 An_TrackId{integer} 56r49 60r24
-17r59 An_TrainName{19|79R9} 55r42 58r47
-20T15 StopTrack 22l9 22e18 26r33 64b15 69l9 69t18
-21Y15 AssignTrain 60s36 66b16 68l13 68t24
-24a5 Steerings(15T15) 41r13 73r5
-25a5 Trains(11T15) 74r5
-26a5 StopTracks(20T15) 60r13
-27r5 SteeringIndexesForTrain0{8|57R9[8]} 71m5 71r5 72m5 72r5 74r60
-30r9 TrainName{19|79R9} 34m13 37r47 41r104
-31r9 SteeringIndexes{8|57R9[8]} 35m13 39r49 41r23 41r73
-33r27 An_Name{19|79R9}
-33r58 An_SteeringIndexes{8|57R9[8]}
-46r9 SteeringName{19|79R9} 49m13 51r47
-48r27 An_Name{19|79R9}
-53i35 An_TrackId{integer}
-53r60 An_TrainName{19|79R9}
+7U11*Main 7b11 80l5 80t9
+8K13 Integer_Vectors[8|46] 13r30 28r32 32r26 35r79
+9K13 SU=9:36 12r39 17r39 31r21 35r37 41r34 51r24 53r37 56r34 78r29 79r26
+11T15 Train 14l9 14e14 26r30 30b15 48l9 48t14
+12Y15 Inicialize 12>26 13>9 13>54 35b16 47l13 47t23 79s15
+12r26 An_Name{19|79R9} 37r26
+13r9 An_SteeringIndexes{8|57R9[8]} 39r32
+13i54 An_TrackId{natural} 38r24 46r13
+16T15 Steering 19l9 19e17 25r33 50b15 67l9 67t17
+17Y15 Inicialize 17>26 53b16 57l13 57t23 78s18
+17r26 An_Name{19|79R9} 54r29
+18Y15 AssignTrainToTrack 18>34 18>59 45s54 58b16 66l13 66t31
+18i34 An_TrackId{integer} 62r49 65r24
+18i59 An_TrainId{natural} 60r49 65r48
+21T15 StopTrack 23l9 23e18 27r33 69b15 74l9 74t18
+22Y15 AssignTrain 22>27 65s36 71b16 73l13 73t24
+22i27 An_TrainId{natural}
+25a5 Steerings(16T15) 45r13 78r5
+26a5 Trains(11T15) 79r5
+27a5 StopTracks(21T15) 65r13
+28r5 SteeringIndexesForTrain0{8|57R9[8]} 76m5 76r5 77m5 77r5 79r60
+31r9 TrainName{19|79R9} 37m13 41r47
+32r9 SteeringIndexes{8|57R9[8]} 39m13 43r49 45r23 45r73
+33i9 TrainId{natural} 38m13
+35r27 An_Name{19|79R9}
+35r58 An_SteeringIndexes{8|57R9[8]}
+36i27 An_TrackId{natural}
+51r9 SteeringName{19|79R9} 54m13 56r47
+53r27 An_Name{19|79R9}
+58i35 An_TrackId{integer}
+58i60 An_TrainId{natural}
+71i28 An_TrainId{natural}
 X 29 system.ads
 67M9*Address
 X 42 s-memory.ads
