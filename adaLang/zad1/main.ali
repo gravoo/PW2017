@@ -18,6 +18,7 @@ RV NO_IMPLICIT_LOOPS
 RV NO_LOCAL_ALLOCATORS
 RV NO_NESTED_FINALIZATION
 RV NO_SECONDARY_STACK
+RV NO_SELECT_STATEMENTS
 RV NO_STANDARD_ALLOCATORS_AFTER_ELABORATION
 RV NO_STANDARD_STORAGE_POOLS
 RV NO_STREAMS
@@ -30,10 +31,11 @@ RV NO_IMPLEMENTATION_ATTRIBUTES
 RV NO_IMPLEMENTATION_PRAGMAS
 RV NO_IMPLICIT_ALIASING
 RV SPARK_05
-RV MAX_TASK_ENTRIES=1
+RV MAX_SELECT_ALTERNATIVES=2
+RV MAX_TASK_ENTRIES=3
 RV MAX_TASKS=1+
 
-U main%b		main.adb		a5f27d3b NE OO SU
+U main%b		main.adb		e40bca37 NE OO SU
 W ada%s			ada.ads			ada.ali
 W ada.containers%s	a-contai.ads		a-contai.ali
 Z ada.containers.generic_array_sort%s
@@ -95,7 +97,7 @@ D a-uncdea.ads		20170306114743 f15a5ed1 ada.unchecked_deallocation%s
 D interfac.ads		20170306114746 4be8ce1b interfaces%s
 D i-c.ads		20170306114743 5421119b interfaces.c%s
 D i-cstrea.ads		20170306114743 e53d8b8e interfaces.c_streams%s
-D main.adb		20170417142849 2a6eda51 main%b
+D main.adb		20170417175746 6b976d5d main%b
 D system.ads		20170306114746 6326c08a system%s
 D s-addima.ads		20170306114743 a1ec9d3a system.address_image%s
 D s-atacco.ads		20170306114743 4c36d12f system.address_to_access_conversions%s
@@ -137,17 +139,18 @@ D s-traent.ads		20170306114743 005bf670 system.traceback_entries%s
 D s-unstyp.ads		20170306114746 9d58a4c0 system.unsigned_types%s
 D s-wchcon.ads		20170306114743 1b7d22d2 system.wch_con%s
 X 1 ada.ads
-16K9*Ada 19e8 28|1r6 2r6 3r6 4r6 5r5 9r24 40r13 41r13 42r13 43r25 44r13 55r13
-. 56r13 59r13 60r25 61r13 62r25 63r13 64r13 72r13
+16K9*Ada 19e8 28|1r6 2r6 3r6 4r6 5r5 9r24 43r13 44r13 49r17 50r17 51r17 52r17
+. 55r17 59r17 70r13 71r13 75r17 76r17 77r17 78r17 79r17 80r17 82r17 91r17
+. 92r17 93r17
 X 4 a-contai.ads
 16K13*Containers 24e19 28|3r10 5r9
 X 8 a-convec.ads
 46k24*Vectors 518e27 28|3w21 8r36
-57R9 Vector<11|43R9> 28|13r46[8] 28r48[8] 32r42[8] 35r95[8]
-245U14 Append 28|76s30[8] 77s30[8]
-289V13 First_Element{integer} 28|43s65[8] 45s39[8] 45s89[8]
+57R9 Vector<11|43R9> 28|12r97[8] 30r48[8] 34r42[8] 38r64[8]
+245U14 Append 28|98s30[8] 99s30[8]
+289V13 First_Element{integer} 28|51s57[8] 53s43[8] 54s46[8]
 X 12 a-inteio.ads
-18K13*Integer_Text_IO[22|46] 28|4w10 43r29 60r29 62r29
+18K13*Integer_Text_IO[22|46] 28|4w10 51r21 76r21 79r21 92r21
 X 14 a-iteint.ads
 24h9 Forward_Iterator
 32h9 Reversible_Iterator<24R9[8|72]>
@@ -155,49 +158,52 @@ X 17 a-string.ads
 16K13*Strings 35e16 28|2r10 9r28
 X 19 a-strunb.ads
 76K21*Unbounded 489e26 28|2w18 9r36
-79R9*Unbounded_String<11|43R9> 473e14 28|12r42 17r42 31r24 35r40 51r27 53r40
-94V13*To_Unbounded_String{79R9} 28|78s32 79s29
-100V13*To_String{string} 28|41s37 56s37
+79R9*Unbounded_String<11|43R9> 473e14 28|12r42 19r42 33r24 37r40 66r27 68r40
+94V13*To_Unbounded_String{79R9} 28|100s32 101s29
+100V13*To_String{string} 28|44s37 71s37
 X 21 a-textio.ads
-49K13*Text_IO 471e16 28|1w10 40r17 41r17 42r17 44r17 55r17 56r17 59r17 61r17
-. 63r17 64r17 72r17
-242U14*Put 28|40s25 42s25 55s25 59s25 63s25
-263U14*Put_Line 28|41s25 44s25 56s25 61s25 64s25 72s25
+49K13*Text_IO 471e16 28|1w10 43r17 44r17 49r21 50r21 52r21 55r21 59r21 70r17
+. 71r17 75r21 77r21 78r21 80r21 82r21 91r21 93r21
+242U14*Put 28|43s25 50s29 70s25 75s29 78s29 91s29
+263U14*Put_Line 28|44s25 49s29 52s29 55s29 59s29 71s25 77s29 80s29 82s29
+. 93s29
 X 22 a-tiinio.ads
-66U14*Put 28|43s45[12|18] 60s45[12|18] 62s45[12|18]
+66U14*Put 28|51s37[12|18] 76s37[12|18] 79s37[12|18] 92s37[12|18]
 X 28 main.adb
-7U11*Main 7b11 80l5 80t9
-8K13 Integer_Vectors[8|46] 13r30 28r32 32r26 35r79
-9K13 SU=9:36 12r39 17r39 31r21 35r37 41r34 51r24 53r37 56r34 78r29 79r26
-11T15 Train 14l9 14e14 26r30 30b15 48l9 48t14
-12Y15 Inicialize 12>26 13>9 13>54 35b16 47l13 47t23 79s15
-12r26 An_Name{19|79R9} 37r26
-13r9 An_SteeringIndexes{8|57R9[8]} 39r32
-13i54 An_TrackId{natural} 38r24 46r13
-16T15 Steering 19l9 19e17 25r33 50b15 67l9 67t17
-17Y15 Inicialize 17>26 53b16 57l13 57t23 78s18
-17r26 An_Name{19|79R9} 54r29
-18Y15 AssignTrainToTrack 18>34 18>59 45s54 58b16 66l13 66t31
-18i34 An_TrackId{integer} 62r49 65r24
-18i59 An_TrainId{natural} 60r49 65r48
-21T15 StopTrack 23l9 23e18 27r33 69b15 74l9 74t18
-22Y15 AssignTrain 22>27 65s36 71b16 73l13 73t24
-22i27 An_TrainId{natural}
-25a5 Steerings(16T15) 45r13 78r5
-26a5 Trains(11T15) 79r5
-27a5 StopTracks(21T15) 65r13
-28r5 SteeringIndexesForTrain0{8|57R9[8]} 76m5 76r5 77m5 77r5 79r60
-31r9 TrainName{19|79R9} 37m13 41r47
-32r9 SteeringIndexes{8|57R9[8]} 39m13 43r49 45r23 45r73
-33i9 TrainId{natural} 38m13
-35r27 An_Name{19|79R9}
-35r58 An_SteeringIndexes{8|57R9[8]}
-36i27 An_TrackId{natural}
-51r9 SteeringName{19|79R9} 54m13 56r47
-53r27 An_Name{19|79R9}
-58i35 An_TrackId{integer}
-58i60 An_TrainId{natural}
-71i28 An_TrainId{natural}
+7U11*Main 7b11 103l5 103t9
+8K13 Integer_Vectors[8|46] 12r81 30r32 34r26 38r48
+9K13 SU=9:36 12r39 19r39 33r21 37r37 44r34 66r24 68r37 71r34 100r29 101r26
+11T15 Train 16l9 16e14 28r30 32b15 63l9 63t14
+12Y15 Inicialize 12>26 12>60 13>26 37b16 45l13 45t23 101s15
+12r26 An_Name{19|79R9} 40r26
+12r60 An_SteeringIndexes{8|57R9[8]} 42r32
+13i26 An_TrackId{natural} 41r24
+14Y15 StartTrain 48b20 56l17 56t27 102s15
+15Y15 WaitOnStopTrack 58b20 60l17 60t32
+18T15 Steering 21l9 21e17 27r33 65b15 85l9 85t17
+19Y15 Inicialize 19>26 68b16 72l13 72t23 100s18
+19r26 An_Name{19|79R9} 69r29
+20Y15 AssignTrainToTrack 20>34 20>59 53s58 74b20 83l17 83t35
+20i34 An_TrackId{integer} 76r41 81r28
+20i59 An_TrainId{natural} 79r41 81r52
+23T15 StopTrack 25l9 25e18 29r33 87b15 96l9 96t18
+24Y15 AssignTrain 24>27 81s40 90b20 94l17 94t28
+24i27 An_TrainId{natural} 92r41
+27a5 Steerings(18T15) 53r17 100r5
+28a5 Trains(11T15) 101r5 102r5
+29a5 StopTracks(23T15) 81r17
+30r5 SteeringIndexesForTrain0{8|57R9[8]} 98m5 98r5 99m5 99r5 101r60
+33r9 TrainName{19|79R9} 40m13 44r47
+34r9 SteeringIndexes{8|57R9[8]} 42m13 51r41 53r27 54r30
+35i9 TrainId{natural} 41m13 54r61
+37r27 An_Name{19|79R9}
+38r27 An_SteeringIndexes{8|57R9[8]}
+39i27 An_TrackId{natural}
+66r9 SteeringName{19|79R9} 69m13 71r47
+68r27 An_Name{19|79R9}
+74i39 An_TrackId{integer}
+74i64 An_TrainId{natural}
+90i32 An_TrainId{natural}
 X 29 system.ads
 67M9*Address
 X 42 s-memory.ads
