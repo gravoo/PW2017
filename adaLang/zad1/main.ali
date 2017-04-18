@@ -3,6 +3,7 @@ M P W=b
 P SS ZX
 
 RN
+RV SIMPLE_BARRIERS
 RV NO_ACCESS_SUBPROGRAMS
 RV NO_ALLOCATORS
 RV NO_DELAY
@@ -18,7 +19,9 @@ RV NO_IMPLICIT_CONDITIONALS
 RV NO_IMPLICIT_DYNAMIC_CODE
 RV NO_IMPLICIT_LOOPS
 RV NO_LOCAL_ALLOCATORS
+RV NO_LOCAL_PROTECTED_OBJECTS
 RV NO_NESTED_FINALIZATION
+RV NO_PROTECTED_TYPE_ALLOCATORS
 RV NO_PROTECTED_TYPES
 RV NO_RELATIVE_DELAY
 RV NO_SECONDARY_STACK
@@ -35,12 +38,12 @@ RV NO_IMPLEMENTATION_ATTRIBUTES
 RV NO_IMPLEMENTATION_PRAGMAS
 RV NO_IMPLICIT_ALIASING
 RV SPARK_05
-RV MAX_PROTECTED_ENTRIES=2
-RV MAX_TASK_ENTRIES=1
+RV MAX_PROTECTED_ENTRIES=3
+RV MAX_TASK_ENTRIES=2
 RV MAX_TASKS=1+
 RV MAX_ENTRY_QUEUE_LENGTH=1+
 
-U main%b		main.adb		80a6c972 NE OO SU
+U main%b		main.adb		10b520ff NE OO SU
 W ada%s			ada.ads			ada.ali
 W ada.calendar.delays%s	a-caldel.adb		a-caldel.ali
 W ada.containers%s	a-contai.ads		a-contai.ali
@@ -61,10 +64,11 @@ Z ada.unchecked_deallocation%s
 W system%s		system.ads		system.ali
 W system.address_image%s  s-addima.adb		s-addima.ali
 W system.concat_2%s	s-conca2.adb		s-conca2.ali
-W system.concat_4%s	s-conca4.adb		s-conca4.ali
+W system.concat_3%s	s-conca3.adb		s-conca3.ali
 W system.finalization_masters%s  s-finmas.adb	s-finmas.ali
 W system.img_int%s	s-imgint.adb		s-imgint.ali
 W system.parameters%s	s-parame.adb		s-parame.ali
+W system.pool_global%s	s-pooglo.adb		s-pooglo.ali
 W system.secondary_stack%s  s-secsta.adb	s-secsta.ali
 W system.soft_links%s	s-soflin.adb		s-soflin.ali
 W system.standard_library%s  s-stalib.adb	s-stalib.ali
@@ -109,14 +113,14 @@ D a-uncdea.ads		20170306114743 f15a5ed1 ada.unchecked_deallocation%s
 D interfac.ads		20170306114746 4be8ce1b interfaces%s
 D i-c.ads		20170306114743 5421119b interfaces.c%s
 D i-cstrea.ads		20170306114743 e53d8b8e interfaces.c_streams%s
-D main.adb		20170418171800 0f3a6e18 main%b
+D main.adb		20170418222910 9f298795 main%b
 D system.ads		20170306114746 6326c08a system%s
 D s-addima.ads		20170306114743 a1ec9d3a system.address_image%s
 D s-atacco.ads		20170306114743 4c36d12f system.address_to_access_conversions%s
 D s-atocou.ads		20170306114743 b45c2d8d system.atomic_counters%s
 D s-atocou.adb		20170306114743 b65612c0 system.atomic_counters%b
 D s-conca2.ads		20170306114743 02a0d7d0 system.concat_2%s
-D s-conca4.ads		20170306114743 7e642b20 system.concat_4%s
+D s-conca3.ads		20170306114743 0b705ca5 system.concat_3%s
 D s-crtl.ads		20170306114743 0ebbdb71 system.crtl%s
 D s-exctab.ads		20170306114743 54135002 system.exception_table%s
 D s-ficobl.ads		20170306114743 078245e4 system.file_control_block%s
@@ -129,6 +133,7 @@ D s-multip.ads		20170306114743 38ac9f73 system.multiprocessors%s
 D s-oscons.ads		20170306121712 4bd50652 system.os_constants%s
 D s-osinte.ads		20170306114746 64f6e3c7 system.os_interface%s
 D s-parame.ads		20170306114743 7e2a0d7f system.parameters%s
+D s-pooglo.ads		20170306114743 ede33ef8 system.pool_global%s
 D s-secsta.ads		20170306114746 86a2856d system.secondary_stack%s
 D s-soflin.ads		20170306114743 14e1eb6c system.soft_links%s
 D s-stache.ads		20170306114743 a37c21ec system.stack_checking%s
@@ -153,64 +158,87 @@ D s-traent.ads		20170306114743 005bf670 system.traceback_entries%s
 D s-unstyp.ads		20170306114746 9d58a4c0 system.unsigned_types%s
 D s-wchcon.ads		20170306114743 1b7d22d2 system.wch_con%s
 X 1 ada.ads
-16K9*Ada 19e8 30|1r6 2r6 3r6 4r6 5r5 6r5 10r24
+16K9*Ada 19e8 30|1r6 2r6 3r6 4r6 5r5 6r5 9r24
 X 6 a-contai.ads
 16K13*Containers 24e19 30|3r10 5r9
 X 10 a-convec.ads
-46k24*Vectors 518e27 30|3w21 9r36
+46k24*Vectors 518e27 30|3w21 23r33 24r44 34r36 43r33
+57R9 Vector<13|43R9> 30|30r67[24] 35r40[34] 38r52[34] 44r34[23] 45r57[24]
+. 48r36[34] 51r53[34] 61r49[24] 63r68[24] 94r27[43]
+245U14 Append 30|97s19[23] 98s19[23] 99s32[24] 100s32[24] 101s22[34] 102s22[34]
+. 104s12[43]
 X 14 a-inteio.ads
 18K13*Integer_Text_IO[24|46] 30|4w10
 X 16 a-iteint.ads
 24h9 Forward_Iterator
 32h9 Reversible_Iterator<24R9[10|72]>
 X 19 a-string.ads
-16K13*Strings 35e16 30|2r10 10r28
+16K13*Strings 35e16 30|2r10 9r28
 X 21 a-strunb.ads
-76K21*Unbounded 489e26 30|2w18 10r36
-79R9*Unbounded_String<13|43R9> 473e14 30|42r27
+76K21*Unbounded 489e26 30|2w18 9r36
 X 23 a-textio.ads
 49K13*Text_IO 471e16 30|1w10 6r9
-263U14*Put_Line 30|37s9
+263U14*Put_Line 30|55s9 84s13 91s13
 X 30 main.adb
-8U11*Main 8b11 71l5 71t9
-9K13 Integer_Vectors[10|46]
-10K13 SU=10:36 42r24
-11I10 Train_ID<short_short_integer> 15r26 20r33 26r49 37r29 45r54 60r33
-12I10 Track_ID<short_short_integer> 27r26 31r24 34r22 37r66 46r34
-13I10 Steering_ID<short_short_integer> 15r49 15r77 26r78 30r23 45r83
-15T15 Train 15d21 15d36 15d62 15l97 15e102 16r33 33b15 39l9 39t14 70r22
-15i21 ID{11I10} 36r53 37r45
-15i36 My_Steering{13I10} 36r19
-15i62 Next_Steering{13I10} 36r57
-16P10 Train_Access(15T15) 67r17
-18W20 StopTrack 22E9 23l9 23e18 31r37 54b20 65l9 65t18
-19Y15 Wait_For_Clear 55b15 59t12
-20Y15 Assign_Train 20>28 48s31 60b15 64t12
-20i28 ID{11I10}
-22b9 Clear{boolean} 56r14 61r14 63r13
-25T15 Steering 28l9 28e17 30r39 41b15 52l9 52t17
-26Y15 Request_TravelThroug 26>36 26>59 27<9 36s32 45b20 50l17 50t37
-26i36 TrainID{11I10} 48r44
-26i59 Next_Steering{13I10}
-27i9 My_TrackId{12I10} 49m17 49r17
-30a5 Steerings(25T15) 36r9
-31a5 StopTracks(18W20) 48r17
-34i9 My_TrackId{12I10} 36m72 37r81
-42r9 SteeringName{21|79R9}
-45i41 TrainID{11I10}
-45i64 Next_Steering{13I10}
-46i17 My_TrackId{12I10}
-60i28 ID{11I10}
-67p5 New_Train{16P10} 70m5
+8U11*Main 8b11 106l5 106t9
+9K13 SU=9:36
+10I10 Train_ID<short_short_integer> 17r33 18r34 28r49 37r26 43r41 55r29 67r54
+. 81r33 84r49 87r34 91r49
+11I10 Track_ID<short_short_integer> 15r35 23r41
+12I10 Steering_ID<short_short_integer> 24r52 27r29 28r78 34r44 37r49 37r77
+. 67r83
+15W20 StopTrack 15d30 20E9 21l9 21e18 22r33 75b20 93l9 93t18 97r30 98r30
+15i30 ID{11I10}
+16Y15 Wait_For_Clear 76b15 80t12
+17Y15 Assign_Train 17>28 69s50 81b15 86t12
+17i28 ID{10I10} 84r65
+18Y15 Release_Track 18>29 57s18 87b15 92t12
+18i29 ID{10I10} 91r65
+20b9 Clear{boolean} 77r14 82r14 85r13 88r18 90r13
+22P10 Track_Access(15W20) 23r51 24r65 29r27 49r20 68r38
+23K13 Track_Vector[10|46] 44r21
+24K13 SteeringToTracks_Vector[10|46] 30r43 45r33 61r25 63r44
+27T15 Steering 27d24 31l9 31e17 33r36 60b15 73l9 73t17 101r33 102r33
+27i24 ID{12I10}
+28Y15 Request_TravelThroug 28>36 28>59 29<9 54s31 67b20 71l17 71t37
+28i36 TrainID{10I10} 69r63
+28i59 Next_Steering{12I10} 69r35 70r50
+29p9 Track_InUse{22P10} 70m21 70r21
+30Y15 Init 30>20 63b16 65l13 65t17 103s25
+30r20 Init_MyNeighbours{10|57R9[24]} 64r30
+33P10 Steering_Access(27T15) 34r57
+34K13 Steering_Vector[10|46] 35r24 38r36 48r20 51r37
+35r5 Steerings_Vector{10|57R9[34]} 101m5 101r5 102m5 102r5 103r5 105r20
+37T15 Train 37d21 37d36 37d62 39l9 39e14 40r33 47b15 58l9 58t14 104r23
+37i21 ID{10I10} 54r52 55r45 57r32
+37i36 My_Steering{12I10} 54r18
+37i62 Next_Steering{12I10} 54r56
+38Y15 Init 38>20 51b16 53l13 53t17 105s15
+38r20 Init_Route{10|57R9[34]} 52r25
+40P10 Train_Access(37T15) 43r51
+43K13 Train_Vector[10|46] 94r14
+44r5 Tracks_Vector{10|57R9[23]} 97m5 97r5 98m5 98r5 99r39 100r39
+45r5 SteeringToTracks_VectorMap{10|57R9[24]} 99m5 99r5 100m5 100r5 103r30
+48r9 My_Route{10|57R9[34]} 52m13 54r9
+49p9 My_Track{22P10} 54m71 54r71 57r9
+51r21 Init_Route{10|57R9[34]}
+61r9 My_Neighbours{10|57R9[24]} 64m13 69r21 70r36
+63r21 Init_MyNeighbours{10|57R9[24]}
+67i41 TrainID{10I10}
+67i64 Next_Steering{12I10}
+68p20 Track_InUse{22P10}
+81i28 ID{10I10}
+87i29 ID{10I10}
+94r5 Trains{10|57R9[43]} 104m5 104r5 105r5
 X 31 system.ads
 67M9*Address
 X 45 s-memory.ads
 53V13*Alloc{31|67M9} 103i<c,__gnat_malloc>22
 68U14*Free 104i<c,__gnat_free>22
 76V13*Realloc{31|67M9} 105i<c,__gnat_realloc>22
-X 53 s-stausa.ads
+X 54 s-stausa.ads
 203U14*Initialize 204i<c,__gnat_stack_usage_initialize>22
 268U14*Output_Results 272i<c,__gnat_stack_usage_output_results>22
-X 55 s-stalib.adb
+X 56 s-stalib.adb
 93U14 Break_Start 94i<c,__gnat_break_start>22
 
