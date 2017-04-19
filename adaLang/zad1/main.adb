@@ -9,19 +9,19 @@ procedure Main is
     package SU renames Ada.Strings.Unbounded;
     type Train_ID is range 1..4;
     type Track_ID is range 1..20;
-    type Steering_ID is range 1..2;
+    type Steering_ID is range 1..4;
     type Track_Type is (Stop_Track, Drive_Track);
 
 
-    protected type StopTrack(ID : Track_ID; My_TrackType : Track_Type) is 
+    protected type TrackThread(ID : Track_ID; My_TrackType : Track_Type) is 
         entry Wait_For_Clear;
         entry Assign_Train(ID : Train_ID);
         entry Check_TrackType(TrackType : out Track_Type);
         entry Release_Track(ID : Train_ID);
     private
         Clear: Boolean := True;
-    end StopTrack;
-    type Track_Access is access StopTrack;
+    end TrackThread;
+    type Track_Access is access TrackThread;
     package Track_Vector is new Vectors(Track_ID, Track_Access);
     package SteeringToTracks_Vector is new Vectors(Steering_ID, Track_Access);
 
@@ -34,7 +34,8 @@ procedure Main is
 
     type Steering_Access is access Steering;
     package Steering_Vector is new Vectors(Steering_ID, Steering_Access);
-    Steerings_Vector : Steering_Vector.Vector;
+    Steerings : Steering_Vector.Vector;
+    Train1Route : Steering_Vector.Vector;
 
     task type Train(ID : Train_ID; My_Steering: Steering_ID; Next_Steering: Steering_ID) is
         entry Init(Init_Route : in Steering_Vector.Vector);
@@ -42,8 +43,11 @@ procedure Main is
     type Train_Access is access Train;
 
     package Train_Vector is new Vectors(Train_ID, Train_Access);
-    Tracks_Vector : Track_Vector.Vector;
-    SteeringToTracks_VectorMap: SteeringToTracks_Vector.Vector;
+    Tracks : Track_Vector.Vector;
+    Steering1Neighbours: SteeringToTracks_Vector.Vector;
+    Steering2Neighbours: SteeringToTracks_Vector.Vector;
+    Steering3Neighbours: SteeringToTracks_Vector.Vector;
+    Steering4Neighbours: SteeringToTracks_Vector.Vector;
 
     task body Train is
         My_Route : Steering_Vector.Vector;
@@ -75,7 +79,7 @@ procedure Main is
         end loop;
     end Steering;
 
-    protected body StopTrack is
+    protected body TrackThread is
         entry Wait_For_Clear
         when Clear is
         begin
@@ -84,32 +88,61 @@ procedure Main is
         entry Assign_Train(ID : Train_ID)
         when Clear is
         begin
-            Put_Line("StopTrack task; train: "& Train_ID'Image (ID) & " on track");
+            Put_Line("TrackThread task; train: "& Train_ID'Image (ID) & " on track: " & Track_Type'Image(My_TrackType));
             Clear := False;
         end;
         entry Release_Track(ID : Train_ID)
         when not Clear is
         begin
             Clear := True;
-            Put_Line("StopTrack task; Train: "& Train_ID'Image (ID) & " released track");
+            Put_Line("TrackThread task; Train: "& Train_ID'Image (ID) & " released track");
         end;
         entry Check_TrackType(TrackType : out Track_Type)
         when not Clear is
         begin
             TrackType := My_TrackType;
-            Put_Line(Track_Type'Image(My_TrackType) & "is my track type");
         end;
-    end StopTrack;
+    end TrackThread;
     Trains : Train_Vector.Vector;
 
 begin
-    Tracks_Vector.Append(new StopTrack(1, Stop_Track));
-    Tracks_Vector.Append(new StopTrack(2, Stop_Track));
-    SteeringToTracks_VectorMap.Append(Tracks_Vector(1));
-    SteeringToTracks_VectorMap.Append(Tracks_Vector(2));
-    Steerings_Vector.Append(new Steering(1));
-    Steerings_Vector.Append(new Steering(2));
-    Steerings_Vector(1).Init(SteeringToTracks_VectorMap);
+    Tracks.Append(new TrackThread(1, Stop_Track));
+    Tracks.Append(new TrackThread(2, Stop_Track));
+    Tracks.Append(new TrackThread(3, Stop_Track));
+    Tracks.Append(new TrackThread(4, Stop_Track));
+    Tracks.Append(new TrackThread(5, Stop_Track));
+    Tracks.Append(new TrackThread(1, Drive_Track));
+
+    Steering1Neighbours.Append(Tracks(1));
+    Steering1Neighbours.Append(Tracks(2));
+
+    Steering2Neighbours.Append(Tracks(2));
+    Steering2Neighbours.Append(Tracks(3));
+
+    Steering3Neighbours.Append(Tracks(3));
+    Steering3Neighbours.Append(Tracks(4));
+
+    Steering4Neighbours.Append(Tracks(4));
+    Steering4Neighbours.Append(Tracks(5));
+
+    Steerings.Append(new Steering(1));
+    Steerings.Append(new Steering(2));
+    Steerings.Append(new Steering(3));
+    Steerings.Append(new Steering(4));
+
+    Steerings(1).Init(Steering1Neighbours);
+    Steerings(2).Init(Steering2Neighbours);
+    Steerings(3).Init(Steering3Neighbours);
+    Steerings(4).Init(Steering4Neighbours);
+
+    Train1Route.Append(Steerings(1));
+    Train1Route.Append(Steerings(2));
+    Train1Route.Append(Steerings(3));
+    Train1Route.Append(Steerings(4));
+    Train1Route.Append(Steerings(3));
+    Train1Route.Append(Steerings(2));
+    Train1Route.Append(Steerings(1));
     Trains.Append(new Train(1,1,2));
-    Trains(1).Init(Steerings_Vector);
+
+    Trains(1).Init(Train1Route);
 end Main;
