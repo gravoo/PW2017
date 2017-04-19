@@ -9,7 +9,7 @@ procedure Main is
     package SU renames Ada.Strings.Unbounded;
     type Train_ID is range 1..4;
     type Track_ID is range 1..20;
-    type Steering_ID is range 1..4;
+    type Steering_ID is range 1..20;
     type Track_Type is (Stop_Track, Drive_Track);
 
 
