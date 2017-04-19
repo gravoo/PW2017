@@ -10,6 +10,7 @@ RV NO_DELAY
 RV NO_DIRECT_BOOLEAN_OPERATORS
 RV NO_DISPATCH
 RV NO_DISPATCHING_CALLS
+RV NO_ENUMERATION_MAPS
 RV NO_EXCEPTION_HANDLERS
 RV NO_EXCEPTION_PROPAGATION
 RV NO_EXCEPTIONS
@@ -38,12 +39,12 @@ RV NO_IMPLEMENTATION_ATTRIBUTES
 RV NO_IMPLEMENTATION_PRAGMAS
 RV NO_IMPLICIT_ALIASING
 RV SPARK_05
-RV MAX_PROTECTED_ENTRIES=3
+RV MAX_PROTECTED_ENTRIES=4
 RV MAX_TASK_ENTRIES=2
 RV MAX_TASKS=1+
 RV MAX_ENTRY_QUEUE_LENGTH=1+
 
-U main%b		main.adb		10b520ff NE OO SU
+U main%b		main.adb		44864fa9 NE OO SU
 W ada%s			ada.ads			ada.ali
 W ada.calendar.delays%s	a-caldel.adb		a-caldel.ali
 W ada.containers%s	a-contai.ads		a-contai.ali
@@ -61,11 +62,13 @@ W ada.strings.unbounded%s  a-strunb.adb		a-strunb.ali
 W ada.tags%s		a-tags.adb		a-tags.ali
 W ada.text_io%s		a-textio.adb		a-textio.ali
 Z ada.unchecked_deallocation%s
+W interfaces%s		interfac.ads		interfac.ali
 W system%s		system.ads		system.ali
 W system.address_image%s  s-addima.adb		s-addima.ali
 W system.concat_2%s	s-conca2.adb		s-conca2.ali
 W system.concat_3%s	s-conca3.adb		s-conca3.ali
 W system.finalization_masters%s  s-finmas.adb	s-finmas.ali
+W system.img_enum_new%s	s-imenne.adb		s-imenne.ali
 W system.img_int%s	s-imgint.adb		s-imgint.ali
 W system.parameters%s	s-parame.adb		s-parame.ali
 W system.pool_global%s	s-pooglo.adb		s-pooglo.ali
@@ -113,7 +116,7 @@ D a-uncdea.ads		20170306114743 f15a5ed1 ada.unchecked_deallocation%s
 D interfac.ads		20170306114746 4be8ce1b interfaces%s
 D i-c.ads		20170306114743 5421119b interfaces.c%s
 D i-cstrea.ads		20170306114743 e53d8b8e interfaces.c_streams%s
-D main.adb		20170418222910 9f298795 main%b
+D main.adb		20170419192547 cb1ae8c3 main%b
 D system.ads		20170306114746 6326c08a system%s
 D s-addima.ads		20170306114743 a1ec9d3a system.address_image%s
 D s-atacco.ads		20170306114743 4c36d12f system.address_to_access_conversions%s
@@ -126,6 +129,7 @@ D s-exctab.ads		20170306114743 54135002 system.exception_table%s
 D s-ficobl.ads		20170306114743 078245e4 system.file_control_block%s
 D s-finmas.ads		20170306114743 7811a767 system.finalization_masters%s
 D s-finroo.ads		20170306114743 4ff27390 system.finalization_root%s
+D s-imenne.ads		20170306114743 614c06c0 system.img_enum_new%s
 D s-imgint.ads		20170306114743 02dbe0c2 system.img_int%s
 D s-linux.ads		20170306114743 2fda6ad1 system.linux%s
 D s-memory.ads		20170306114746 597d6634 system.memory%s
@@ -162,11 +166,11 @@ X 1 ada.ads
 X 6 a-contai.ads
 16K13*Containers 24e19 30|3r10 5r9
 X 10 a-convec.ads
-46k24*Vectors 518e27 30|3w21 23r33 24r44 34r36 43r33
-57R9 Vector<13|43R9> 30|30r67[24] 35r40[34] 38r52[34] 44r34[23] 45r57[24]
-. 48r36[34] 51r53[34] 61r49[24] 63r68[24] 94r27[43]
-245U14 Append 30|97s19[23] 98s19[23] 99s32[24] 100s32[24] 101s22[34] 102s22[34]
-. 104s12[43]
+46k24*Vectors 518e27 30|3w21 25r33 26r44 36r36 44r33
+57R9 Vector<13|43R9> 30|32r67[26] 37r40[36] 40r52[36] 45r34[25] 46r57[26]
+. 49r36[36] 53r53[36] 64r49[26] 66r68[26] 103r27[44]
+245U14 Append 30|106s19[25] 107s19[25] 108s32[26] 109s32[26] 110s22[36] 111s22[36]
+. 113s12[44]
 X 14 a-inteio.ads
 18K13*Integer_Text_IO[24|46] 30|4w10
 X 16 a-iteint.ads
@@ -178,67 +182,76 @@ X 21 a-strunb.ads
 76K21*Unbounded 489e26 30|2w18 9r36
 X 23 a-textio.ads
 49K13*Text_IO 471e16 30|1w10 6r9
-263U14*Put_Line 30|55s9 84s13 91s13
+263U14*Put_Line 30|58s9 87s13 94s13 100s13
 X 30 main.adb
-8U11*Main 8b11 106l5 106t9
+8U11*Main 8b11 115l5 115t9
 9K13 SU=9:36
-10I10 Train_ID<short_short_integer> 17r33 18r34 28r49 37r26 43r41 55r29 67r54
-. 81r33 84r49 87r34 91r49
-11I10 Track_ID<short_short_integer> 15r35 23r41
-12I10 Steering_ID<short_short_integer> 24r52 27r29 28r78 34r44 37r49 37r77
-. 67r83
-15W20 StopTrack 15d30 20E9 21l9 21e18 22r33 75b20 93l9 93t18 97r30 98r30
-15i30 ID{11I10}
-16Y15 Wait_For_Clear 76b15 80t12
-17Y15 Assign_Train 17>28 69s50 81b15 86t12
-17i28 ID{10I10} 84r65
-18Y15 Release_Track 18>29 57s18 87b15 92t12
-18i29 ID{10I10} 91r65
-20b9 Clear{boolean} 77r14 82r14 85r13 88r18 90r13
-22P10 Track_Access(15W20) 23r51 24r65 29r27 49r20 68r38
-23K13 Track_Vector[10|46] 44r21
-24K13 SteeringToTracks_Vector[10|46] 30r43 45r33 61r25 63r44
-27T15 Steering 27d24 31l9 31e17 33r36 60b15 73l9 73t17 101r33 102r33
-27i24 ID{12I10}
-28Y15 Request_TravelThroug 28>36 28>59 29<9 54s31 67b20 71l17 71t37
-28i36 TrainID{10I10} 69r63
-28i59 Next_Steering{12I10} 69r35 70r50
-29p9 Track_InUse{22P10} 70m21 70r21
-30Y15 Init 30>20 63b16 65l13 65t17 103s25
-30r20 Init_MyNeighbours{10|57R9[24]} 64r30
-33P10 Steering_Access(27T15) 34r57
-34K13 Steering_Vector[10|46] 35r24 38r36 48r20 51r37
-35r5 Steerings_Vector{10|57R9[34]} 101m5 101r5 102m5 102r5 103r5 105r20
-37T15 Train 37d21 37d36 37d62 39l9 39e14 40r33 47b15 58l9 58t14 104r23
-37i21 ID{10I10} 54r52 55r45 57r32
-37i36 My_Steering{12I10} 54r18
-37i62 Next_Steering{12I10} 54r56
-38Y15 Init 38>20 51b16 53l13 53t17 105s15
-38r20 Init_Route{10|57R9[34]} 52r25
-40P10 Train_Access(37T15) 43r51
-43K13 Train_Vector[10|46] 94r14
-44r5 Tracks_Vector{10|57R9[23]} 97m5 97r5 98m5 98r5 99r39 100r39
-45r5 SteeringToTracks_VectorMap{10|57R9[24]} 99m5 99r5 100m5 100r5 103r30
-48r9 My_Route{10|57R9[34]} 52m13 54r9
-49p9 My_Track{22P10} 54m71 54r71 57r9
-51r21 Init_Route{10|57R9[34]}
-61r9 My_Neighbours{10|57R9[24]} 64m13 69r21 70r36
-63r21 Init_MyNeighbours{10|57R9[24]}
-67i41 TrainID{10I10}
-67i64 Next_Steering{12I10}
-68p20 Track_InUse{22P10}
-81i28 ID{10I10}
-87i29 ID{10I10}
-94r5 Trains{10|57R9[43]} 104m5 104r5 105r5
+10I10 Train_ID<short_short_integer> 18r33 20r34 30r49 39r26 44r41 58r29 70r54
+. 84r33 87r49 90r34 94r49
+11I10 Track_ID<short_short_integer> 16r35 25r41
+12I10 Steering_ID<short_short_integer> 26r52 29r29 30r78 36r44 39r49 39r77
+. 70r83
+13E10 Track_Type 13e49 16r60 19r47 51r24 96r47 100r22
+13n25 Stop_Track{13E10} 106r43 107r43
+13n37 Drive_Track{13E10}
+16W20 StopTrack 16d30 16d45 22E9 23l9 23e18 24r33 78b20 102l9 102t18 106r30
+. 107r30
+16i30 ID{11I10}
+16e45 My_TrackType{13E10} 99r26 100r39
+17Y15 Wait_For_Clear 79b15 83t12
+18Y15 Assign_Train 18>28 72s50 84b15 89t12
+18i28 ID{10I10} 87r65
+19Y15 Check_TrackType 19<31 57s18 96b15 101t12
+19e31 TrackType{13E10} 99m13
+20Y15 Release_Track 20>29 60s18 90b15 95t12
+20i29 ID{10I10} 94r65
+22b9 Clear{boolean} 80r14 85r14 88r13 91r18 93r13 97r18
+24P10 Track_Access(16W20) 25r51 26r65 31r27 50r20 71r38
+25K13 Track_Vector[10|46] 45r21
+26K13 SteeringToTracks_Vector[10|46] 32r43 46r33 64r25 66r44
+29T15 Steering 29d24 33l9 33e17 35r36 63b15 76l9 76t17 110r33 111r33
+29i24 ID{12I10}
+30Y15 Request_TravelThroug 30>36 30>59 31<9 56s31 70b20 74l17 74t37
+30i36 TrainID{10I10} 72r63
+30i59 Next_Steering{12I10} 72r35 73r50
+31p9 Track_InUse{24P10} 73m21 73r21
+32Y15 Init 32>20 66b16 68l13 68t17 112s25
+32r20 Init_MyNeighbours{10|57R9[26]} 67r30
+35P10 Steering_Access(29T15) 36r57
+36K13 Steering_Vector[10|46] 37r24 40r36 49r20 53r37
+37r5 Steerings_Vector{10|57R9[36]} 110m5 110r5 111m5 111r5 112r5 114r20
+39T15 Train 39d21 39d36 39d62 41l9 41e14 42r33 48b15 61l9 61t14 113r23
+39i21 ID{10I10} 56r52 58r45 60r32
+39i36 My_Steering{12I10} 56r18
+39i62 Next_Steering{12I10} 56r56
+40Y15 Init 40>20 53b16 55l13 55t17 114s15
+40r20 Init_Route{10|57R9[36]} 54r25
+42P10 Train_Access(39T15) 44r51
+44K13 Train_Vector[10|46] 103r14
+45r5 Tracks_Vector{10|57R9[25]} 106m5 106r5 107m5 107r5 108r39 109r39
+46r5 SteeringToTracks_VectorMap{10|57R9[26]} 108m5 108r5 109m5 109r5 112r30
+49r9 My_Route{10|57R9[36]} 54m13 56r9
+50p9 My_Track{24P10} 56m71 56r71 57r9 60r9
+51e9 My_TrackType{13E10} 57m34
+53r21 Init_Route{10|57R9[36]}
+64r9 My_Neighbours{10|57R9[26]} 67m13 72r21 73r36
+66r21 Init_MyNeighbours{10|57R9[26]}
+70i41 TrainID{10I10}
+70i64 Next_Steering{12I10}
+71p20 Track_InUse{24P10}
+84i28 ID{10I10}
+90i29 ID{10I10}
+96e31 TrackType{13E10}
+103r5 Trains{10|57R9[44]} 113m5 113r5 114r5
 X 31 system.ads
 67M9*Address
-X 45 s-memory.ads
+X 46 s-memory.ads
 53V13*Alloc{31|67M9} 103i<c,__gnat_malloc>22
 68U14*Free 104i<c,__gnat_free>22
 76V13*Realloc{31|67M9} 105i<c,__gnat_realloc>22
-X 54 s-stausa.ads
+X 55 s-stausa.ads
 203U14*Initialize 204i<c,__gnat_stack_usage_initialize>22
 268U14*Output_Results 272i<c,__gnat_stack_usage_output_results>22
-X 56 s-stalib.adb
+X 57 s-stalib.adb
 93U14 Break_Start 94i<c,__gnat_break_start>22
 

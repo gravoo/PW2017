@@ -10,11 +10,13 @@ procedure Main is
     type Train_ID is range 1..4;
     type Track_ID is range 1..20;
     type Steering_ID is range 1..2;
+    type Track_Type is (Stop_Track, Drive_Track);
 
 
-    protected type StopTrack(ID : Track_ID) is 
+    protected type StopTrack(ID : Track_ID; My_TrackType : Track_Type) is 
         entry Wait_For_Clear;
         entry Assign_Train(ID : Train_ID);
+        entry Check_TrackType(TrackType : out Track_Type);
         entry Release_Track(ID : Train_ID);
     private
         Clear: Boolean := True;
@@ -46,11 +48,13 @@ procedure Main is
     task body Train is
         My_Route : Steering_Vector.Vector;
         My_Track : Track_Access;
+        My_TrackType : Track_Type;
     begin
         accept Init(Init_Route : in Steering_Vector.Vector) do
             My_Route := Init_Route;
         end Init;
         My_Route(My_Steering).Request_TravelThroug(ID, Next_Steering, My_Track);
+        My_Track.Check_TrackType(My_TrackType);
         Put_Line("Train: "& Train_ID'Image (ID) & " on track");
         delay 1.0;
         My_Track.Release_Track(ID);
@@ -89,12 +93,18 @@ procedure Main is
             Clear := True;
             Put_Line("StopTrack task; Train: "& Train_ID'Image (ID) & " released track");
         end;
+        entry Check_TrackType(TrackType : out Track_Type)
+        when not Clear is
+        begin
+            TrackType := My_TrackType;
+            Put_Line(Track_Type'Image(My_TrackType) & "is my track type");
+        end;
     end StopTrack;
     Trains : Train_Vector.Vector;
 
 begin
-    Tracks_Vector.Append(new StopTrack(1));
-    Tracks_Vector.Append(new StopTrack(2));
+    Tracks_Vector.Append(new StopTrack(1, Stop_Track));
+    Tracks_Vector.Append(new StopTrack(2, Stop_Track));
     SteeringToTracks_VectorMap.Append(Tracks_Vector(1));
     SteeringToTracks_VectorMap.Append(Tracks_Vector(2));
     Steerings_Vector.Append(new Steering(1));
