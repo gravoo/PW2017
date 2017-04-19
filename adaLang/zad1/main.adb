@@ -37,7 +37,7 @@ procedure Main is
     Steerings : Steering_Vector.Vector;
     Train1Route : Steering_Vector.Vector;
 
-    task type Train(ID : Train_ID; My_Steering: Steering_ID; Next_Steering: Steering_ID) is
+    task type Train(ID : Train_ID;  Next_Steering: Steering_ID) is
         entry Init(Init_Route : in Steering_Vector.Vector);
     end Train;
     type Train_Access is access Train;
@@ -53,10 +53,12 @@ procedure Main is
         My_Route : Steering_Vector.Vector;
         My_Track : Track_Access;
         My_TrackType : Track_Type;
+        My_Steering: Steering_ID;
     begin
         accept Init(Init_Route : in Steering_Vector.Vector) do
             My_Route := Init_Route;
         end Init;
+        My_Steering := My_Route.First_Index;
         My_Route(My_Steering).Request_TravelThroug(ID, Next_Steering, My_Track);
         My_Track.Check_TrackType(My_TrackType);
         Put_Line("Train: "& Train_ID'Image (ID) & " on track");
@@ -142,7 +144,7 @@ begin
     Train1Route.Append(Steerings(3));
     Train1Route.Append(Steerings(2));
     Train1Route.Append(Steerings(1));
-    Trains.Append(new Train(1,1,2));
+    Trains.Append(new Train(1,2));
 
     Trains(1).Init(Train1Route);
 end Main;
