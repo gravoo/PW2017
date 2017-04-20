@@ -42,7 +42,8 @@ procedure Main is
     type Train_Access is access TrainThread;
 
     package Train_Vector is new Vectors(Train_ID, Train_Access);
-    Tracks : Track_Vector.Vector;
+    StopTracks : Track_Vector.Vector;
+    DriveTracks : Track_Vector.Vector;
     Steering1Neighbours: SteeringToTracks_Vector.Vector;
     Steering2Neighbours: SteeringToTracks_Vector.Vector;
     Steering3Neighbours: SteeringToTracks_Vector.Vector;
@@ -64,9 +65,16 @@ procedure Main is
                 My_Steering := My_Route(I).ID;
                 Next_Steering := My_Route(I+1).ID; 
                 My_Route(My_Steering).Request_TravelThroug(ID, Next_Steering, My_Track);
-                My_Track.Check_TrackType(My_TrackType);
                 Put_Line("TrainThread: "& Train_ID'Image (ID) & " on track");
-                delay 5.0;
+                My_Track.Check_TrackType(My_TrackType);
+                case My_TrackType is
+                    when Stop_Track =>
+                        Put_Line("I am stop track");
+                        delay 5.0;
+                    when Drive_Track =>
+                        Put_Line("I am drive track");
+                        delay 15.0;
+                end case;
                 My_Track.Release_Track(ID);
             end loop;
         end loop;
@@ -118,36 +126,28 @@ procedure Main is
     Trains : Train_Vector.Vector;
 
 begin
-    Tracks.Append(new TrackThread(1, Stop_Track));
-    Tracks.Append(new TrackThread(2, Stop_Track));
-    Tracks.Append(new TrackThread(3, Stop_Track));
-    Tracks.Append(new TrackThread(4, Stop_Track));
-    Tracks.Append(new TrackThread(5, Stop_Track));
-    Tracks.Append(new TrackThread(1, Drive_Track));
+    StopTracks.Append(new TrackThread(1, Stop_Track));
+    StopTracks.Append(new TrackThread(2, Stop_Track));
+    StopTracks.Append(new TrackThread(3, Stop_Track));
+    StopTracks.Append(new TrackThread(4, Stop_Track));
+    DriveTracks.Append(new TrackThread(1, Drive_Track));
 
-    Steering1Neighbours.Append(Tracks(1));
-    Steering1Neighbours.Append(Tracks(2));
-    Steering1Neighbours.Append(null);
-    Steering1Neighbours.Append(null);
-    Steering1Neighbours.Append(null);
+    Steering1Neighbours.Append(StopTracks(1));
+    Steering1Neighbours.Append(StopTracks(2));
 
-    Steering2Neighbours.Append(Tracks(1));
-    Steering2Neighbours.Append(Tracks(2));
-    Steering2Neighbours.Append(Tracks(3));
+    Steering2Neighbours.Append(StopTracks(2));
     Steering2Neighbours.Append(null);
-    Steering2Neighbours.Append(null);
+    Steering2Neighbours.Append(DriveTracks(1));
 
     Steering3Neighbours.Append(null);
-    Steering3Neighbours.Append(Tracks(2));
-    Steering3Neighbours.Append(Tracks(3));
-    Steering3Neighbours.Append(Tracks(4));
+    Steering3Neighbours.Append(DriveTracks(1));
     Steering3Neighbours.Append(null);
+    Steering3Neighbours.Append(StopTracks(3));
 
     Steering4Neighbours.Append(null);
     Steering4Neighbours.Append(null);
-    Steering4Neighbours.Append(Tracks(3));
-    Steering4Neighbours.Append(Tracks(4));
-    Steering4Neighbours.Append(Tracks(5));
+    Steering4Neighbours.Append(StopTracks(3));
+    Steering4Neighbours.Append(StopTracks(4));
 
     Steerings.Append(new SteeringThread(1));
     Steerings.Append(new SteeringThread(2));
