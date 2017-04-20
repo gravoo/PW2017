@@ -25,21 +25,21 @@ procedure Main is
     package SteeringToTracks_Vector is new Vectors(Steering_ID, Track_Access);
 
 
-    task type Steering(ID : Steering_ID) is 
+    task type SteeringThread(ID : Steering_ID) is 
         entry Request_TravelThroug(TrainID : in Train_ID; Next_Steering : in Steering_ID;
         Track_InUse : out Track_Access);
         entry Init(Init_MyNeighbours : in SteeringToTracks_Vector.Vector);
-    end Steering;
+    end SteeringThread;
 
-    type Steering_Access is access Steering;
+    type Steering_Access is access SteeringThread;
     package Steering_Vector is new Vectors(Steering_ID, Steering_Access);
     Steerings : Steering_Vector.Vector;
     Train1Route : Steering_Vector.Vector;
 
-    task type Train(ID : Train_ID) is
+    task type TrainThread(ID : Train_ID) is
         entry Init(Init_Route : in Steering_Vector.Vector);
-    end Train;
-    type Train_Access is access Train;
+    end TrainThread;
+    type Train_Access is access TrainThread;
 
     package Train_Vector is new Vectors(Train_ID, Train_Access);
     Tracks : Track_Vector.Vector;
@@ -48,7 +48,7 @@ procedure Main is
     Steering3Neighbours: SteeringToTracks_Vector.Vector;
     Steering4Neighbours: SteeringToTracks_Vector.Vector;
 
-    task body Train is
+    task body TrainThread is
         My_Route : Steering_Vector.Vector;
         My_Track : Track_Access;
         My_TrackType : Track_Type;
@@ -60,19 +60,19 @@ procedure Main is
         end Init;
         loop
             for I in Steering_ID range My_Route.First_Index .. My_Route.Last_Index - 1 loop
-                Put_Line("Train");
+                Put_Line("TrainThread");
                 My_Steering := My_Route(I).ID;
                 Next_Steering := My_Route(I+1).ID; 
                 My_Route(My_Steering).Request_TravelThroug(ID, Next_Steering, My_Track);
                 My_Track.Check_TrackType(My_TrackType);
-                Put_Line("Train: "& Train_ID'Image (ID) & " on track");
+                Put_Line("TrainThread: "& Train_ID'Image (ID) & " on track");
                 delay 5.0;
                 My_Track.Release_Track(ID);
             end loop;
         end loop;
-    end Train;
+    end TrainThread;
 
-    task body Steering is
+    task body SteeringThread is
         My_Neighbours : SteeringToTracks_Vector.Vector;
     begin
         accept Init(Init_MyNeighbours : in SteeringToTracks_Vector.Vector) do
@@ -87,7 +87,7 @@ procedure Main is
                     Track_InUse := My_Neighbours(Next_Steering); 
             end Request_TravelThroug;
         end loop;
-    end Steering;
+    end SteeringThread;
 
     protected body TrackThread is
         entry Wait_For_Clear
@@ -149,10 +149,10 @@ begin
     Steering4Neighbours.Append(Tracks(4));
     Steering4Neighbours.Append(Tracks(5));
 
-    Steerings.Append(new Steering(1));
-    Steerings.Append(new Steering(2));
-    Steerings.Append(new Steering(3));
-    Steerings.Append(new Steering(4));
+    Steerings.Append(new SteeringThread(1));
+    Steerings.Append(new SteeringThread(2));
+    Steerings.Append(new SteeringThread(3));
+    Steerings.Append(new SteeringThread(4));
 
     Steerings(1).Init(Steering1Neighbours);
     Steerings(2).Init(Steering2Neighbours);
@@ -167,7 +167,7 @@ begin
     Train1Route.Append(Steerings(3));
     Train1Route.Append(Steerings(2));
     Train1Route.Append(Steerings(1));
-    Trains.Append(new Train(1));
+    Trains.Append(new TrainThread(1));
 
     Trains(1).Init(Train1Route);
 end Main;
