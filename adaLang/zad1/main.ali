@@ -45,16 +45,18 @@ RV MAX_TASK_ENTRIES=2
 RV MAX_TASKS=1+
 RV MAX_ENTRY_QUEUE_LENGTH=1+
 
-U main%b		main.adb		c302f799 NE OO SU
+U main%b		main.adb		79f5ca58 NE OO SU
 W ada%s			ada.ads			ada.ali
 W ada.calendar.delays%s	a-caldel.adb		a-caldel.ali
 W ada.containers%s	a-contai.ads		a-contai.ali
 Z ada.containers.generic_array_sort%s
+Z ada.containers.hash_tables%s  a-cohata.ads	a-cohata.ali
+Z ada.containers.hash_tables.generic_keys%s
+Z ada.containers.hash_tables.generic_operations%s
+W ada.containers.hashed_maps%s
 Z ada.containers.helpers%s  a-conhel.adb	a-conhel.ali
 W ada.containers.ordered_maps%s
-Z ada.containers.red_black_trees%s  a-crbltr.ads  a-crbltr.ali
-Z ada.containers.red_black_trees.generic_keys%s
-Z ada.containers.red_black_trees.generic_operations%s
+Z ada.containers.prime_numbers%s  a-coprnu.adb	a-coprnu.ali
 W ada.containers.vectors%s
 W ada.exceptions%s	a-except.adb		a-except.ali
 Z ada.finalization%s	a-finali.ads		a-finali.ali
@@ -101,15 +103,21 @@ D a-charac.ads		20170306114743 2d3ec45b ada.characters%s
 D a-chlat1.ads		20170306114743 66457d31 ada.characters.latin_1%s
 D a-contai.ads		20170306114743 61e5e089 ada.containers%s
 D a-cgarso.ads		20170306114743 9129bfa8 ada.containers.generic_array_sort%s
+D a-cohata.ads		20170306114743 80a8c839 ada.containers.hash_tables%s
+D a-chtgke.ads		20170306114743 20177f7b ada.containers.hash_tables.generic_keys%s
+D a-chtgke.adb		20170306114743 7d66b1e3 ada.containers.hash_tables.generic_keys%b
+D a-chtgop.ads		20170306114746 bea86046 ada.containers.hash_tables.generic_operations%s
+D a-chtgop.adb		20170306114746 dc263095 ada.containers.hash_tables.generic_operations%b
+D a-cohama.ads		20170306114743 5b9a95f7 ada.containers.hashed_maps%s
+D a-cohama.adb		20170306114743 6d24e6e5 ada.containers.hashed_maps%b
 D a-conhel.ads		20170306114746 20298884 ada.containers.helpers%s
 D a-conhel.adb		20170306114746 34fff4f6 ada.containers.helpers%b
 D a-coorma.ads		20170306114743 f11dbb1a ada.containers.ordered_maps%s
 D a-coorma.adb		20170306114743 385a34e2 ada.containers.ordered_maps%b
+D a-coprnu.ads		20170306114743 0cdf1864 ada.containers.prime_numbers%s
 D a-crbltr.ads		20170306114743 c3e90a86 ada.containers.red_black_trees%s
 D a-crbtgk.ads		20170306114743 ab25d217 ada.containers.red_black_trees.generic_keys%s
-D a-crbtgk.adb		20170306114743 cffbc19e ada.containers.red_black_trees.generic_keys%b
 D a-crbtgo.ads		20170306114743 e494c304 ada.containers.red_black_trees.generic_operations%s
-D a-crbtgo.adb		20170306114746 9d75ddfc ada.containers.red_black_trees.generic_operations%b
 D a-convec.ads		20170306114743 7e2b0fdf ada.containers.vectors%s
 D a-convec.adb		20170306114746 89163169 ada.containers.vectors%b
 D a-except.ads		20170306114743 291912d5 ada.exceptions%s
@@ -130,7 +138,7 @@ D a-uncdea.ads		20170306114743 f15a5ed1 ada.unchecked_deallocation%s
 D interfac.ads		20170306114746 4be8ce1b interfaces%s
 D i-c.ads		20170306114743 5421119b interfaces.c%s
 D i-cstrea.ads		20170306114743 e53d8b8e interfaces.c_streams%s
-D main.adb		20170422175958 bd83ebe9 main%b
+D main.adb		20170422200843 5cee43df main%b
 D system.ads		20170306114746 6326c08a system%s
 D s-addima.ads		20170306114743 a1ec9d3a system.address_image%s
 D s-atacco.ads		20170306114743 4c36d12f system.address_to_access_conversions%s
@@ -178,174 +186,172 @@ D s-traent.ads		20170306114743 005bf670 system.traceback_entries%s
 D s-unstyp.ads		20170306114746 9d58a4c0 system.unsigned_types%s
 D s-wchcon.ads		20170306114743 1b7d22d2 system.wch_con%s
 X 1 ada.ads
-16K9*Ada 19e8 37|1r6 2r6 3r6 4r6 5r6 6r5 7r5 10r24 39r33
+16K9*Ada 19e8 43|1r6 2r6 3r6 4r6 5r6 6r6 7r5 8r5 11r24 44r38
 X 6 a-contai.ads
-16K13*Containers 24e19 37|3r10 5r10 6r9 39r37
-X 10 a-coorma.ads
-41+9 Key_Type 37|41r10
-42+9 Element_Type 37|40r10
-47k24*Ordered_Maps 392e32 37|5w21 39r48
-54R9 Map<20|43R9> 37|42r32[39]
-241R9 Node_Type
+16K13*Containers 24e19 43|3r10 5r10 6r10 7r9 44r42
+19M9*Hash_Type 43|24r50 26r15
+X 13 a-cohama.ads
+41+9 Key_Type 43|46r10
+42+9 Element_Type 43|45r10
+44V18 Hash{6|19M9} 43|47r10
+45V18 Equivalent_Keys{boolean} 43|48r10
+48k24*Hashed_Maps 462e31 43|6w21 44r53
+53R9 Map<26|43R9> 43|53r61[44] 70r43[44] 71r43[44] 72r43[44] 73r43[44] 118r43[44]
+. 120r62[44]
+204U14 Insert 43|213s23[44] 214s23[44] 216s23[44] 217s23[44] 219s23[44] 220s23[44]
+. 221s23[44] 223s23[44] 224s23[44]
+X 17 a-coorma.ads
+47k24*Ordered_Maps 392e32 43|5w21
 242P9 Node_Access(241R9)
-X 11 a-coorma.adb
-55V13 Color{12|37E9} 15|45i19[37|39]
-58V13 Left{10|242P9} 15|41i19
-61V13 Parent{10|242P9[37|39]} 15|39i19[37|39]
-64V13 Right{10|242P9[37|39]} 15|43i19[37|39]
-67U14 Set_Parent 15|40i19[37|39]
-70U14 Set_Left 15|42i19
-73U14 Set_Right 15|44i19
-76U14 Set_Color 15|46i19
-X 17 a-convec.ads
-46k24*Vectors 518e27 37|3w21 37r33 38r44 52r36 62r33
+X 18 a-coorma.adb
+55V13 Color{20|37E9} 22|45i19
+58V13 Left{17|242P9} 22|41i19
+61V13 Parent{17|242P9} 22|39i19
+64V13 Right{17|242P9} 22|43i19
+67U14 Set_Parent 22|40i19
+70U14 Set_Left 22|42i19
+73U14 Set_Right 22|44i19
+76U14 Set_Color 22|46i19
+X 23 a-convec.ads
+46k24*Vectors 518e27 43|3w21 42r33 43r44 57r36 67r33
 51I12 Extended_Index<short_short_integer>
-57R9 Vector<20|43R9> 37|48r67[38] 53r33[52] 54r35[52] 55r35[52] 58r52[52]
-. 63r31[37] 64r32[37] 65r50[38] 66r50[38] 67r50[38] 68r50[38] 71r36[52] 81r53[52]
-. 113r49[38] 115r68[38] 165r27[62]
-245U14 Append 37|168s16[37] 169s16[37] 170s16[37] 171s16[37] 172s16[37] 173s16[37]
-. 174s16[37] 175s16[37] 176s16[37] 177s16[37] 178s16[37] 179s16[37] 180s16[37]
-. 181s16[37] 182s16[37] 183s16[37] 184s16[37] 185s16[37] 186s16[37] 187s16[37]
-. 188s16[37] 189s16[37] 190s16[37] 191s16[37] 192s17[37] 193s17[37] 194s17[37]
-. 195s17[37] 196s17[37] 197s17[37] 198s17[37] 199s17[37] 200s17[37] 202s25[38]
-. 203s25[38] 205s25[38] 206s25[38] 207s25[38] 209s25[38] 210s25[38] 211s25[38]
-. 212s25[38] 214s25[38] 215s25[38] 216s25[38] 217s25[38] 219s15[52] 220s15[52]
-. 221s15[52] 222s15[52] 229s17[52] 230s17[52] 231s17[52] 232s17[52] 233s17[52]
-. 234s17[52] 235s17[52] 236s17[52] 237s12[62] 239s17[52] 240s17[52] 241s17[52]
-. 242s17[52] 243s17[52] 244s17[52] 245s17[52] 246s17[52] 247s12[62]
-285V13 First_Index{37|13I10} 37|86s44[52] 87s54[52] 88s27[52] 89s49[52]
-291V13 Last_Index{51I12[37|52]} 37|89s73[52]
-X 21 a-inteio.ads
-18K13*Integer_Text_IO[31|46] 37|4w10
-X 23 a-iteint.ads
+57R9 Vector<26|43R9> 43|58r33[57] 59r35[57] 60r35[57] 63r52[57] 68r31[42]
+. 69r32[42] 76r36[57] 86r53[57] 170r27[67]
+245U14 Append 43|173s16[42] 174s16[42] 175s16[42] 176s16[42] 177s16[42] 178s16[42]
+. 179s16[42] 180s16[42] 181s16[42] 182s16[42] 183s16[42] 184s16[42] 185s16[42]
+. 186s16[42] 187s16[42] 188s16[42] 189s16[42] 190s16[42] 191s16[42] 192s16[42]
+. 193s16[42] 194s16[42] 195s16[42] 196s16[42] 197s17[42] 198s17[42] 199s17[42]
+. 200s17[42] 201s17[42] 202s17[42] 203s17[42] 204s17[42] 205s17[42] 208s15[57]
+. 209s15[57] 210s15[57] 211s15[57] 232s17[57] 233s17[57] 234s17[57] 235s17[57]
+. 236s17[57] 237s17[57] 238s12[67]
+285V13 First_Index{43|14I10} 43|91s44[57] 92s54[57] 93s27[57] 94s49[57]
+291V13 Last_Index{51I12[43|57]} 43|94s73[57]
+X 27 a-inteio.ads
+18K13*Integer_Text_IO[37|46] 43|4w10
+X 29 a-iteint.ads
 24h9 Forward_Iterator
-32h9 Reversible_Iterator<24R9[10|69]>
-X 26 a-string.ads
-16K13*Strings 35e16 37|2r10 10r28
-X 28 a-strunb.ads
-76K21*Unbounded 489e26 37|2w18 10r36
-X 30 a-textio.ads
-49K13*Text_IO 471e16 37|1w10 7r9
-263U14*Put_Line 37|85s9 87s9 90s17 94s25 98s25 104s17 121s21 137s13 145s13
-X 37 main.adb
-9U11*Main 9b11 251l5 251t9
-10K13 SU=10:36
-11I10 Train_ID<short_short_integer> 27r38 29r39 46r49 57r32 62r41 90r43 119r54
-. 134r38 137r51 141r39 145r51
-12I10 Track_ID<short_short_integer> 24r37 37r41 137r94 146r77
-13I10 Steering_ID<short_short_integer> 15r26 38r52 41r22 45r35 46r78 52r44
-. 74r22 75r24 87r18 87r79 89r22 104r26 119r83 121r48 121r95
-14E10 Track_Type 14e49 24r62 28r47 73r24 138r25 146r38 148r47
-14n25 Stop_Track{14E10} 93r26 168r42 169r42 170r42 171r42 172r42 173r42 174r42
-. 175r42 176r42 177r42 178r43 179r43 180r43 181r43 182r43 183r43 184r43 185r43
-. 186r43 187r43 188r43 189r43 190r43 191r43
-14n37 Drive_Track{14E10} 97r26 192r43 193r43 194r43 195r43 196r43 197r43
-. 198r43 199r43 200r43
-15V15 "<"{boolean} 10|44i19 37|15b15 15>19 15>22 17s14 22l10 22t12
-15i19 a{13I10} 17r12
-15i22 b{13I10} 17r16
-24W20 TrackThread 24d32 24d47 24d74 24d95 25d9 33E9 34l9 34e20 36r33 128b20
-. 164l9 164t20 168r27 169r27 170r27 171r27 172r27 173r27 174r27 175r27 176r27
-. 177r27 178r27 179r27 180r27 181r27 182r27 183r27 184r27 185r27 186r27 187r27
-. 188r27 189r27 190r27 191r27 192r28 193r28 194r28 195r28 196r28 197r28 198r28
-. 199r28 200r28
-24i32 ID{12I10} 137r109 146r92
-24e47 My_TrackType{14E10} 138r42 146r55 151r26
-24i74 Wait_Time{integer} 156r34
-24i95 Track_Max_Velocity{integer} 162r28
-25i9 Track_Length{integer} 161r23
-26Y15 Wait_For_Clear 129b15 133t12
-27Y15 Assign_Train 27>28 122s50 134b15 140t12
-27i28 TrainID{11I10} 137r67
-28Y15 Check_TrackType 28<31 91s26 148b15 152t12
-28e31 TrackType{14E10} 151m13
-29Y15 Release_Track 29>29 106s34 108s18 141b15 147t12
-29i29 TrainID{11I10} 145r67
-30Y15 Wait_OnStation 30<30 95s34 153b15 157t12
-30i30 Wait_OnTrackTime{integer} 156m14
-31Y15 Drive_Trough 31<28 31<50 99s34 158b15 163t12
-31i28 Length{integer} 161m13
-31i50 MaxVelocity{integer} 162m13
-33b9 Clear{boolean} 130r14 135r14 139r13 142r18 144r13 149r18 154r18 159r18
-36P10 Track_Access(24W20) 37r51 38r65 40r26 47r27 72r20 76r28 120r38
-37K13 Track_Vector[17|46] 63r18 64r19
-38K13 SteeringToTracks_Vector[17|46] 48r43 65r26 66r26 67r26 68r26 113r25
-. 115r44
-39K13 Steering_Map[10|47] 42r19
-42r5 SteeringMap{10|54R9[39]}
-45T15 SteeringThread 45d30 49l9 49e23 51r36 112b15 126l9 126t23 219r26 220r26
-. 221r26 222r26
-45i30 ID{13I10} 86r57 87r67 103r48 121r66
-46Y15 Request_TravelThroug 46>36 46>59 47<9 88s40 105s29 119b20 124l17 124t37
-46i36 TrainID{11I10} 122r63
-46i59 Next_Steering{13I10} 121r113 122r35 123r50
-47p9 Track_InUse{36P10} 123m21 123r21
-48Y15 Init 48>20 115b16 117l13 117t17 224s18 225s18 226s18 227s18
-48r20 Init_MyNeighbours{17|57R9[38]} 116r30
-51P10 Steering_Access(45T15) 52r57
-52K13 Steering_Vector[17|46] 53r17 54r19 55r19 58r36 71r20 81r37
-53r5 Steerings{17|57R9[52]} 219m5 219r5 220m5 220r5 221m5 221r5 222m5 222r5
-. 224r5 225r5 226r5 227r5 229r24 230r24 231r24 232r24 233r24 234r24 235r24
-. 236r24 239r24 240r24 241r24 242r24 243r24 244r24 245r24 246r24
-54r5 Train1Route{17|57R9[52]} 229m5 229r5 230m5 230r5 231m5 231r5 232m5 232r5
-. 233m5 233r5 234m5 234r5 235m5 235r5 236m5 236r5 249r20
-55r5 Train2Route{17|57R9[52]} 239m5 239r5 240m5 240r5 241m5 241r5 242m5 242r5
-. 243m5 243r5 244m5 244r5 245m5 245r5 246m5 246r5 250r20
-57T15 TrainThread 57d27 57d42 59l9 59e20 60r33 70b15 110l9 110t20 237r23
-. 247r23
-57i27 ID{11I10} 88r61 90r59 105r50 106r48 108r32
-57i42 Velocity{integer}
-58Y15 Init 58>20 81b16 83l13 83t17 249s15 250s15
-58r20 Init_Route{17|57R9[52]} 82r25
-60P10 Train_Access(57T15) 62r51
-62K13 Train_Vector[17|46] 165r14
-63r5 StopTracks{17|57R9[37]} 168m5 168r5 169m5 169r5 170m5 170r5 171m5 171r5
-. 172m5 172r5 173m5 173r5 174m5 174r5 175m5 175r5 176m5 176r5 177m5 177r5
-. 178m5 178r5 179m5 179r5 180m5 180r5 181m5 181r5 182m5 182r5 183m5 183r5
-. 184m5 184r5 185m5 185r5 186m5 186r5 187m5 187r5 188m5 188r5 189m5 189r5
-. 190m5 190r5 191m5 191r5 202r32 203r32 205r32 212r32 216r32 217r32
-64r5 DriveTracks{17|57R9[37]} 192m5 192r5 193m5 193r5 194m5 194r5 195m5 195r5
-. 196m5 196r5 197m5 197r5 198m5 198r5 199m5 199r5 200m5 200r5 207r32 210r32
-65r5 Steering1Neighbours{17|57R9[38]} 202m5 202r5 203m5 203r5 224r23
-66r5 Steering2Neighbours{17|57R9[38]} 205m5 205r5 206m5 206r5 207m5 207r5
-. 225r23
-67r5 Steering3Neighbours{17|57R9[38]} 209m5 209r5 210m5 210r5 211m5 211r5
-. 212m5 212r5 226r23
-68r5 Steering4Neighbours{17|57R9[38]} 214m5 214r5 215m5 215r5 216m5 216r5
-. 217m5 217r5 227r23
-71r9 My_Route{17|57R9[52]} 82m13 86r26 86r35 87r36 87r45 88r9 88r18 89r40
-. 89r64 103r34 105r17
-72p9 My_Track{36P10} 88m80 88r80 91r17 95r25 99r25 102r37 105m69 105r69 108r9
-73e9 My_TrackType{14E10} 91m42 92r22
-74i9 My_Steering{13I10}
-75i9 Next_Steering{13I10} 86m9 87r97 88r65 103m17 104r44 105r54
-76p9 Track_To_Release{36P10} 102m17 106r17
-77i9 Wait_Time{integer} 95m49 96r40
-78i9 Track_MaxVelocity{integer} 99m61 100r53
-79i9 Track_Length{integer} 99m47 100r40
-81r21 Init_Route{17|57R9[52]}
-89i17 I<short_short_integer> 103r43 105r26
-113r9 My_Neighbours{17|57R9[38]} 116m13 122r21 123r36
-115r21 Init_MyNeighbours{17|57R9[38]}
-119i41 TrainID{11I10}
-119i64 Next_Steering{13I10}
-120p20 Track_InUse{36P10}
-134i28 TrainID{11I10}
-141i29 TrainID{11I10}
-148e31 TrackType{14E10}
-153i30 Wait_OnTrackTime{integer}
-158i28 Length{integer}
-158i50 MaxVelocity{integer}
-165r5 Trains{17|57R9[62]} 237m5 237r5 247m5 247r5 249r5 250r5
-X 38 system.ads
+32h9 Reversible_Iterator<24R9[23|72]>
+X 32 a-string.ads
+16K13*Strings 35e16 43|2r10 11r28
+X 34 a-strunb.ads
+76K21*Unbounded 489e26 43|2w18 11r36
+X 36 a-textio.ads
+49K13*Text_IO 471e16 43|1w10 8r9
+263U14*Put_Line 43|90s9 92s9 95s17 99s25 103s25 109s17 126s21 142s13 150s13
+X 43 main.adb
+10U11*Main 10b11 241l5 241t9
+11K13 SU=11:36
+12I10 Train_ID<short_short_integer> 32r38 34r39 51r49 62r32 67r41 95r43 124r54
+. 139r38 142r51 146r39 150r51
+13I10 Track_ID<short_short_integer> 29r37 42r41 142r94 151r77
+14I10 Steering_ID<short_short_integer> 16r26 24r30 26r30 43r52 46r22 50r35
+. 51r78 57r44 79r22 80r24 92r18 92r79 94r22 109r26 124r83 126r48 126r95
+15E10 Track_Type 15e49 29r62 33r47 78r24 143r25 151r38 153r47
+15n25 Stop_Track{15E10} 98r26 173r42 174r42 175r42 176r42 177r42 178r42 179r42
+. 180r42 181r42 182r42 183r43 184r43 185r43 186r43 187r43 188r43 189r43 190r43
+. 191r43 192r43 193r43 194r43 195r43 196r43
+15n37 Drive_Track{15E10} 102r26 197r43 198r43 199r43 200r43 201r43 202r43
+. 203r43 204r43 205r43
+16V15 "<"{boolean} 16b15 16>19 16>22 18s14 23l10 23t12
+16i19 a{14I10} 18r12
+16i22 b{14I10} 18r16
+24V14 ID_Hashed{6|19M9} 24b14 24>25 27l9 27t18 47r18
+24i25 Id{14I10} 26r47
+29W20 TrackThread 29d32 29d47 29d74 29d95 30d9 38E9 39l9 39e20 41r33 133b20
+. 169l9 169t20 173r27 174r27 175r27 176r27 177r27 178r27 179r27 180r27 181r27
+. 182r27 183r27 184r27 185r27 186r27 187r27 188r27 189r27 190r27 191r27 192r27
+. 193r27 194r27 195r27 196r27 197r28 198r28 199r28 200r28 201r28 202r28 203r28
+. 204r28 205r28
+29i32 ID{13I10} 142r109 151r92
+29e47 My_TrackType{15E10} 143r42 151r55 156r26
+29i74 Wait_Time{integer} 161r34
+29i95 Track_Max_Velocity{integer} 167r28
+30i9 Track_Length{integer} 166r23
+31Y15 Wait_For_Clear 134b15 138t12
+32Y15 Assign_Train 32>28 127s50 139b15 145t12
+32i28 TrainID{12I10} 142r67
+33Y15 Check_TrackType 33<31 96s26 153b15 157t12
+33e31 TrackType{15E10} 156m13
+34Y15 Release_Track 34>29 111s34 113s18 146b15 152t12
+34i29 TrainID{12I10} 150r67
+35Y15 Wait_OnStation 35<30 100s34 158b15 162t12
+35i30 Wait_OnTrackTime{integer} 161m14
+36Y15 Drive_Trough 36<28 36<50 104s34 163b15 168t12
+36i28 Length{integer} 166m13
+36i50 MaxVelocity{integer} 167m13
+38b9 Clear{boolean} 135r14 140r14 144r13 147r18 149r13 154r18 159r18 164r18
+41P10 Track_Access(29W20) 42r51 43r65 45r26 52r27 77r20 81r28 125r38
+42K13 Track_Vector[23|46] 68r18 69r19
+43K13 SteeringToTracks_Vector[23|46]
+44K13 SteeringTrack_Map[13|48] 53r43 70r25 71r25 72r25 73r25 118r25 120r44
+50T15 SteeringThread 50d30 54l9 54e23 56r36 117b15 131l9 131t23 208r26 209r26
+. 210r26 211r26
+50i30 ID{14I10} 91r57 92r67 108r48 126r66
+51Y15 Request_TravelThroug 51>36 51>59 52<9 93s40 110s29 124b20 129l17 129t37
+51i36 TrainID{12I10} 127r63
+51i59 Next_Steering{14I10} 126r113 127r35 128r50
+52p9 Track_InUse{41P10} 128m21 128r21
+53Y15 Init 53>20 120b16 122l13 122t17 227s18 228s18 229s18 230s18
+53r20 Init_MyNeighbours{13|53R9[44]} 121r30
+56P10 Steering_Access(50T15) 57r57
+57K13 Steering_Vector[23|46] 58r17 59r19 60r19 63r36 76r20 86r37
+58r5 Steerings{23|57R9[57]} 208m5 208r5 209m5 209r5 210m5 210r5 211m5 211r5
+. 227r5 228r5 229r5 230r5 232r24 233r24 234r24 235r24 236r24 237r24
+59r5 Train1Route{23|57R9[57]} 232m5 232r5 233m5 233r5 234m5 234r5 235m5 235r5
+. 236m5 236r5 237m5 237r5 240r20
+60r5 Train2Route{23|57R9[57]}
+62T15 TrainThread 62d27 62d42 64l9 64e20 65r33 75b15 115l9 115t20 238r23
+62i27 ID{12I10} 93r61 95r59 110r50 111r48 113r32
+62i42 Velocity{integer}
+63Y15 Init 63>20 86b16 88l13 88t17 240s15
+63r20 Init_Route{23|57R9[57]} 87r25
+65P10 Train_Access(62T15) 67r51
+67K13 Train_Vector[23|46] 170r14
+68r5 StopTracks{23|57R9[42]} 173m5 173r5 174m5 174r5 175m5 175r5 176m5 176r5
+. 177m5 177r5 178m5 178r5 179m5 179r5 180m5 180r5 181m5 181r5 182m5 182r5
+. 183m5 183r5 184m5 184r5 185m5 185r5 186m5 186r5 187m5 187r5 188m5 188r5
+. 189m5 189r5 190m5 190r5 191m5 191r5 192m5 192r5 193m5 193r5 194m5 194r5
+. 195m5 195r5 196m5 196r5 213r33 214r33 216r33 217r33 219r33 220r33 224r33
+69r5 DriveTracks{23|57R9[42]} 197m5 197r5 198m5 198r5 199m5 199r5 200m5 200r5
+. 201m5 201r5 202m5 202r5 203m5 203r5 204m5 204r5 205m5 205r5 221r33 223r33
+70r5 Steering0TrackMap{13|53R9[44]} 213m5 213r5 214m5 214r5 227r23
+71r5 Steering1TrackMap{13|53R9[44]} 216m5 216r5 217m5 217r5 228r23
+72r5 Steering2TrackMap{13|53R9[44]} 219m5 219r5 220m5 220r5 221m5 221r5 229r23
+73r5 Steering3TrackMap{13|53R9[44]} 223m5 223r5 224m5 224r5 230r23
+76r9 My_Route{23|57R9[57]} 87m13 91r26 91r35 92r36 92r45 93r9 93r18 94r40
+. 94r64 108r34 110r17
+77p9 My_Track{41P10} 93m80 93r80 96r17 100r25 104r25 107r37 110m69 110r69
+. 113r9
+78e9 My_TrackType{15E10} 96m42 97r22
+79i9 My_Steering{14I10}
+80i9 Next_Steering{14I10} 91m9 92r97 93r65 108m17 109r44 110r54
+81p9 Track_To_Release{41P10} 107m17 111r17
+82i9 Wait_Time{integer} 100m49 101r40
+83i9 Track_MaxVelocity{integer} 104m61 105r53
+84i9 Track_Length{integer} 104m47 105r40
+86r21 Init_Route{23|57R9[57]}
+94i17 I<short_short_integer> 108r43 110r26
+118r9 My_Neighbours{13|53R9[44]} 121m13 127r21 128r36
+120r21 Init_MyNeighbours{13|53R9[44]}
+124i41 TrainID{12I10}
+124i64 Next_Steering{14I10}
+125p20 Track_InUse{41P10}
+139i28 TrainID{12I10}
+146i29 TrainID{12I10}
+153e31 TrackType{15E10}
+158i30 Wait_OnTrackTime{integer}
+163i28 Length{integer}
+163i50 MaxVelocity{integer}
+170r5 Trains{23|57R9[67]} 238m5 238r5 240r5
+X 44 system.ads
 67M9*Address
-X 55 s-memory.ads
-53V13*Alloc{38|67M9} 103i<c,__gnat_malloc>22
+X 61 s-memory.ads
+53V13*Alloc{44|67M9} 103i<c,__gnat_malloc>22
 68U14*Free 104i<c,__gnat_free>22
-76V13*Realloc{38|67M9} 105i<c,__gnat_realloc>22
-X 64 s-stausa.ads
+76V13*Realloc{44|67M9} 105i<c,__gnat_realloc>22
+X 70 s-stausa.ads
 203U14*Initialize 204i<c,__gnat_stack_usage_initialize>22
 268U14*Output_Results 272i<c,__gnat_stack_usage_output_results>22
-X 66 s-stalib.adb
+X 72 s-stalib.adb
 93U14 Break_Start 94i<c,__gnat_break_start>22
 
