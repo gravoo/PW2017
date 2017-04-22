@@ -58,6 +58,8 @@ procedure Main is
     Steerings : Steering_Vector.Vector;
     Train1Route : Steering_Vector.Vector;
     Train2Route : Steering_Vector.Vector;
+    Train3Route : Steering_Vector.Vector;
+    Train4Route : Steering_Vector.Vector;
 
     task type TrainThread(ID : Train_ID; Velocity : Integer) is
         entry Init(Init_Route : in Steering_Vector.Vector);
@@ -140,6 +142,7 @@ procedure Main is
             accept Request_TravelThroug(TrainID : in Train_ID; Next_Steering : in Steering_ID;
                    Track_InUse : out Track_Access)  do 
                     Put_Line("steering id: " & Steering_ID'Image(ID) & " Target steering: " & Steering_ID'Image(Next_Steering));
+                    My_Neighbours(Next_Steering).Wait_For_Clear;
                     My_Neighbours(Next_Steering).Assign_Train(TrainID);
                     Track_InUse := My_Neighbours(Next_Steering); 
             end Request_TravelThroug;
@@ -279,7 +282,7 @@ begin
     Steering10TrackMap.Insert(9, StopTracks(10));
     Steering10TrackMap.Insert(10, StopTracks(12));
     
-    Steering11TrackMap.Insert(10, StopTracks(11));
+    Steering11TrackMap.Insert(9, StopTracks(11));
     Steering11TrackMap.Insert(11, StopTracks(13));
     
     Steering12TrackMap.Insert(6, DriveTracks(4));
@@ -349,7 +352,57 @@ begin
     Train1Route.Append(Steerings(3));
     Train1Route.Append(Steerings(2));
     Train1Route.Append(Steerings(0));
+    
+    Train2Route.Append(Steerings(11));
+    Train2Route.Append(Steerings(9));
+    Train2Route.Append(Steerings(8));
+    Train2Route.Append(Steerings(7));
+    Train2Route.Append(Steerings(6));
+    Train2Route.Append(Steerings(5));
+    Train2Route.Append(Steerings(4));
+    Train2Route.Append(Steerings(3));
+    Train2Route.Append(Steerings(2));
+    Train2Route.Append(Steerings(1));
+    Train2Route.Append(Steerings(1));
+    Train2Route.Append(Steerings(2));
+    Train2Route.Append(Steerings(3));
+    Train2Route.Append(Steerings(4));
+    Train2Route.Append(Steerings(5));
+    Train2Route.Append(Steerings(6));
+    Train2Route.Append(Steerings(7));
+    Train2Route.Append(Steerings(8));
+    Train2Route.Append(Steerings(9));
+    Train2Route.Append(Steerings(11));
+    
+    Train3Route.Append(Steerings(15));
+    Train3Route.Append(Steerings(14));
+    Train3Route.Append(Steerings(13));
+    Train3Route.Append(Steerings(12));
+    Train3Route.Append(Steerings(6));
+    Train3Route.Append(Steerings(5));
+    Train3Route.Append(Steerings(6));
+    Train3Route.Append(Steerings(12));
+    Train3Route.Append(Steerings(13));
+    Train3Route.Append(Steerings(14));
+    Train3Route.Append(Steerings(15));
+
+    Train4Route.Append(Steerings(19));
+    Train4Route.Append(Steerings(17));
+    Train4Route.Append(Steerings(4));
+    Train4Route.Append(Steerings(5));
+    Train4Route.Append(Steerings(6));
+    Train4Route.Append(Steerings(5));
+    Train4Route.Append(Steerings(4));
+    Train4Route.Append(Steerings(17));
+    Train4Route.Append(Steerings(18));
+
     Trains.Append(new TrainThread(ID => 1, Velocity=>1));
+    Trains.Append(new TrainThread(ID => 2, Velocity=>1));
+    Trains.Append(new TrainThread(ID => 3, Velocity=>1));
+    Trains.Append(new TrainThread(ID => 4, Velocity=>1));
 
     Trains(1).Init(Train1Route);
+    Trains(2).Init(Train2Route);
+    Trains(3).Init(Train3Route);
+    Trains(4).Init(Train4Route);
 end Main;
