@@ -69,10 +69,9 @@ procedure Main is
         end Init;
         loop
         Put_Line("TrainThread");
-        My_Steering := My_Route(My_Route.First_Index).ID;
         Next_Steering := My_Route(My_Route.First_Index).ID;
-        Put_Line(Steering_ID'Image(My_Steering) & " " & Steering_ID'Image(Next_Steering));
-        My_Route(My_Steering).Request_TravelThroug(ID, Next_Steering, My_Track);
+        Put_Line(Steering_ID'Image(My_Route.First_Index) & " " & Steering_ID'Image(Next_Steering));
+        My_Route(My_Route.First_Index).Request_TravelThroug(ID, Next_Steering, My_Track);
             for I in Steering_ID range My_Route.First_Index .. My_Route.Last_Index - 1 loop
                 Put_Line("TrainThread: "& Train_ID'Image (ID) & " on track");
                 My_Track.Check_TrackType(My_TrackType);
@@ -87,10 +86,9 @@ procedure Main is
                         delay Duration(Track_Length/Track_MaxVelocity);
                 end case;
                 Track_To_Release := My_Track;
-                My_Steering := My_Route(I).ID;
-                Next_Steering := My_Route(I+1).ID; 
-                Put_Line(Steering_ID'Image(My_Steering) & " " & Steering_ID'Image(Next_Steering));
-                My_Route(My_Steering).Request_TravelThroug(ID, Next_Steering, My_Track);
+                Next_Steering := My_Route(I+1).ID;
+                Put_Line(Steering_ID'Image(Next_Steering));
+                My_Route(I).Request_TravelThroug(ID, Next_Steering, My_Track);
                 Track_To_Release.Release_Track(ID);
             end loop;
         My_Track.Release_Track(ID);
