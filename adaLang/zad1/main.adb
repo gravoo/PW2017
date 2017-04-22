@@ -10,8 +10,8 @@ use Ada.Text_IO;
 procedure Main is
     package SU renames Ada.Strings.Unbounded;
     type Train_ID is range 1..4;
-    type Track_ID is range 0..24;
-    type Steering_ID is range 0..20;
+    type Track_ID is range 0..100;
+    type Steering_ID is range 0..100;
     type Track_Type is (Stop_Track, Drive_Track);
     function "<" (a, b : Steering_ID) return Boolean is
     begin
@@ -71,6 +71,22 @@ procedure Main is
     Steering1TrackMap : SteeringTrack_Map.Map;
     Steering2TrackMap : SteeringTrack_Map.Map;
     Steering3TrackMap : SteeringTrack_Map.Map;
+    Steering4TrackMap : SteeringTrack_Map.Map;
+    Steering5TrackMap : SteeringTrack_Map.Map;
+    Steering6TrackMap : SteeringTrack_Map.Map;
+    Steering7TrackMap : SteeringTrack_Map.Map;
+    Steering8TrackMap : SteeringTrack_Map.Map;
+    Steering9TrackMap : SteeringTrack_Map.Map;
+    Steering10TrackMap : SteeringTrack_Map.Map;
+    Steering11TrackMap : SteeringTrack_Map.Map;
+    Steering12TrackMap : SteeringTrack_Map.Map;
+    Steering13TrackMap : SteeringTrack_Map.Map;
+    Steering14TrackMap : SteeringTrack_Map.Map;
+    Steering15TrackMap : SteeringTrack_Map.Map;
+    Steering16TrackMap : SteeringTrack_Map.Map;
+    Steering17TrackMap : SteeringTrack_Map.Map;
+    Steering18TrackMap : SteeringTrack_Map.Map;
+    Steering19TrackMap : SteeringTrack_Map.Map;
 
     task body TrainThread is
         My_Route : Steering_Vector.Vector;
@@ -221,17 +237,100 @@ begin
     Steering2TrackMap.Insert(3, DriveTracks(0));
 
     Steering3TrackMap.Insert(2, DriveTracks(0));
-    Steering3TrackMap.Insert(3, StopTracks(0));
+    Steering3TrackMap.Insert(4, StopTracks(4));
 
+    Steering4TrackMap.Insert(3, StopTracks(5));
+    Steering4TrackMap.Insert(5, DriveTracks(1));
+    Steering4TrackMap.Insert(17, DriveTracks(6));
+
+    Steering5TrackMap.Insert(6, StopTracks(6));
+    Steering5TrackMap.Insert(4, DriveTracks(8));
+
+    Steering6TrackMap.Insert(5, StopTracks(7));
+    Steering6TrackMap.Insert(7, DriveTracks(2));
+    Steering6TrackMap.Insert(12, DriveTracks(4));
+
+    Steering7TrackMap.Insert(6, DriveTracks(7));
+    Steering7TrackMap.Insert(8, StopTracks(8));
+
+    Steering8TrackMap.Insert(7, StopTracks(9));
+    Steering8TrackMap.Insert(8, DriveTracks(3));
+    
+    Steering9TrackMap.Insert(8, DriveTracks(3));
+    Steering9TrackMap.Insert(10, StopTracks(10));
+    Steering9TrackMap.Insert(11, StopTracks(11));
+    
+    Steering10TrackMap.Insert(9, StopTracks(10));
+    Steering10TrackMap.Insert(10, StopTracks(12));
+    
+    Steering11TrackMap.Insert(10, StopTracks(11));
+    Steering11TrackMap.Insert(11, StopTracks(13));
+    
+    Steering12TrackMap.Insert(6, DriveTracks(4));
+    Steering12TrackMap.Insert(13, StopTracks(14));
+    
+    Steering13TrackMap.Insert(12, StopTracks(15));
+    Steering13TrackMap.Insert(14, DriveTracks(5));
+    
+    Steering14TrackMap.Insert(13, DriveTracks(5));
+    Steering14TrackMap.Insert(15, StopTracks(16));
+    Steering14TrackMap.Insert(16, StopTracks(17));
+    
+    Steering15TrackMap.Insert(14, StopTracks(16));
+    Steering15TrackMap.Insert(15, StopTracks(18));
+    
+    Steering16TrackMap.Insert(14, StopTracks(17));
+    Steering16TrackMap.Insert(16, StopTracks(19));
+    
+    Steering17TrackMap.Insert(4, DriveTracks(6));
+    Steering17TrackMap.Insert(18, StopTracks(20));
+    Steering17TrackMap.Insert(19, StopTracks(21));
+    
+    Steering18TrackMap.Insert(17, StopTracks(20));
+    Steering18TrackMap.Insert(18, StopTracks(22));
+    
+    Steering19TrackMap.Insert(17, StopTracks(21));
+    Steering19TrackMap.Insert(19, StopTracks(22));
 
     Steerings(0).Init(Steering0TrackMap);
     Steerings(1).Init(Steering1TrackMap);
     Steerings(2).Init(Steering2TrackMap);
     Steerings(3).Init(Steering3TrackMap);
+    Steerings(4).Init(Steering4TrackMap);
+    Steerings(5).Init(Steering5TrackMap);
+    Steerings(6).Init(Steering6TrackMap);
+    Steerings(7).Init(Steering7TrackMap);
+    Steerings(8).Init(Steering8TrackMap);
+    Steerings(9).Init(Steering9TrackMap);
+    Steerings(10).Init(Steering10TrackMap);
+    Steerings(11).Init(Steering11TrackMap);
+    Steerings(12).Init(Steering12TrackMap);
+    Steerings(13).Init(Steering13TrackMap);
+    Steerings(14).Init(Steering14TrackMap);
+    Steerings(15).Init(Steering15TrackMap);
+    Steerings(16).Init(Steering16TrackMap);
+    Steerings(17).Init(Steering17TrackMap);
+    Steerings(18).Init(Steering18TrackMap);
+    Steerings(19).Init(Steering19TrackMap);
 
     Train1Route.Append(Steerings(0));
     Train1Route.Append(Steerings(2));
     Train1Route.Append(Steerings(3));
+    Train1Route.Append(Steerings(3));
+    Train1Route.Append(Steerings(4));
+    Train1Route.Append(Steerings(5));
+    Train1Route.Append(Steerings(6));
+    Train1Route.Append(Steerings(7));
+    Train1Route.Append(Steerings(8));
+    Train1Route.Append(Steerings(9));
+    Train1Route.Append(Steerings(10));
+    Train1Route.Append(Steerings(10));
+    Train1Route.Append(Steerings(9));
+    Train1Route.Append(Steerings(8));
+    Train1Route.Append(Steerings(7));
+    Train1Route.Append(Steerings(6));
+    Train1Route.Append(Steerings(5));
+    Train1Route.Append(Steerings(4));
     Train1Route.Append(Steerings(3));
     Train1Route.Append(Steerings(2));
     Train1Route.Append(Steerings(0));
