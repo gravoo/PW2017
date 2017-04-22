@@ -225,6 +225,22 @@ begin
     Steerings.Append(new SteeringThread(1));
     Steerings.Append(new SteeringThread(2));
     Steerings.Append(new SteeringThread(3));
+    Steerings.Append(new SteeringThread(4));
+    Steerings.Append(new SteeringThread(5));
+    Steerings.Append(new SteeringThread(6));
+    Steerings.Append(new SteeringThread(7));
+    Steerings.Append(new SteeringThread(8));
+    Steerings.Append(new SteeringThread(9));
+    Steerings.Append(new SteeringThread(10));
+    Steerings.Append(new SteeringThread(11));
+    Steerings.Append(new SteeringThread(12));
+    Steerings.Append(new SteeringThread(13));
+    Steerings.Append(new SteeringThread(14));
+    Steerings.Append(new SteeringThread(15));
+    Steerings.Append(new SteeringThread(16));
+    Steerings.Append(new SteeringThread(17));
+    Steerings.Append(new SteeringThread(18));
+    Steerings.Append(new SteeringThread(19));
 
     Steering0TrackMap.Insert(0, StopTracks(0));
     Steering0TrackMap.Insert(2, StopTracks(1));
@@ -254,7 +270,7 @@ begin
     Steering7TrackMap.Insert(8, StopTracks(8));
 
     Steering8TrackMap.Insert(7, StopTracks(9));
-    Steering8TrackMap.Insert(8, DriveTracks(3));
+    Steering8TrackMap.Insert(9, DriveTracks(3));
     
     Steering9TrackMap.Insert(8, DriveTracks(3));
     Steering9TrackMap.Insert(10, StopTracks(10));
@@ -315,7 +331,6 @@ begin
 
     Train1Route.Append(Steerings(0));
     Train1Route.Append(Steerings(2));
-    Train1Route.Append(Steerings(3));
     Train1Route.Append(Steerings(3));
     Train1Route.Append(Steerings(4));
     Train1Route.Append(Steerings(5));
