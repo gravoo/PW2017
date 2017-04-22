@@ -2,15 +2,24 @@ with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with Ada.Integer_Text_IO;
+with Ada.Containers.Ordered_Maps;
 use Ada.Containers;
 use Ada.Text_IO;
 
 procedure Main is
     package SU renames Ada.Strings.Unbounded;
     type Train_ID is range 1..4;
-    type Track_ID is range 1..20;
+    type Track_ID is range 0..23;
     type Steering_ID is range 1..20;
     type Track_Type is (Stop_Track, Drive_Track);
+    function "<" (a, b : Steering_ID) return Boolean is
+    begin
+        if a < b then 
+            return True;
+        else
+            return False;
+        end if;
+    end "<";
 
     protected type TrackThread(ID : Track_ID; My_TrackType : Track_Type; Wait_Time : Integer; Track_Max_Velocity : Integer; 
         Track_Length : Integer) is 
@@ -27,6 +36,10 @@ procedure Main is
     type Track_Access is access TrackThread;
     package Track_Vector is new Vectors(Track_ID, Track_Access);
     package SteeringToTracks_Vector is new Vectors(Steering_ID, Track_Access);
+    package Steering_Map is new Ada.Containers.Ordered_Maps
+        (Element_Type => Track_Access,
+         Key_Type => Steering_ID);
+    SteeringMap : Steering_Map.Map;
 
 
     task type SteeringThread(ID : Steering_ID) is 
@@ -39,6 +52,7 @@ procedure Main is
     package Steering_Vector is new Vectors(Steering_ID, Steering_Access);
     Steerings : Steering_Vector.Vector;
     Train1Route : Steering_Vector.Vector;
+    Train2Route : Steering_Vector.Vector;
 
     task type TrainThread(ID : Train_ID; Velocity : Integer) is
         entry Init(Init_Route : in Steering_Vector.Vector);
@@ -70,7 +84,7 @@ procedure Main is
         loop
         Put_Line("TrainThread");
         Next_Steering := My_Route(My_Route.First_Index).ID;
-        Put_Line(Steering_ID'Image(My_Route.First_Index) & " " & Steering_ID'Image(Next_Steering));
+        Put_Line(Steering_ID'Image(My_Route(My_Route.First_Index).ID) & " " & Steering_ID'Image(Next_Steering));
         My_Route(My_Route.First_Index).Request_TravelThroug(ID, Next_Steering, My_Track);
             for I in Steering_ID range My_Route.First_Index .. My_Route.Last_Index - 1 loop
                 Put_Line("TrainThread: "& Train_ID'Image (ID) & " on track");
@@ -151,28 +165,56 @@ procedure Main is
     Trains : Train_Vector.Vector;
 
 begin
+    StopTracks.Append(new TrackThread(0, Stop_Track, 5, 0, 0));
     StopTracks.Append(new TrackThread(1, Stop_Track, 5, 0, 0));
     StopTracks.Append(new TrackThread(2, Stop_Track, 5, 0, 0));
     StopTracks.Append(new TrackThread(3, Stop_Track, 5, 0, 0));
     StopTracks.Append(new TrackThread(4, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(5, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(6, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(7, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(8, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(9, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(10, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(11, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(12, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(13, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(14, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(15, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(16, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(17, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(18, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(19, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(20, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(21, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(22, Stop_Track, 5, 0, 0));
+    StopTracks.Append(new TrackThread(23, Stop_Track, 5, 0, 0));
+    DriveTracks.Append(new TrackThread(0, Drive_Track, 0, 10, 20));
     DriveTracks.Append(new TrackThread(1, Drive_Track, 0, 10, 20));
+    DriveTracks.Append(new TrackThread(2, Drive_Track, 0, 10, 20));
+    DriveTracks.Append(new TrackThread(3, Drive_Track, 0, 10, 20));
+    DriveTracks.Append(new TrackThread(4, Drive_Track, 0, 10, 20));
+    DriveTracks.Append(new TrackThread(5, Drive_Track, 0, 10, 20));
+    DriveTracks.Append(new TrackThread(6, Drive_Track, 0, 10, 20));
+    DriveTracks.Append(new TrackThread(7, Drive_Track, 0, 10, 20));
+    DriveTracks.Append(new TrackThread(8, Drive_Track, 0, 10, 20));
 
+    Steering1Neighbours.Append(StopTracks(0));
     Steering1Neighbours.Append(StopTracks(1));
-    Steering1Neighbours.Append(StopTracks(2));
 
-    Steering2Neighbours.Append(StopTracks(2));
+    Steering2Neighbours.Append(StopTracks(1));
     Steering2Neighbours.Append(null);
-    Steering2Neighbours.Append(DriveTracks(1));
+    Steering2Neighbours.Append(DriveTracks(0));
 
     Steering3Neighbours.Append(null);
-    Steering3Neighbours.Append(DriveTracks(1));
+    Steering3Neighbours.Append(DriveTracks(0));
     Steering3Neighbours.Append(null);
-    Steering3Neighbours.Append(StopTracks(3));
+    Steering3Neighbours.Append(StopTracks(2));
 
     Steering4Neighbours.Append(null);
     Steering4Neighbours.Append(null);
+    Steering4Neighbours.Append(StopTracks(2));
     Steering4Neighbours.Append(StopTracks(3));
-    Steering4Neighbours.Append(StopTracks(4));
 
     Steerings.Append(new SteeringThread(1));
     Steerings.Append(new SteeringThread(2));
@@ -194,5 +236,16 @@ begin
     Train1Route.Append(Steerings(1));
     Trains.Append(new TrainThread(ID => 1, Velocity=>1));
 
+    Train2Route.Append(Steerings(4));
+    Train2Route.Append(Steerings(3));
+    Train2Route.Append(Steerings(2));
+    Train2Route.Append(Steerings(1));
+    Train2Route.Append(Steerings(1));
+    Train2Route.Append(Steerings(2));
+    Train2Route.Append(Steerings(3));
+    Train2Route.Append(Steerings(4));
+    Trains.Append(new TrainThread(ID => 2, Velocity=>1));
+
     Trains(1).Init(Train1Route);
+    Trains(2).Init(Train2Route);
 end Main;
