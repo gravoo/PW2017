@@ -21,7 +21,7 @@ procedure Main is
     protected type TrackThread(ID : Track_ID; My_TrackType : Track_Type; Wait_Time : Integer; Track_Max_Velocity : Integer; 
         Track_Length : Integer) is 
         entry Wait_For_Clear;
-        entry Assign_Train(TrainID : Train_ID);
+        entry Request_TravelTrough(TrainID : Train_ID);
         entry Check_TrackType(TrackType : out Track_Type);
         entry Release_Track(TrainID : Train_ID);
         entry Wait_OnStation(Wait_OnTrackTime : out Integer);
@@ -40,9 +40,10 @@ procedure Main is
          Equivalent_Keys => "=");
 
     task type SteeringThread(ID : Steering_ID) is 
-        entry Request_TravelThroug(TrainID : in Train_ID; Next_Steering : in Steering_ID;
+        entry Request_AssignTrack(TrainID : in Train_ID; Next_Steering : in Steering_ID;
         Track_InUse : out Track_Access);
         entry Init(Init_MyNeighbours : in SteeringTrack_Map.Map);
+        entry Request_ReconfigSteering;
     end SteeringThread;
 
     type Steering_Access is access SteeringThread;
@@ -86,7 +87,6 @@ procedure Main is
         My_Route : Steering_Vector.Vector;
         My_Track : Track_Access;
         My_TrackType : Track_Type;
-        My_Steering: Steering_ID;
         Next_Steering: Steering_ID;
         Track_To_Release : Track_Access;
         Wait_Time : Integer;
@@ -97,10 +97,10 @@ procedure Main is
             My_Route := Init_Route;
         end Init;
         loop
-        Put_Line("TrainThread");
         Next_Steering := My_Route(My_Route.First_Index).ID;
         Put_Line(Steering_ID'Image(My_Route(My_Route.First_Index).ID) & " " & Steering_ID'Image(Next_Steering));
-        My_Route(My_Route.First_Index).Request_TravelThroug(ID, Next_Steering, My_Track);
+        My_Route(My_Route.First_Index).Request_AssignTrack(ID, Next_Steering, My_Track);
+        My_Track.Request_TravelTrough(ID);
             for I in Steering_ID range My_Route.First_Index .. My_Route.Last_Index - 1 loop
                 Put_Line("TrainThread: "& Train_ID'Image (ID) & " on track");
                 My_Track.Check_TrackType(My_TrackType);
@@ -115,7 +115,10 @@ procedure Main is
                 Track_To_Release := My_Track;
                 Next_Steering := My_Route(I+1).ID;
                 Put_Line(Steering_ID'Image(Next_Steering));
-                My_Route(I).Request_TravelThroug(ID, Next_Steering, My_Track);
+                My_Route(I).Request_AssignTrack(ID, Next_Steering, My_Track);
+                My_Track.Wait_For_Clear;
+                My_Route(I).Request_ReconfigSteering;
+                My_Track.Request_TravelTrough(ID);
                 Track_To_Release.Release_Track(ID);
             end loop;
         My_Track.Release_Track(ID);
@@ -129,13 +132,17 @@ procedure Main is
             My_Neighbours := Init_MyNeighbours;
         end Init;
         loop
-            accept Request_TravelThroug(TrainID : in Train_ID; Next_Steering : in Steering_ID;
+            select
+            accept Request_AssignTrack(TrainID : in Train_ID; Next_Steering : in Steering_ID;
                    Track_InUse : out Track_Access)  do 
-                    Put_Line("steering id: " & Steering_ID'Image(ID) & " Target steering: " & Steering_ID'Image(Next_Steering));
-                    My_Neighbours(Next_Steering).Wait_For_Clear;
-                    My_Neighbours(Next_Steering).Assign_Train(TrainID);
-                    Track_InUse := My_Neighbours(Next_Steering); 
-            end Request_TravelThroug;
+                   Put_Line("steering id: " & Steering_ID'Image(ID) & " Target steering: " & Steering_ID'Image(Next_Steering));
+                   Track_InUse := My_Neighbours(Next_Steering); 
+            end Request_AssignTrack;
+            or
+            accept Request_ReconfigSteering do
+                    delay 5.0;
+            end Request_ReconfigSteering;
+        end select;
         end loop;
     end SteeringThread;
 
@@ -145,7 +152,7 @@ procedure Main is
         begin
             null;
         end;
-        entry Assign_Train(TrainID : Train_ID)
+        entry Request_TravelTrough(TrainID : Train_ID)
         when Clear is
         begin
             Put_Line("TrackThread task; train: "& Train_ID'Image (TrainID) & " on track: " & Track_ID'Image(ID)
@@ -407,8 +414,8 @@ begin
     Trains.Append(new TrainThread(ID => 3, Velocity=>1));
     Trains.Append(new TrainThread(ID => 4, Velocity=>1));
 
-    --Trains(1).Init(Train1Route);
-    --Trains(2).Init(Train2Route);
+    Trains(1).Init(Train1Route);
+    Trains(2).Init(Train2Route);
     Trains(3).Init(Train3Route);
     Trains(4).Init(Train4Route);
 end Main;
