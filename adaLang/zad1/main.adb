@@ -13,14 +13,6 @@ procedure Main is
     type Track_ID is range 0..100;
     type Steering_ID is range 0..100;
     type Track_Type is (Stop_Track, Drive_Track);
-    function "<" (a, b : Steering_ID) return Boolean is
-    begin
-        if a < b then 
-            return True;
-        else
-            return False;
-        end if;
-    end "<";
     function ID_Hashed (Id : Steering_ID) return Hash_Type is
     begin
        return Hash_Type'Val (Steering_ID'Pos (Id));
@@ -114,11 +106,9 @@ procedure Main is
                 My_Track.Check_TrackType(My_TrackType);
                 case My_TrackType is
                     when Stop_Track =>
-                        Put_Line("I am stop track");
                         My_Track.Wait_OnStation(Wait_Time);
                         delay Duration(Wait_Time);
                     when Drive_Track =>
-                        Put_Line("I am drive track");
                         My_Track.Drive_Trough(Track_Length, Track_MaxVelocity);
                         delay Duration(Track_Length/Track_MaxVelocity);
                 end case;
@@ -380,6 +370,13 @@ begin
     Train3Route.Append(Steerings(12));
     Train3Route.Append(Steerings(6));
     Train3Route.Append(Steerings(5));
+    Train3Route.Append(Steerings(4));
+    Train3Route.Append(Steerings(17));
+    Train3Route.Append(Steerings(18));
+    Train3Route.Append(Steerings(18));
+    Train3Route.Append(Steerings(17));
+    Train3Route.Append(Steerings(4));
+    Train3Route.Append(Steerings(5));
     Train3Route.Append(Steerings(6));
     Train3Route.Append(Steerings(12));
     Train3Route.Append(Steerings(13));
@@ -391,18 +388,27 @@ begin
     Train4Route.Append(Steerings(4));
     Train4Route.Append(Steerings(5));
     Train4Route.Append(Steerings(6));
+    Train4Route.Append(Steerings(12));
+    Train4Route.Append(Steerings(13));
+    Train4Route.Append(Steerings(14));
+    Train4Route.Append(Steerings(16));
+    Train4Route.Append(Steerings(16));
+    Train4Route.Append(Steerings(14));
+    Train4Route.Append(Steerings(13));
+    Train4Route.Append(Steerings(12));
+    Train4Route.Append(Steerings(6));
     Train4Route.Append(Steerings(5));
     Train4Route.Append(Steerings(4));
     Train4Route.Append(Steerings(17));
-    Train4Route.Append(Steerings(18));
+    Train4Route.Append(Steerings(19));
 
     Trains.Append(new TrainThread(ID => 1, Velocity=>1));
     Trains.Append(new TrainThread(ID => 2, Velocity=>1));
     Trains.Append(new TrainThread(ID => 3, Velocity=>1));
     Trains.Append(new TrainThread(ID => 4, Velocity=>1));
 
-    Trains(1).Init(Train1Route);
-    Trains(2).Init(Train2Route);
+    --Trains(1).Init(Train1Route);
+    --Trains(2).Init(Train2Route);
     Trains(3).Init(Train3Route);
     Trains(4).Init(Train4Route);
 end Main;
