@@ -20,7 +20,7 @@ func (t *Train) buildSteeringToTrainMsg() *SteeringToTrainMsg {
 
 func (t *Train) assignTrainToSteering() *SteeringToTrainMsg {
 	connectMsg := t.buildSteeringToTrainMsg()
-	fmt.Println("Source goRoutine ", t.trainName, ": traget ", connectMsg.targetSteering)
+	fmt.Println("Source goRoutine ", t.trainName, ": destination ", connectMsg.targetSteering)
 	t.track.Value.(CurrentAndTargetSteering).currentSteeringCh <- connectMsg
 	t.track = t.track.Next()
 	return connectMsg
@@ -59,7 +59,7 @@ func (train *Train) travelTrough() {
 		case *DriveTrackToTrainMsg:
 			fmt.Println("Source goRoutine ", train.trainName, ": received msg from track", assignedTrack.trackId)
 			timeToTravel := train.driveTroughTrack(assignedTrack)
-			fmt.Println("Source goRoutine ", train.trainName, ": has finidhed route after", timeToTravel)
+			fmt.Println("Source goRoutine ", train.trainName, ": has finished route after", timeToTravel)
 			trainSteeringPipe = train.assignTrainToSteering()
 			train.releaseDriveTrack(assignedTrack)
 			trackToAttach = <-trainSteeringPipe.resp
@@ -94,7 +94,7 @@ func (s *Steering) assignTrainToTrack() {
 			fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
 			s.tracks[trainMsg.targetSteering] <- connectMsg
 			respFromTrack := <-connectMsg.resp
-			fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfig", s.timeToReconfig)
+			fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfiguration", s.timeToReconfig)
 			time.Sleep(s.timeToReconfig)
 			trainMsg.resp <- respFromTrack
 		}()

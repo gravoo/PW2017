@@ -103,7 +103,7 @@ procedure Main is
         My_Route(My_Route.First_Index).Request_AssignTrack(ID, Next_Steering, My_Track);
         My_Track.Request_TravelTrough(ID);
             for I in Steering_ID range My_Route.First_Index .. My_Route.Last_Index - 1 loop
-                Put_Line("TrainThread: "& Train_ID'Image (ID) & " on track");
+                Put_Line("Train Thread: "& Train_ID'Image (ID) & " on track");
                 My_Track.Check_TrackType(My_TrackType);
                 case My_TrackType is
                     when Stop_Track =>
@@ -156,7 +156,7 @@ procedure Main is
         entry Request_TravelTrough(TrainID : Train_ID)
         when Clear is
         begin
-            Put_Line("TrackThread task; train: "& Train_ID'Image (TrainID) & " on track: " & Track_ID'Image(ID)
+            Put_Line("Track Thread task; train: "& Train_ID'Image (TrainID) & " on track: " & Track_ID'Image(ID)
                 & " " & Track_Type'Image(My_TrackType));
             Clear := False;
         end;
@@ -164,7 +164,7 @@ procedure Main is
         when not Clear is
         begin
             Clear := True;
-            Put_Line("TrackThread task; Train: "& Train_ID'Image (TrainID) &
+            Put_Line("Track Thread task; Train: "& Train_ID'Image (TrainID) &
                 " released track " & Track_Type'Image(My_TrackType) & " " & Track_ID'Image(ID));
         end;
         entry Check_TrackType(TrackType : out Track_Type)
