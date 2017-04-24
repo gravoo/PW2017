@@ -1,3 +1,4 @@
+//Bartlomiej Sadowski 204392
 package main
 
 import "fmt"
