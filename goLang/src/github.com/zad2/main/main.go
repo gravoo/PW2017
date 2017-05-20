@@ -2,136 +2,91 @@
 package main
 
 import (
-	"container/ring"
 	"fmt"
 	"github.com/zad2/utils"
 	"time"
 )
 
-type Train struct {
+type TrainThread struct {
 	maxVelocity int
 	maxCapacity int
-	track       *ring.Ring
 	trainName   string
+	trackEdges  []*steeringTuple
 }
 
-func (t *Train) buildSteeringToTrainMsg() *utils.SteeringToTrainMsg {
-	return &utils.SteeringToTrainMsg{
-		TargetSteering: t.track.Value.(CurrentAndTargetSteering).nextSteeringId,
-		Resp:           make(chan interface{})}
+type AssignTrackToTrain struct {
+	edge  *steeringTuple
+	track chan interface{}
+}
+type ReconfigureSteering struct {
+	Resp chan bool
 }
 
-func (t *Train) assignTrainToSteering() *utils.SteeringToTrainMsg {
-	connectMsg := t.buildSteeringToTrainMsg()
-	fmt.Println("Source goRoutine ", t.trainName, ": destination ", connectMsg.TargetSteering)
-	t.track.Value.(CurrentAndTargetSteering).currentSteeringCh <- connectMsg
-	t.track = t.track.Next()
-	return connectMsg
+func (train *TrainThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackToTrain {
+	return &AssignTrackToTrain{
+		edge:  train.trackEdges[indexOfEdge],
+		track: make(chan interface{})}
 }
 
-func (t *Train) driveTroughTrack(msg *utils.DriveTrackToTrainMsg) int {
-	velocity := func() int {
-		if msg.MaxAllowedVelocity < t.maxVelocity {
-			return msg.MaxAllowedVelocity
-		} else {
-			return t.maxVelocity
+func (train *TrainThread) startTrainThread() {
+	for {
+		for i, _ := range train.trackEdges {
+			trainSteeringPipe := train.buildTrainToSteeringMsg(i)
+			train.trackEdges[i].from.steeringInputChanel <- trainSteeringPipe
+			trackToTravel := <-trainSteeringPipe.track
+			fmt.Println("TrainThread received track to travel")
+			steeringReconfig := &ReconfigureSteering{Resp: make(chan bool)}
+			train.trackEdges[i].from.steeringReconfChanel <- steeringReconfig
+			fmt.Println("TrainThread steering reconfiguration result", <-steeringReconfig.Resp)
+			trackPipe := &utils.TrainToTrackMsg{Resp: make(chan interface{})}
+			switch trackData := trackToTravel.(type) {
+			case *DriveTrackThread:
+				trackData.trackInputChanel <- trackPipe
+				trackType := <-trackPipe.Resp
+				fmt.Println("TrainThread receivec msg from DriveTrack, time to travel")
+				time.Sleep(time.Duration(trackData.length/trackData.maxAllowedVelocity) * time.Second)
+				trackType.(*utils.DriveTrackToTrainMsg).Resp <- "Release track"
+			case *StopTrackThread:
+				trackData.trackInputChanel <- trackPipe
+				trackType := <-trackPipe.Resp
+				fmt.Println("TrainThread receivec msg from StopTrack, time to wait")
+				time.Sleep(trackData.timeToRest)
+				trackType.(*utils.StopTrackToTrainMsg).Resp <- "Release track"
+			}
 		}
 	}
-	timeToTravel := msg.TrackLength / velocity()
-	time.Sleep(time.Duration(timeToTravel) * time.Second)
-	return timeToTravel
 }
 
-func (t *Train) waitOnStopTrack(msg *utils.StopTrackToTrainMsg) {
-	time.Sleep(msg.TimeToRest * time.Second)
+type SteeringThread struct {
+	timeToReconfig       time.Duration
+	steeringInputChanel  chan *AssignTrackToTrain
+	steeringName         string
+	steeringEdges        map[*steeringTuple]interface{}
+	steeringReconfChanel chan *ReconfigureSteering
 }
 
-func (t *Train) releaseStopTrack(msg *utils.StopTrackToTrainMsg) {
-	msg.Resp <- t.trainName
-}
-
-func (t *Train) releaseDriveTrack(msg *utils.DriveTrackToTrainMsg) {
-	msg.Resp <- t.trainName
-}
-
-func (train *Train) travelTrough() {
-	trainSteeringPipe := train.assignTrainToSteering()
-	trackToAttach := <-trainSteeringPipe.Resp
+func (s *SteeringThread) startSteeringThread() {
 	for {
-		switch assignedTrack := trackToAttach.(type) {
-		case *utils.DriveTrackToTrainMsg:
-			fmt.Println("Source goRoutine ", train.trainName, ": received msg from track", assignedTrack.TrackId)
-			timeToTravel := train.driveTroughTrack(assignedTrack)
-			fmt.Println("Source goRoutine ", train.trainName, ": has finished route after", timeToTravel)
-			trainSteeringPipe = train.assignTrainToSteering()
-			train.releaseDriveTrack(assignedTrack)
-			trackToAttach = <-trainSteeringPipe.Resp
-		case *utils.StopTrackToTrainMsg:
-			fmt.Println("Source goRoutine ", train.trainName, ": received msg from station, time to wait", assignedTrack.TimeToRest)
-			trainSteeringPipe = train.assignTrainToSteering()
-			train.waitOnStopTrack(assignedTrack)
-			trackToAttach = <-trainSteeringPipe.Resp
-			train.releaseStopTrack(assignedTrack)
-		}
-		fmt.Println("Source goRoutine ", train.trainName, "has finished route")
-	}
-}
-
-type Steering struct {
-	timeToReconfig time.Duration
-	inputChanel    chan *utils.SteeringToTrainMsg
-	tracks         map[string]chan interface{}
-	steeringName   string
-}
-
-func (s *Steering) assignTrainToTrack() {
-	for {
-		trainMsg := <-s.inputChanel
-		go func() {
-			fmt.Println("Source goRoutine ", s.steeringName, ": received msg from train with req travel to", trainMsg.TargetSteering)
-			connectMsg := &utils.SteeringToTrackMsg{Resp: make(chan interface{})}
-			fmt.Println("Source goRoutine ", s.steeringName, ": sending msg to track")
-			s.tracks[trainMsg.TargetSteering] <- connectMsg
-			respFromTrack := <-connectMsg.Resp
-			fmt.Println("Source goRoutine ", s.steeringName, ": received msg from track time to reconfiguration", s.timeToReconfig)
+		select {
+		case requestFromTrain := <-s.steeringInputChanel:
+			fmt.Println("SteeringThread", s.steeringName, " received request for track")
+			requestFromTrain.track <- s.steeringEdges[requestFromTrain.edge]
+		case reconfigSteering := <-s.steeringReconfChanel:
+			fmt.Println("SteeringThread", s.steeringName, " during reconfiguration")
 			time.Sleep(s.timeToReconfig)
-			trainMsg.Resp <- respFromTrack
-		}()
+			reconfigSteering.Resp <- true
+		}
 	}
 }
 
-type DriveTrack struct {
+type DriveTrackThread struct {
 	trackId            int
-	steeringChan       chan interface{}
+	trackInputChanel   chan interface{}
 	length             int
 	maxAllowedVelocity int
 }
 
-type StopTrack struct {
-	trackId      int
-	steeringChan chan interface{}
-	timeToRest   time.Duration
-}
-
-func (st *StopTrack) buildTrainMsg() *utils.StopTrackToTrainMsg {
-	return &utils.StopTrackToTrainMsg{
-		TrackId:    st.trackId,
-		Resp:       make(chan string),
-		TimeToRest: st.timeToRest}
-}
-
-func (st *StopTrack) track() {
-	for {
-		msgFromSteering := <-st.steeringChan
-		fmt.Println("Source goRoutine ", st.trackId, ": received msg from steering")
-		connectMsg := st.buildTrainMsg()
-		msgFromSteering.(*utils.SteeringToTrackMsg).Resp <- connectMsg
-		fmt.Println("Source goRoutine ", st.trackId, ": received msg from train on finish", <-connectMsg.Resp)
-		close(connectMsg.Resp)
-	}
-}
-
-func (tr *DriveTrack) buildTrainMsg() *utils.DriveTrackToTrainMsg {
+func (tr *DriveTrackThread) buildTrainMsg() *utils.DriveTrackToTrainMsg {
 	return &utils.DriveTrackToTrainMsg{
 		TrackId:            tr.trackId,
 		Resp:               make(chan string),
@@ -139,163 +94,88 @@ func (tr *DriveTrack) buildTrainMsg() *utils.DriveTrackToTrainMsg {
 		TrackLength:        tr.length}
 }
 
-func (tr *DriveTrack) track() {
+func (tr *DriveTrackThread) startTrackThread() {
 	for {
-		msgFromSteering := <-tr.steeringChan
-		fmt.Println("Source goRoutine ", tr.trackId, ": received msg from steering")
-		connectMsg := tr.buildTrainMsg()
-		msgFromSteering.(*utils.SteeringToTrackMsg).Resp <- connectMsg
-		fmt.Println("Source goRoutine ", tr.trackId, ": received msg from train on finish", <-connectMsg.Resp)
-		close(connectMsg.Resp)
+		trainPipe := <-tr.trackInputChanel
+		fmt.Println("DriveTrackThread", tr.trackId, ":received msg from train")
+		trackPipe := tr.buildTrainMsg()
+		trainPipe.(*utils.TrainToTrackMsg).Resp <- trackPipe
+		fmt.Println("DriveTrackThread", tr.trackId, ": received msg from train on finish", <-trackPipe.Resp)
+		close(trackPipe.Resp)
 	}
 }
 
-type CurrentAndTargetSteering struct {
-	nextSteeringId    string
-	currentSteeringCh chan *utils.SteeringToTrainMsg
+type StopTrackThread struct {
+	trackId          int
+	trackInputChanel chan interface{}
+	timeToRest       time.Duration
 }
 
-func generateStopTracks(numOfStopTracks int) []*StopTrack {
-	tracks := make([]*StopTrack, numOfStopTracks)
-	for i, _ := range tracks {
-		tracks[i] = &StopTrack{i, make(chan interface{}, 4), 10 * time.Second}
+func (tr *StopTrackThread) buildTrainMsg() *utils.StopTrackToTrainMsg {
+	return &utils.StopTrackToTrainMsg{
+		TrackId:    tr.trackId,
+		Resp:       make(chan string),
+		TimeToRest: tr.timeToRest}
+}
+
+func (tr *StopTrackThread) startTrackThread() {
+	for {
+		trainPipe := <-tr.trackInputChanel
+		fmt.Println("StopTrackThread", tr.trackId, ":received msg from train")
+		trackPipe := tr.buildTrainMsg()
+		trainPipe.(*utils.TrainToTrackMsg).Resp <- trackPipe
+		fmt.Println("StopTrackThread", tr.trackId, ": received msg from train on finish", <-trackPipe.Resp)
+		close(trackPipe.Resp)
 	}
-	return tracks
 }
 
-func generateDriveTracks(numOfDriveTracks int) []*DriveTrack {
-	tracks := make([]*DriveTrack, numOfDriveTracks)
-	for i, _ := range tracks {
-		tracks[i] = &DriveTrack{i + 100, make(chan interface{}, 4), 900, 90}
-	}
-	return tracks
-}
-
-func assignRouteToSteering(steeringRoute map[string]chan interface{}, steeringName string) *Steering {
-	return &Steering{5 * time.Second, make(chan *utils.SteeringToTrainMsg), steeringRoute, steeringName}
-}
-
-func generateTrackForTrain(trackTab []string, steerings map[string]*Steering) *ring.Ring {
-	tracks := ring.New(len(trackTab))
-	firstSteering := trackTab[0]
-	for _, value := range trackTab {
-		tracks.Value = CurrentAndTargetSteering{
-			currentSteeringCh: steerings["steering"+firstSteering].inputChanel, nextSteeringId: steerings["steering"+value].steeringName}
-		firstSteering = value
-		tracks = tracks.Next()
-	}
-	return tracks
+type steeringTuple struct {
+	from, to *SteeringThread
 }
 
 func main() {
-	const numOfSteerings = 22
-	const numOfTracks = 30
-	const numOfStopTracks = 24
-	const numOfDriveTracks = 9
-	stopTracks := generateStopTracks(numOfStopTracks)
-	driveTracks := generateDriveTracks(numOfDriveTracks)
-	steerings := make(map[string]*Steering)
-	steerings["steeringA"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringA": stopTracks[0].steeringChan,
-		"steeringC": stopTracks[1].steeringChan}, "steeringA")
-	steerings["steeringB"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringB": stopTracks[3].steeringChan,
-		"steeringC": stopTracks[2].steeringChan}, "steeringB")
-	steerings["steeringC"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringA": stopTracks[1].steeringChan,
-		"steeringB": stopTracks[2].steeringChan,
-		"steeringD": driveTracks[0].steeringChan}, "steeringC")
-	steerings["steeringD"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringE": stopTracks[4].steeringChan,
-		"steeringC": driveTracks[0].steeringChan}, "steeringD")
-	steerings["steeringE"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringD": stopTracks[5].steeringChan,
-		"steeringG": driveTracks[1].steeringChan,
-		"steeringU": driveTracks[6].steeringChan}, "steeringE")
-	steerings["steeringG"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringE": driveTracks[8].steeringChan,
-		"steeringH": stopTracks[6].steeringChan}, "steeringG")
-	steerings["steeringH"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringG": stopTracks[7].steeringChan,
-		"steeringJ": driveTracks[2].steeringChan,
-		"steeringO": driveTracks[4].steeringChan}, "steeringH")
-	steerings["steeringJ"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringH": driveTracks[7].steeringChan,
-		"steeringK": stopTracks[8].steeringChan,
-		"steeringO": driveTracks[6].steeringChan}, "steeringJ")
-	steerings["steeringK"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringL": driveTracks[3].steeringChan,
-		"steeringJ": stopTracks[9].steeringChan}, "steeringK")
-	steerings["steeringL"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringK": driveTracks[3].steeringChan,
-		"steeringM": stopTracks[10].steeringChan,
-		"steeringN": stopTracks[11].steeringChan}, "steeringL")
-	steerings["steeringM"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringL": stopTracks[10].steeringChan,
-		"steeringM": stopTracks[12].steeringChan}, "steeringM")
-	steerings["steeringN"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringL": stopTracks[11].steeringChan,
-		"steeringN": stopTracks[13].steeringChan}, "steeringN")
-	steerings["steeringO"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringJ": driveTracks[6].steeringChan,
-		"steeringP": stopTracks[14].steeringChan}, "steeringO")
-	steerings["steeringP"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringO": stopTracks[15].steeringChan,
-		"steeringR": driveTracks[7].steeringChan}, "steeringP")
-	steerings["steeringR"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringS": stopTracks[16].steeringChan,
-		"steeringT": stopTracks[17].steeringChan,
-		"steeringP": driveTracks[5].steeringChan}, "steeringR")
-	steerings["steeringS"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringR": stopTracks[16].steeringChan,
-		"steeringS": stopTracks[18].steeringChan}, "steeringS")
-	steerings["steeringT"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringR": stopTracks[17].steeringChan,
-		"steeringT": stopTracks[19].steeringChan}, "steeringT")
-	steerings["steeringU"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringW": stopTracks[20].steeringChan,
-		"steeringX": stopTracks[21].steeringChan,
-		"steeringE": driveTracks[6].steeringChan}, "steeringU")
-	steerings["steeringW"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringU": stopTracks[20].steeringChan,
-		"steeringW": stopTracks[22].steeringChan}, "steeringW")
-	steerings["steeringX"] = assignRouteToSteering(map[string]chan interface{}{
-		"steeringU": stopTracks[21].steeringChan,
-		"steeringX": stopTracks[23].steeringChan}, "steeringX")
+	var nodes []*SteeringThread
+	var edges = make([]*steeringTuple, 6)
+	var trains []*TrainThread
 
-	routes := make(map[string]*ring.Ring)
-	routes["trainAroute"] = generateTrackForTrain([]string{
-		"A", "C", "D", "E", "G", "H", "J", "K", "L", "M",
-		"M", "L", "K", "J", "H", "G", "E", "D", "C", "A"}, steerings)
-	routes["trainBroute"] = generateTrackForTrain([]string{
-		"N", "L", "K", "J", "H", "G", "E", "D", "C", "B",
-		"B", "C", "D", "E", "G", "H", "J", "K", "L", "N"}, steerings)
-	routes["trainCroute"] = generateTrackForTrain([]string{
-		"S", "R", "P", "O", "J", "H", "G",
-		"H", "J", "O", "P", "R", "S"}, steerings)
-	routes["trainDroute"] = generateTrackForTrain([]string{
-		"X", "U", "E", "G", "H",
-		"G", "E", "U", "W"}, steerings)
+	nodes = append(nodes, &SteeringThread{5 * time.Second, make(chan *AssignTrackToTrain), "steering1",
+		make(map[*steeringTuple]interface{}), make(chan *ReconfigureSteering)})
+	nodes = append(nodes, &SteeringThread{5 * time.Second, make(chan *AssignTrackToTrain), "steering2",
+		make(map[*steeringTuple]interface{}), make(chan *ReconfigureSteering)})
+	nodes = append(nodes, &SteeringThread{5 * time.Second, make(chan *AssignTrackToTrain), "steering3",
+		make(map[*steeringTuple]interface{}), make(chan *ReconfigureSteering)})
 
-	trains := make(map[string]*Train)
-	trains["trainA"] = &Train{90, 5, routes["trainAroute"], "trainA"}
-	trains["trainB"] = &Train{90, 5, routes["trainBroute"], "trainB"}
-	trains["trainC"] = &Train{90, 5, routes["trainCroute"], "trainC"}
-	trains["trainD"] = &Train{90, 5, routes["trainDroute"], "trainD"}
+	edges[0] = &steeringTuple{nodes[0], nodes[0]}
+	edges[1] = &steeringTuple{nodes[0], nodes[1]}
+	edges[2] = &steeringTuple{nodes[1], nodes[0]}
+	edges[3] = &steeringTuple{nodes[1], nodes[2]}
+	edges[4] = &steeringTuple{nodes[2], nodes[1]}
+	edges[5] = &steeringTuple{nodes[2], nodes[2]}
 
-	for _, val := range stopTracks {
-		go val.track()
-	}
-	for _, val := range driveTracks {
-		go val.track()
-	}
-	for _, val := range steerings {
-		go val.assignTrainToTrack()
-	}
+	nodes[0].steeringEdges[edges[0]] = &StopTrackThread{10, make(chan interface{}), 15 * time.Second}
+	nodes[0].steeringEdges[edges[1]] = &DriveTrackThread{101, make(chan interface{}), 900, 90}
+	nodes[1].steeringEdges[edges[2]] = nodes[0].steeringEdges[edges[1]]
+	nodes[1].steeringEdges[edges[3]] = &DriveTrackThread{102, make(chan interface{}), 900, 90}
+	nodes[2].steeringEdges[edges[4]] = nodes[1].steeringEdges[edges[3]]
+	nodes[2].steeringEdges[edges[5]] = &StopTrackThread{11, make(chan interface{}), 15 * time.Second}
 
-	for _, val := range trains {
-		go val.travelTrough()
-	}
+	go nodes[0].steeringEdges[edges[0]].(*StopTrackThread).startTrackThread()
+	go nodes[0].steeringEdges[edges[1]].(*DriveTrackThread).startTrackThread()
+	go nodes[1].steeringEdges[edges[3]].(*DriveTrackThread).startTrackThread()
+	go nodes[2].steeringEdges[edges[5]].(*StopTrackThread).startTrackThread()
+
+	trains = append(trains, &TrainThread{1, 2, "train1", nil})
+	trains[0].trackEdges = append(trains[0].trackEdges, edges[1])
+	trains[0].trackEdges = append(trains[0].trackEdges, edges[3])
+	trains[0].trackEdges = append(trains[0].trackEdges, edges[5])
+	trains[0].trackEdges = append(trains[0].trackEdges, edges[2])
+	trains[0].trackEdges = append(trains[0].trackEdges, edges[0])
+
+	go nodes[0].startSteeringThread()
+	go nodes[1].startSteeringThread()
+	go nodes[2].startSteeringThread()
+
+	go trains[0].startTrainThread()
 
 	var input string
 	fmt.Scanln(&input)
