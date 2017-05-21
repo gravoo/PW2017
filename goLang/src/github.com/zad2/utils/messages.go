@@ -25,6 +25,7 @@ type SteeringToTrackMsg struct {
 type TrackToTrainMsg struct {
 	Resp chan interface{}
 }
+
 type TrainToTrackMsg struct {
 	Resp chan interface{}
 }

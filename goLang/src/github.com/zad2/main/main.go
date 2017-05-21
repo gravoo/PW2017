@@ -4,14 +4,30 @@ package main
 import (
 	"fmt"
 	"github.com/zad2/utils"
+	"math/rand"
 	"time"
 )
+
+type RepairBrigadeThread struct {
+	repairBrigadeInput chan interface{}
+	timeOfRepair       time.Duration
+	tracks             []*steeringTuple
+}
+
+func (rp *RepairBrigadeThread) startRepairBrigadeThread() {
+	repairOrder := <-rp.repairBrigadeInput
+	switch repair := repairOrder.(type) {
+	case *TrainBrokenOrder:
+		fmt.Println("RepairBrigadeThread received order from", repair)
+	}
+}
 
 type TrainThread struct {
 	maxVelocity int
 	maxCapacity int
 	trainName   string
 	trackEdges  []*steeringTuple
+	repairOrder chan interface{}
 }
 
 type AssignTrackToTrain struct {
@@ -22,10 +38,27 @@ type ReconfigureSteering struct {
 	Resp chan bool
 }
 
+type TrainBrokenOrder struct {
+	currentEdge *steeringTuple
+	Resp        chan interface{}
+}
+
 func (train *TrainThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackToTrain {
 	return &AssignTrackToTrain{
 		edge:  train.trackEdges[indexOfEdge],
 		track: make(chan interface{})}
+}
+
+func (train *TrainThread) generateFault(indexOfEdge int) {
+	randNum := rand.Float64()
+	if randNum > 0.5 {
+		RepairBrigadePipe := &TrainBrokenOrder{
+			currentEdge: train.trackEdges[indexOfEdge],
+			Resp:        make(chan interface{})}
+		train.repairOrder <- RepairBrigadePipe
+		fmt.Println(<-RepairBrigadePipe.Resp)
+	}
+	fmt.Println(randNum)
 }
 
 func (train *TrainThread) startTrainThread() {
@@ -53,6 +86,7 @@ func (train *TrainThread) startTrainThread() {
 				time.Sleep(trackData.timeToRest)
 				trackType.(*utils.StopTrackToTrainMsg).Resp <- "Release track"
 			}
+			train.generateFault(i)
 		}
 	}
 }
@@ -154,17 +188,22 @@ func main() {
 
 	nodes[0].steeringEdges[edges[0]] = &StopTrackThread{10, make(chan interface{}), 15 * time.Second}
 	nodes[0].steeringEdges[edges[1]] = &DriveTrackThread{101, make(chan interface{}), 900, 90}
-	nodes[1].steeringEdges[edges[2]] = nodes[0].steeringEdges[edges[1]]
-	nodes[1].steeringEdges[edges[3]] = &DriveTrackThread{102, make(chan interface{}), 900, 90}
-	nodes[2].steeringEdges[edges[4]] = nodes[1].steeringEdges[edges[3]]
+	nodes[1].steeringEdges[edges[2]] = &DriveTrackThread{102, make(chan interface{}), 900, 90}
+	nodes[1].steeringEdges[edges[3]] = &DriveTrackThread{103, make(chan interface{}), 900, 90}
+	nodes[2].steeringEdges[edges[4]] = &DriveTrackThread{104, make(chan interface{}), 900, 90}
 	nodes[2].steeringEdges[edges[5]] = &StopTrackThread{11, make(chan interface{}), 15 * time.Second}
 
 	go nodes[0].steeringEdges[edges[0]].(*StopTrackThread).startTrackThread()
 	go nodes[0].steeringEdges[edges[1]].(*DriveTrackThread).startTrackThread()
+	go nodes[1].steeringEdges[edges[2]].(*DriveTrackThread).startTrackThread()
 	go nodes[1].steeringEdges[edges[3]].(*DriveTrackThread).startTrackThread()
+	go nodes[2].steeringEdges[edges[4]].(*DriveTrackThread).startTrackThread()
 	go nodes[2].steeringEdges[edges[5]].(*StopTrackThread).startTrackThread()
 
-	trains = append(trains, &TrainThread{1, 2, "train1", nil})
+	repairChanel := make(chan interface{})
+	repairBrigade := &RepairBrigadeThread{repairChanel, 40 * time.Second, edges}
+
+	trains = append(trains, &TrainThread{1, 2, "train1", nil, repairChanel})
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[1])
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[3])
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[5])
@@ -176,6 +215,7 @@ func main() {
 	go nodes[2].startSteeringThread()
 
 	go trains[0].startTrainThread()
+	go repairBrigade.startRepairBrigadeThread()
 
 	var input string
 	fmt.Scanln(&input)
