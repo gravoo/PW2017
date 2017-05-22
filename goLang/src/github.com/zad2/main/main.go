@@ -24,33 +24,33 @@ func (train *RepairBrigadeThread) buildTrainToSteeringMsg(indexOfEdge int) *Assi
 }
 
 func (train *RepairBrigadeThread) startRepairTrain(positionToFix *steeringTuple) {
-	for {
-		for i, _ := range train.trackEdges {
-			trainSteeringPipe := train.buildTrainToSteeringMsg(i)
-			train.trackEdges[i].from.steeringInputChanel <- trainSteeringPipe
-			trackToTravel := <-trainSteeringPipe.track
-			fmt.Println("RepairBrigade received track to travel")
-			if positionToFix.to == train.trackEdges[i].to {
-				fmt.Println("Reached target to fix")
-			}
-			steeringReconfig := &ReconfigureSteering{Resp: make(chan bool)}
-			train.trackEdges[i].from.steeringReconfChanel <- steeringReconfig
-			fmt.Println("TrainThread steering reconfiguration result", <-steeringReconfig.Resp)
-			trackPipe := &utils.TrainToTrackMsg{Resp: make(chan interface{})}
-			switch trackData := trackToTravel.(type) {
-			case *DriveTrackThread:
-				trackData.trackInputChanel <- trackPipe
-				trackType := <-trackPipe.Resp
-				fmt.Println("RepairBrigade receivec msg from DriveTrack, time to travel")
-				time.Sleep(time.Duration(trackData.length/trackData.maxAllowedVelocity) * time.Second)
-				trackType.(*utils.DriveTrackToTrainMsg).Resp <- "Release track"
-			case *StopTrackThread:
-				trackData.trackInputChanel <- trackPipe
-				trackType := <-trackPipe.Resp
-				fmt.Println("RepairBrigade receivec msg from StopTrack, time to wait")
-				time.Sleep(trackData.timeToRest)
-				trackType.(*utils.StopTrackToTrainMsg).Resp <- "Release track"
-			}
+	for i, _ := range train.trackEdges {
+		trainSteeringPipe := train.buildTrainToSteeringMsg(i)
+		train.trackEdges[i].from.steeringInputChanel <- trainSteeringPipe
+		trackToTravel := <-trainSteeringPipe.track
+		fmt.Println("RepairBrigade received track to travel")
+		if positionToFix.to == train.trackEdges[i].to {
+			fmt.Println("RepairBrigade fixing...")
+			time.Sleep(20 * time.Second)
+			fmt.Println("RepairBrigade fixed!")
+		}
+		steeringReconfig := &ReconfigureSteering{Resp: make(chan bool)}
+		train.trackEdges[i].from.steeringReconfChanel <- steeringReconfig
+		fmt.Println("RepairBrigade steering reconfiguration result", <-steeringReconfig.Resp)
+		trackPipe := &utils.TrainToTrackMsg{Resp: make(chan interface{})}
+		switch trackData := trackToTravel.(type) {
+		case *DriveTrackThread:
+			trackData.trackInputChanel <- trackPipe
+			trackType := <-trackPipe.Resp
+			fmt.Println("RepairBrigade receivec msg from DriveTrack, time to travel")
+			time.Sleep(time.Duration(trackData.length/trackData.maxAllowedVelocity) * time.Second)
+			trackType.(*utils.DriveTrackToTrainMsg).Resp <- "Release track"
+		case *StopTrackThread:
+			trackData.trackInputChanel <- trackPipe
+			trackType := <-trackPipe.Resp
+			fmt.Println("RepairBrigade receivec msg from StopTrack, time to wait")
+			time.Sleep(trackData.timeToRest)
+			trackType.(*utils.StopTrackToTrainMsg).Resp <- "Release track"
 		}
 	}
 }
@@ -64,10 +64,6 @@ func fillWithWalues(nodes []*SteeringThread) map[*SteeringThread]int {
 }
 
 func findPath(nodes map[*SteeringThread]*SteeringThread, source, targetCloser, targetFurther *SteeringThread) []*steeringTuple {
-	fmt.Println("train is on", targetCloser.steeringName, targetFurther.steeringName)
-	for pre, current := range nodes {
-		fmt.Println(pre.steeringName, current.steeringName)
-	}
 	var finalPath []*steeringTuple
 	tmpNode := targetFurther
 	for {
@@ -77,12 +73,14 @@ func findPath(nodes map[*SteeringThread]*SteeringThread, source, targetCloser, t
 		}
 		tmpNode = nodes[tmpNode]
 	}
-
-	return reversePath(finalPath)
+	return prepareRoute(finalPath)
 }
-func reversePath(path []*steeringTuple) []*steeringTuple {
+func prepareRoute(path []*steeringTuple) []*steeringTuple {
 	var finalPath []*steeringTuple
 	for i := len(path) - 1; i >= 0; i-- {
+		finalPath = append(finalPath, path[i])
+	}
+	for i := 1; i < len(path); i++ {
 		finalPath = append(finalPath, path[i])
 	}
 	return finalPath
@@ -117,20 +115,13 @@ func (rb *RepairBrigadeThread) findShortestPath(source *SteeringThread, target *
 			delete(nodeToDistance, minElem)
 		}
 	}
-	fmt.Println(target.to.steeringName, tmpMap[target.to], target.from.steeringName, tmpMap[target.from])
-
 	closerNode := target.to
 	furtherNode := target.from
 	if tmpMap[closerNode] > tmpMap[target.from] {
 		closerNode = target.from
 		furtherNode = target.to
 	}
-	fmt.Println("Closer node is", closerNode, furtherNode)
-
 	finalResult := findPath(pre, source, closerNode, furtherNode)
-	for _, val := range finalResult {
-		fmt.Println("Edge to get broken train:", val.from.steeringName, val.to.steeringName)
-	}
 	return finalResult
 }
 
@@ -138,10 +129,9 @@ func (rb *RepairBrigadeThread) startRepairBrigadeThread() {
 	repairOrder := <-rb.repairBrigadeInput
 	switch repair := repairOrder.(type) {
 	case *TrainBrokenOrder:
-		fmt.Println(repair.currentEdge.from.steeringName)
-		fmt.Println(repair.currentEdge.to.steeringName)
 		rb.trackEdges = rb.findShortestPath(rb.startPosition.from, repair.currentEdge)
-		go rb.startRepairTrain(repair.currentEdge)
+		rb.startRepairTrain(repair.currentEdge)
+		repair.Resp <- "FIXED"
 	}
 }
 
@@ -163,7 +153,7 @@ type ReconfigureSteering struct {
 
 type TrainBrokenOrder struct {
 	currentEdge *steeringTuple
-	Resp        chan interface{}
+	Resp        chan string
 }
 
 func (train *TrainThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackToTrain {
@@ -174,15 +164,14 @@ func (train *TrainThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackT
 
 func (train *TrainThread) generateFault(indexOfEdge int) {
 	randNum := rand.Float64()
-	if randNum > 0.5 {
+	if randNum > 0.9 {
 		fmt.Println("TrainThread", train.trainName, "is broken, send msg for help")
 		RepairBrigadePipe := &TrainBrokenOrder{
 			currentEdge: train.trackEdges[indexOfEdge],
-			Resp:        make(chan interface{})}
+			Resp:        make(chan string)}
 		train.repairOrder <- RepairBrigadePipe
-		fmt.Println(<-RepairBrigadePipe.Resp)
+		fmt.Println("TrackThread", train.trainName, <-RepairBrigadePipe.Resp)
 	}
-	fmt.Println(randNum)
 }
 
 func (train *TrainThread) startTrainThread() {
