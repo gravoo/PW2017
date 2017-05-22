@@ -132,6 +132,17 @@ func (rb *RepairBrigadeThread) startRepairBrigadeThread() {
 		rb.trackEdges = rb.findShortestPath(rb.startPosition.from, repair.currentEdge)
 		rb.startRepairTrain(repair.currentEdge)
 		repair.Resp <- "FIXED"
+	case *SteeringBrokenOrder:
+		rb.trackEdges = rb.findShortestPath(rb.startPosition.from,
+			&steeringTuple{repair.brokenSteering, repair.brokenSteering, 0})
+		rb.startRepairTrain(&steeringTuple{repair.brokenSteering, repair.brokenSteering, 0})
+		repair.Resp <- "FIXED"
+	case *TrackBrokenOrder:
+		rb.trackEdges = rb.findShortestPath(rb.startPosition.from,
+			&steeringTuple{rb.tracks[repair.brokenTrackId].from, rb.tracks[repair.brokenTrackId].to, 0})
+		rb.startRepairTrain(&steeringTuple{rb.tracks[repair.brokenTrackId].from,
+			rb.tracks[repair.brokenTrackId].to, 0})
+		repair.Resp <- "FIXED"
 	}
 }
 
@@ -156,6 +167,16 @@ type TrainBrokenOrder struct {
 	Resp        chan string
 }
 
+type SteeringBrokenOrder struct {
+	brokenSteering *SteeringThread
+	Resp           chan string
+}
+
+type TrackBrokenOrder struct {
+	brokenTrackId int
+	Resp          chan string
+}
+
 func (train *TrainThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackToTrain {
 	return &AssignTrackToTrain{
 		edge:  train.trackEdges[indexOfEdge],
@@ -164,7 +185,7 @@ func (train *TrainThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackT
 
 func (train *TrainThread) generateFault(indexOfEdge int) {
 	randNum := rand.Float64()
-	if randNum > 0.9 {
+	if randNum > 0.9999 {
 		fmt.Println("TrainThread", train.trainName, "is broken, send msg for help")
 		RepairBrigadePipe := &TrainBrokenOrder{
 			currentEdge: train.trackEdges[indexOfEdge],
@@ -177,6 +198,7 @@ func (train *TrainThread) generateFault(indexOfEdge int) {
 func (train *TrainThread) startTrainThread() {
 	for {
 		for i, _ := range train.trackEdges {
+			train.generateFault(i)
 			trainSteeringPipe := train.buildTrainToSteeringMsg(i)
 			train.trackEdges[i].from.steeringInputChanel <- trainSteeringPipe
 			trackToTravel := <-trainSteeringPipe.track
@@ -199,7 +221,6 @@ func (train *TrainThread) startTrainThread() {
 				time.Sleep(trackData.timeToRest)
 				trackType.(*utils.StopTrackToTrainMsg).Resp <- "Release track"
 			}
-			train.generateFault(i)
 		}
 	}
 }
@@ -211,10 +232,24 @@ type SteeringThread struct {
 	steeringEdges        map[*SteeringThread]interface{}
 	steeringReconfChanel chan *ReconfigureSteering
 	neighborEdges        []*steeringTuple
+	repairOrder          chan interface{}
+}
+
+func (steering *SteeringThread) generateFault() {
+	randNum := rand.Float64()
+	if randNum > 0.99999 {
+		fmt.Println("SteeringThread", steering.steeringName, "is broken, send msg for help")
+		RepairBrigadePipe := &SteeringBrokenOrder{
+			brokenSteering: steering,
+			Resp:           make(chan string)}
+		steering.repairOrder <- RepairBrigadePipe
+		fmt.Println("SteeringThread", steering.steeringName, <-RepairBrigadePipe.Resp)
+	}
 }
 
 func (s *SteeringThread) startSteeringThread() {
 	for {
+		s.generateFault()
 		select {
 		case requestFromTrain := <-s.steeringInputChanel:
 			fmt.Println("SteeringThread", s.steeringName, " received request for track")
@@ -232,6 +267,19 @@ type DriveTrackThread struct {
 	trackInputChanel   chan interface{}
 	length             int
 	maxAllowedVelocity int
+	repairOrder        chan interface{}
+}
+
+func generateFault(id int, trackType string, repairOrder chan interface{}) {
+	randNum := rand.Float64()
+	if randNum > 0.9999 {
+		fmt.Println(trackType, id, "is broken, send msg for help")
+		RepairBrigadePipe := &TrackBrokenOrder{
+			brokenTrackId: id,
+			Resp:          make(chan string)}
+		repairOrder <- RepairBrigadePipe
+		fmt.Println(trackType, id, <-RepairBrigadePipe.Resp)
+	}
 }
 
 func (tr *DriveTrackThread) buildTrainMsg() *utils.DriveTrackToTrainMsg {
@@ -244,6 +292,7 @@ func (tr *DriveTrackThread) buildTrainMsg() *utils.DriveTrackToTrainMsg {
 
 func (tr *DriveTrackThread) startTrackThread() {
 	for {
+		generateFault(tr.trackId, "StopTrackThread", tr.repairOrder)
 		trainPipe := <-tr.trackInputChanel
 		fmt.Println("DriveTrackThread", tr.trackId, ":received msg from train")
 		trackPipe := tr.buildTrainMsg()
@@ -257,6 +306,7 @@ type StopTrackThread struct {
 	trackId          int
 	trackInputChanel chan interface{}
 	timeToRest       time.Duration
+	repairOrder      chan interface{}
 }
 
 func (tr *StopTrackThread) buildTrainMsg() *utils.StopTrackToTrainMsg {
@@ -268,6 +318,7 @@ func (tr *StopTrackThread) buildTrainMsg() *utils.StopTrackToTrainMsg {
 
 func (tr *StopTrackThread) startTrackThread() {
 	for {
+		generateFault(tr.trackId, "StopTrackThread", tr.repairOrder)
 		trainPipe := <-tr.trackInputChanel
 		fmt.Println("StopTrackThread", tr.trackId, ":received msg from train")
 		trackPipe := tr.buildTrainMsg()
@@ -286,22 +337,23 @@ func main() {
 	var nodes []*SteeringThread
 	var edges = make([]*steeringTuple, 7)
 	var trains []*TrainThread
+	repairChanel := make(chan interface{})
 
 	nodes = append(nodes, &SteeringThread{5 * time.Second, make(chan *AssignTrackToTrain), "steering1",
-		make(map[*SteeringThread]interface{}), make(chan *ReconfigureSteering), nil})
+		make(map[*SteeringThread]interface{}), make(chan *ReconfigureSteering), nil, repairChanel})
 	nodes = append(nodes, &SteeringThread{5 * time.Second, make(chan *AssignTrackToTrain), "steering2",
-		make(map[*SteeringThread]interface{}), make(chan *ReconfigureSteering), nil})
+		make(map[*SteeringThread]interface{}), make(chan *ReconfigureSteering), nil, repairChanel})
 	nodes = append(nodes, &SteeringThread{5 * time.Second, make(chan *AssignTrackToTrain), "steering3",
-		make(map[*SteeringThread]interface{}), make(chan *ReconfigureSteering), nil})
+		make(map[*SteeringThread]interface{}), make(chan *ReconfigureSteering), nil, repairChanel})
 
 	edges[0] = &steeringTuple{nodes[0], nodes[0], 10}
 	edges[1] = &steeringTuple{nodes[0], nodes[1], 10}
 	edges[6] = &steeringTuple{nodes[0], nodes[0], 10}
 	nodes[0].neighborEdges = append(nodes[0].neighborEdges, edges[0])
 	nodes[0].neighborEdges = append(nodes[0].neighborEdges, edges[1])
-	nodes[0].steeringEdges[edges[0].to] = &StopTrackThread{10, make(chan interface{}), 15 * time.Second}
-	nodes[0].steeringEdges[edges[1].to] = &DriveTrackThread{101, make(chan interface{}), 900, 90}
-	nodes[0].steeringEdges[edges[6].to] = &StopTrackThread{12, make(chan interface{}), 15 * time.Second}
+	nodes[0].steeringEdges[edges[0].to] = &StopTrackThread{0, make(chan interface{}), 15 * time.Second, repairChanel}
+	nodes[0].steeringEdges[edges[1].to] = &DriveTrackThread{1, make(chan interface{}), 900, 90, repairChanel}
+	nodes[0].steeringEdges[edges[6].to] = &StopTrackThread{6, make(chan interface{}), 15 * time.Second, repairChanel}
 	go nodes[0].steeringEdges[edges[0].to].(*StopTrackThread).startTrackThread()
 	go nodes[0].steeringEdges[edges[1].to].(*DriveTrackThread).startTrackThread()
 	go nodes[0].steeringEdges[edges[6].to].(*StopTrackThread).startTrackThread()
@@ -310,8 +362,8 @@ func main() {
 	edges[3] = &steeringTuple{nodes[1], nodes[2], 10}
 	nodes[1].neighborEdges = append(nodes[1].neighborEdges, edges[2])
 	nodes[1].neighborEdges = append(nodes[1].neighborEdges, edges[3])
-	nodes[1].steeringEdges[edges[2].to] = &DriveTrackThread{102, make(chan interface{}), 900, 90}
-	nodes[1].steeringEdges[edges[3].to] = &DriveTrackThread{103, make(chan interface{}), 900, 90}
+	nodes[1].steeringEdges[edges[2].to] = &DriveTrackThread{2, make(chan interface{}), 900, 90, repairChanel}
+	nodes[1].steeringEdges[edges[3].to] = &DriveTrackThread{3, make(chan interface{}), 900, 90, repairChanel}
 	go nodes[1].steeringEdges[edges[2].to].(*DriveTrackThread).startTrackThread()
 	go nodes[1].steeringEdges[edges[3].to].(*DriveTrackThread).startTrackThread()
 
@@ -319,12 +371,11 @@ func main() {
 	edges[5] = &steeringTuple{nodes[2], nodes[2], 10}
 	nodes[2].neighborEdges = append(nodes[2].neighborEdges, edges[4])
 	nodes[2].neighborEdges = append(nodes[2].neighborEdges, edges[5])
-	nodes[2].steeringEdges[edges[4].to] = &DriveTrackThread{104, make(chan interface{}), 900, 90}
-	nodes[2].steeringEdges[edges[5].to] = &StopTrackThread{11, make(chan interface{}), 15 * time.Second}
+	nodes[2].steeringEdges[edges[4].to] = &DriveTrackThread{4, make(chan interface{}), 900, 90, repairChanel}
+	nodes[2].steeringEdges[edges[5].to] = &StopTrackThread{5, make(chan interface{}), 15 * time.Second, repairChanel}
 	go nodes[2].steeringEdges[edges[4].to].(*DriveTrackThread).startTrackThread()
 	go nodes[2].steeringEdges[edges[5].to].(*StopTrackThread).startTrackThread()
 
-	repairChanel := make(chan interface{})
 	repairBrigade := &RepairBrigadeThread{repairChanel, 40 * time.Second, edges, nodes, edges[0], nil}
 
 	trains = append(trains, &TrainThread{1, 2, "train1", nil, repairChanel})
