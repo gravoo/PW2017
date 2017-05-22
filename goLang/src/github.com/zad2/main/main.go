@@ -14,6 +14,45 @@ type RepairBrigadeThread struct {
 	tracks             []*steeringTuple
 	steerings          []*SteeringThread
 	startPosition      *steeringTuple
+	trackEdges         []*steeringTuple
+}
+
+func (train *RepairBrigadeThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackToTrain {
+	return &AssignTrackToTrain{
+		edge:  train.trackEdges[indexOfEdge],
+		track: make(chan interface{})}
+}
+
+func (train *RepairBrigadeThread) startRepairTrain(positionToFix *steeringTuple) {
+	for {
+		for i, _ := range train.trackEdges {
+			trainSteeringPipe := train.buildTrainToSteeringMsg(i)
+			train.trackEdges[i].from.steeringInputChanel <- trainSteeringPipe
+			trackToTravel := <-trainSteeringPipe.track
+			fmt.Println("RepairBrigade received track to travel")
+			if positionToFix == train.trackEdges[i] {
+				fmt.Println("Reached target to fix")
+			}
+			steeringReconfig := &ReconfigureSteering{Resp: make(chan bool)}
+			train.trackEdges[i].from.steeringReconfChanel <- steeringReconfig
+			fmt.Println("TrainThread steering reconfiguration result", <-steeringReconfig.Resp)
+			trackPipe := &utils.TrainToTrackMsg{Resp: make(chan interface{})}
+			switch trackData := trackToTravel.(type) {
+			case *DriveTrackThread:
+				trackData.trackInputChanel <- trackPipe
+				trackType := <-trackPipe.Resp
+				fmt.Println("RepairBrigade receivec msg from DriveTrack, time to travel")
+				time.Sleep(time.Duration(trackData.length/trackData.maxAllowedVelocity) * time.Second)
+				trackType.(*utils.DriveTrackToTrainMsg).Resp <- "Release track"
+			case *StopTrackThread:
+				trackData.trackInputChanel <- trackPipe
+				trackType := <-trackPipe.Resp
+				fmt.Println("RepairBrigade receivec msg from StopTrack, time to wait")
+				time.Sleep(trackData.timeToRest)
+				trackType.(*utils.StopTrackToTrainMsg).Resp <- "Release track"
+			}
+		}
+	}
 }
 
 func fillWithWalues(nodes []*SteeringThread) map[*SteeringThread]int {
@@ -23,6 +62,7 @@ func fillWithWalues(nodes []*SteeringThread) map[*SteeringThread]int {
 	}
 	return nodeToDistance
 }
+
 func findPath(nodes map[*SteeringThread]*SteeringThread, target *SteeringThread) []*steeringTuple {
 	var finalPath []*steeringTuple
 	for father, son := range nodes {
@@ -45,12 +85,12 @@ func findMin(nodes map[*SteeringThread]int) *SteeringThread {
 	return minElement
 }
 
-func (rb *RepairBrigadeThread) findPath(source, target *SteeringThread) {
+func (rb *RepairBrigadeThread) findShortestPath(source, target *SteeringThread) []*steeringTuple {
 	nodeToDistance := fillWithWalues(rb.steerings)
 	nodeToDistance[source] = 0
 	result := make(map[*SteeringThread]*SteeringThread)
 	pre := make(map[*SteeringThread]*SteeringThread)
-	for i := 0; i < 3; i++ {
+	for i := 0; i < len(rb.steerings); i++ {
 		minElem := findMin(nodeToDistance)
 		for _, value := range minElem.neighborEdges {
 			if nodeToDistance[value.to] > nodeToDistance[minElem]+value.weight {
@@ -66,6 +106,7 @@ func (rb *RepairBrigadeThread) findPath(source, target *SteeringThread) {
 		fmt.Println("Edge to get broken train:", val.from.steeringName,
 			val.to.steeringName)
 	}
+	return finalResult
 }
 
 func (rb *RepairBrigadeThread) startRepairBrigadeThread() {
@@ -73,7 +114,9 @@ func (rb *RepairBrigadeThread) startRepairBrigadeThread() {
 	switch repair := repairOrder.(type) {
 	case *TrainBrokenOrder:
 		fmt.Println(repair.currentEdge.from.steeringName)
-		rb.findPath(rb.startPosition.from, repair.currentEdge.from)
+		fmt.Println(repair.currentEdge.to.steeringName)
+		rb.trackEdges = rb.findShortestPath(rb.startPosition.from, repair.currentEdge.from)
+		go rb.startRepairTrain(repair.currentEdge)
 	}
 }
 
@@ -268,7 +311,7 @@ func main() {
 	go nodes[2].steeringEdges[edges[5]].(*StopTrackThread).startTrackThread()
 
 	repairChanel := make(chan interface{})
-	repairBrigade := &RepairBrigadeThread{repairChanel, 40 * time.Second, edges, nodes, edges[0]}
+	repairBrigade := &RepairBrigadeThread{repairChanel, 40 * time.Second, edges, nodes, edges[0], nil}
 
 	trains = append(trains, &TrainThread{1, 2, "train1", nil, repairChanel})
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[1])
