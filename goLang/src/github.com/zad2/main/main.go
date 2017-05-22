@@ -23,21 +23,57 @@ func fillWithWalues(nodes []*SteeringThread) map[*SteeringThread]int {
 	}
 	return nodeToDistance
 }
+func findPath(nodes map[*SteeringThread]*SteeringThread, target *SteeringThread) []*steeringTuple {
+	var finalPath []*steeringTuple
+	for father, son := range nodes {
+		finalPath = append(finalPath, &steeringTuple{son, father, 0})
+		if father.steeringName == target.steeringName {
+			break
+		}
+	}
+	return finalPath
+}
+func findMin(nodes map[*SteeringThread]int) *SteeringThread {
+	min := 1<<31 - 1
+	var minElement *SteeringThread
+	for id, value := range nodes {
+		if value <= min {
+			min = value
+			minElement = id
+		}
+	}
+	return minElement
+}
 
 func (rb *RepairBrigadeThread) findPath(source, target *SteeringThread) {
 	nodeToDistance := fillWithWalues(rb.steerings)
 	nodeToDistance[source] = 0
-
-	fmt.Println(nodeToDistance)
+	result := make(map[*SteeringThread]*SteeringThread)
+	pre := make(map[*SteeringThread]*SteeringThread)
+	for i := 0; i < 3; i++ {
+		minElem := findMin(nodeToDistance)
+		for _, value := range minElem.neighborEdges {
+			if nodeToDistance[value.to] > nodeToDistance[minElem]+value.weight {
+				nodeToDistance[value.to] = nodeToDistance[minElem] + value.weight
+				pre[value.to] = minElem
+			}
+			result[minElem] = minElem
+			delete(nodeToDistance, minElem)
+		}
+	}
+	finalResult := findPath(pre, target)
+	for _, val := range finalResult {
+		fmt.Println("Edge to get broken train:", val.from.steeringName,
+			val.to.steeringName)
+	}
 }
 
 func (rb *RepairBrigadeThread) startRepairBrigadeThread() {
 	repairOrder := <-rb.repairBrigadeInput
 	switch repair := repairOrder.(type) {
 	case *TrainBrokenOrder:
+		fmt.Println(repair.currentEdge.from.steeringName)
 		rb.findPath(rb.startPosition.from, repair.currentEdge.from)
-		fmt.Println("RepairBrigadeThread received order from train located:", repair.currentEdge.from,
-			repair.currentEdge.to)
 	}
 }
 
@@ -186,6 +222,7 @@ func (tr *StopTrackThread) startTrackThread() {
 
 type steeringTuple struct {
 	from, to *SteeringThread
+	weight   int
 }
 
 func main() {
@@ -200,9 +237,9 @@ func main() {
 	nodes = append(nodes, &SteeringThread{5 * time.Second, make(chan *AssignTrackToTrain), "steering3",
 		make(map[*steeringTuple]interface{}), make(chan *ReconfigureSteering), nil})
 
-	edges[0] = &steeringTuple{nodes[0], nodes[0]}
-	edges[1] = &steeringTuple{nodes[0], nodes[1]}
-	edges[6] = &steeringTuple{nodes[0], nodes[0]}
+	edges[0] = &steeringTuple{nodes[0], nodes[0], 10}
+	edges[1] = &steeringTuple{nodes[0], nodes[1], 10}
+	edges[6] = &steeringTuple{nodes[0], nodes[0], 10}
 	nodes[0].neighborEdges = append(nodes[0].neighborEdges, edges[0])
 	nodes[0].neighborEdges = append(nodes[0].neighborEdges, edges[1])
 	nodes[0].steeringEdges[edges[0]] = &StopTrackThread{10, make(chan interface{}), 15 * time.Second}
@@ -212,8 +249,8 @@ func main() {
 	go nodes[0].steeringEdges[edges[1]].(*DriveTrackThread).startTrackThread()
 	go nodes[0].steeringEdges[edges[6]].(*StopTrackThread).startTrackThread()
 
-	edges[2] = &steeringTuple{nodes[1], nodes[0]}
-	edges[3] = &steeringTuple{nodes[1], nodes[2]}
+	edges[2] = &steeringTuple{nodes[1], nodes[0], 10}
+	edges[3] = &steeringTuple{nodes[1], nodes[2], 10}
 	nodes[1].neighborEdges = append(nodes[1].neighborEdges, edges[2])
 	nodes[1].neighborEdges = append(nodes[1].neighborEdges, edges[3])
 	nodes[1].steeringEdges[edges[2]] = &DriveTrackThread{102, make(chan interface{}), 900, 90}
@@ -221,8 +258,8 @@ func main() {
 	go nodes[1].steeringEdges[edges[2]].(*DriveTrackThread).startTrackThread()
 	go nodes[1].steeringEdges[edges[3]].(*DriveTrackThread).startTrackThread()
 
-	edges[4] = &steeringTuple{nodes[2], nodes[1]}
-	edges[5] = &steeringTuple{nodes[2], nodes[2]}
+	edges[4] = &steeringTuple{nodes[2], nodes[1], 10}
+	edges[5] = &steeringTuple{nodes[2], nodes[2], 10}
 	nodes[2].neighborEdges = append(nodes[2].neighborEdges, edges[4])
 	nodes[2].neighborEdges = append(nodes[2].neighborEdges, edges[5])
 	nodes[2].steeringEdges[edges[4]] = &DriveTrackThread{104, make(chan interface{}), 900, 90}
