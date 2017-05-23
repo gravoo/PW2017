@@ -1,0 +1,435 @@
+V "GNAT Lib v6"
+M P W=b
+P SS ZX
+
+RN
+RV SIMPLE_BARRIERS
+RV NO_ACCESS_SUBPROGRAMS
+RV NO_ALLOCATORS
+RV NO_DELAY
+RV NO_DIRECT_BOOLEAN_OPERATORS
+RV NO_DISPATCH
+RV NO_DISPATCHING_CALLS
+RV NO_ENUMERATION_MAPS
+RV NO_EXCEPTION_HANDLERS
+RV NO_EXCEPTION_PROPAGATION
+RV NO_EXCEPTIONS
+RV NO_FIXED_POINT
+RV NO_IO
+RV NO_IMPLICIT_CONDITIONALS
+RV NO_IMPLICIT_DYNAMIC_CODE
+RV NO_IMPLICIT_LOOPS
+RV NO_LOCAL_ALLOCATORS
+RV NO_LOCAL_PROTECTED_OBJECTS
+RV NO_NESTED_FINALIZATION
+RV NO_PROTECTED_TYPE_ALLOCATORS
+RV NO_PROTECTED_TYPES
+RV NO_RELATIVE_DELAY
+RV NO_SECONDARY_STACK
+RV NO_SELECT_STATEMENTS
+RV NO_STANDARD_ALLOCATORS_AFTER_ELABORATION
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_STREAMS
+RV NO_TASK_ALLOCATORS
+RV NO_TASK_HIERARCHY
+RV NO_TASKING
+RV NO_UNCHECKED_ACCESS
+RV NO_DEFAULT_INITIALIZATION
+RV NO_DYNAMIC_SIZED_OBJECTS
+RV NO_IMPLEMENTATION_ATTRIBUTES
+RV NO_IMPLEMENTATION_PRAGMAS
+RV NO_IMPLICIT_ALIASING
+RV SPARK_05
+RV MAX_PROTECTED_ENTRIES=6
+RV MAX_SELECT_ALTERNATIVES=2
+RV MAX_TASK_ENTRIES=3
+RV MAX_TASKS=1+
+RV MAX_ENTRY_QUEUE_LENGTH=1+
+
+U main%b		main.adb		1eea1df9 NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.calendar.delays%s	a-caldel.adb		a-caldel.ali
+W ada.containers%s	a-contai.ads		a-contai.ali
+Z ada.containers.generic_array_sort%s
+Z ada.containers.hash_tables%s  a-cohata.ads	a-cohata.ali
+Z ada.containers.hash_tables.generic_keys%s
+Z ada.containers.hash_tables.generic_operations%s
+W ada.containers.hashed_maps%s
+Z ada.containers.helpers%s  a-conhel.adb	a-conhel.ali
+W ada.containers.ordered_maps%s
+Z ada.containers.prime_numbers%s  a-coprnu.adb	a-coprnu.ali
+W ada.containers.vectors%s
+W ada.exceptions%s	a-except.adb		a-except.ali
+Z ada.finalization%s	a-finali.ads		a-finali.ali
+W ada.integer_text_io%s	a-inteio.ads		a-inteio.ali
+Z ada.iterator_interfaces%s
+W ada.real_time%s	a-reatim.adb		a-reatim.ali
+W ada.streams%s		a-stream.adb		a-stream.ali
+W ada.strings%s		a-string.ads		a-string.ali
+W ada.strings.unbounded%s  a-strunb.adb		a-strunb.ali
+W ada.tags%s		a-tags.adb		a-tags.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+Z ada.unchecked_deallocation%s
+W interfaces%s		interfac.ads		interfac.ali
+W system%s		system.ads		system.ali
+W system.address_image%s  s-addima.adb		s-addima.ali
+W system.concat_2%s	s-conca2.adb		s-conca2.ali
+W system.concat_3%s	s-conca3.adb		s-conca3.ali
+W system.concat_4%s	s-conca4.adb		s-conca4.ali
+W system.concat_6%s	s-conca6.adb		s-conca6.ali
+W system.finalization_masters%s  s-finmas.adb	s-finmas.ali
+W system.img_enum_new%s	s-imenne.adb		s-imenne.ali
+W system.img_int%s	s-imgint.adb		s-imgint.ali
+W system.parameters%s	s-parame.adb		s-parame.ali
+W system.pool_global%s	s-pooglo.adb		s-pooglo.ali
+W system.secondary_stack%s  s-secsta.adb	s-secsta.ali
+W system.soft_links%s	s-soflin.adb		s-soflin.ali
+W system.standard_library%s  s-stalib.adb	s-stalib.ali
+W system.storage_elements%s  s-stoele.adb	s-stoele.ali
+W system.storage_pools%s  s-stopoo.adb		s-stopoo.ali
+W system.storage_pools.subpools%s  s-stposu.adb	s-stposu.ali
+W system.stream_attributes%s  s-stratt.adb	s-stratt.ali
+W system.task_info%s	s-tasinf.adb		s-tasinf.ali
+W system.tasking%s	s-taskin.adb		s-taskin.ali
+W system.tasking.protected_objects%s  s-taprob.adb  s-taprob.ali
+W system.tasking.protected_objects.entries%s  s-tpoben.adb  s-tpoben.ali
+W system.tasking.protected_objects.operations%s  s-tpobop.adb  s-tpobop.ali
+W system.tasking.rendezvous%s  s-tasren.adb	s-tasren.ali
+W system.tasking.stages%s  s-tassta.adb		s-tassta.ali
+
+D ada.ads		20170306114746 3ffc8e18 ada%s
+D a-calend.ads		20170306114746 d986d312 ada.calendar%s
+D a-caldel.ads		20170306114743 9f20b83d ada.calendar.delays%s
+D a-charac.ads		20170306114743 2d3ec45b ada.characters%s
+D a-chlat1.ads		20170306114743 66457d31 ada.characters.latin_1%s
+D a-contai.ads		20170306114743 61e5e089 ada.containers%s
+D a-cgarso.ads		20170306114743 9129bfa8 ada.containers.generic_array_sort%s
+D a-cohata.ads		20170306114743 80a8c839 ada.containers.hash_tables%s
+D a-chtgke.ads		20170306114743 20177f7b ada.containers.hash_tables.generic_keys%s
+D a-chtgke.adb		20170306114743 7d66b1e3 ada.containers.hash_tables.generic_keys%b
+D a-chtgop.ads		20170306114746 bea86046 ada.containers.hash_tables.generic_operations%s
+D a-chtgop.adb		20170306114746 dc263095 ada.containers.hash_tables.generic_operations%b
+D a-cohama.ads		20170306114743 5b9a95f7 ada.containers.hashed_maps%s
+D a-cohama.adb		20170306114743 6d24e6e5 ada.containers.hashed_maps%b
+D a-conhel.ads		20170306114746 20298884 ada.containers.helpers%s
+D a-conhel.adb		20170306114746 34fff4f6 ada.containers.helpers%b
+D a-coorma.ads		20170306114743 f11dbb1a ada.containers.ordered_maps%s
+D a-coorma.adb		20170306114743 385a34e2 ada.containers.ordered_maps%b
+D a-coprnu.ads		20170306114743 0cdf1864 ada.containers.prime_numbers%s
+D a-crbltr.ads		20170306114743 c3e90a86 ada.containers.red_black_trees%s
+D a-crbtgk.ads		20170306114743 ab25d217 ada.containers.red_black_trees.generic_keys%s
+D a-crbtgo.ads		20170306114743 e494c304 ada.containers.red_black_trees.generic_operations%s
+D a-convec.ads		20170306114743 7e2b0fdf ada.containers.vectors%s
+D a-convec.adb		20170306114746 89163169 ada.containers.vectors%b
+D a-except.ads		20170306114743 291912d5 ada.exceptions%s
+D a-finali.ads		20170306114743 bf4f806b ada.finalization%s
+D a-inteio.ads		20170306114743 f64b89a4 ada.integer_text_io%s
+D a-ioexce.ads		20170306114743 e4a01f64 ada.io_exceptions%s
+D a-iteint.ads		20170306114743 7c7305e9 ada.iterator_interfaces%s
+D a-reatim.ads		20170306114746 428ef5f7 ada.real_time%s
+D a-stream.ads		20170306114743 119b8fb3 ada.streams%s
+D a-string.ads		20170306114743 90ac6797 ada.strings%s
+D a-strmap.ads		20170306114743 e8bb714a ada.strings.maps%s
+D a-strunb.ads		20170306114746 3f91d4c5 ada.strings.unbounded%s
+D a-tags.ads		20170306114743 01f5e3ef ada.tags%s
+D a-textio.ads		20170306114743 386df5d4 ada.text_io%s
+D a-tiinio.ads		20170306114743 aa04e5d6 ada.text_io.integer_io%s
+D a-unccon.ads		20170306114746 f9eb8f06 ada.unchecked_conversion%s
+D a-uncdea.ads		20170306114743 f15a5ed1 ada.unchecked_deallocation%s
+D interfac.ads		20170306114746 4be8ce1b interfaces%s
+D i-c.ads		20170306114743 5421119b interfaces.c%s
+D i-cstrea.ads		20170306114743 e53d8b8e interfaces.c_streams%s
+D main.adb		20170523221041 3bf1947e main%b
+D system.ads		20170306114746 6326c08a system%s
+D s-addima.ads		20170306114743 a1ec9d3a system.address_image%s
+D s-atacco.ads		20170306114743 4c36d12f system.address_to_access_conversions%s
+D s-atocou.ads		20170306114743 b45c2d8d system.atomic_counters%s
+D s-atocou.adb		20170306114743 b65612c0 system.atomic_counters%b
+D s-conca2.ads		20170306114743 02a0d7d0 system.concat_2%s
+D s-conca3.ads		20170306114743 0b705ca5 system.concat_3%s
+D s-conca4.ads		20170306114743 7e642b20 system.concat_4%s
+D s-conca6.ads		20170306114743 d2c72db2 system.concat_6%s
+D s-crtl.ads		20170306114743 0ebbdb71 system.crtl%s
+D s-exctab.ads		20170306114743 54135002 system.exception_table%s
+D s-ficobl.ads		20170306114743 078245e4 system.file_control_block%s
+D s-finmas.ads		20170306114743 7811a767 system.finalization_masters%s
+D s-finroo.ads		20170306114743 4ff27390 system.finalization_root%s
+D s-imenne.ads		20170306114743 614c06c0 system.img_enum_new%s
+D s-imgint.ads		20170306114743 02dbe0c2 system.img_int%s
+D s-linux.ads		20170306114743 2fda6ad1 system.linux%s
+D s-memory.ads		20170306114746 597d6634 system.memory%s
+D s-multip.ads		20170306114743 38ac9f73 system.multiprocessors%s
+D s-oscons.ads		20170306121712 4bd50652 system.os_constants%s
+D s-osinte.ads		20170306114746 64f6e3c7 system.os_interface%s
+D s-parame.ads		20170306114743 7e2a0d7f system.parameters%s
+D s-pooglo.ads		20170306114743 ede33ef8 system.pool_global%s
+D s-secsta.ads		20170306114746 86a2856d system.secondary_stack%s
+D s-soflin.ads		20170306114743 14e1eb6c system.soft_links%s
+D s-stache.ads		20170306114743 a37c21ec system.stack_checking%s
+D s-stausa.ads		20170306114743 017a0a05 system.stack_usage%s
+D s-stalib.ads		20170306114743 09bd3940 system.standard_library%s
+D s-stalib.adb		20170306114743 f2fe2716 system.standard_library%b
+D s-stoele.ads		20170306114743 2dc34a04 system.storage_elements%s
+D s-stoele.adb		20170306114743 ed88f8fb system.storage_elements%b
+D s-stopoo.ads		20170306114743 b16154c2 system.storage_pools%s
+D s-stposu.ads		20170306114743 97a6219c system.storage_pools.subpools%s
+D s-stratt.ads		20170306114743 aedef97e system.stream_attributes%s
+D s-tasinf.ads		20170306114743 2b3f8252 system.task_info%s
+D s-taspri.ads		20170306114743 e3ab4429 system.task_primitives%s
+D s-taprop.ads		20170306114743 1dd2e1b6 system.task_primitives.operations%s
+D s-taskin.ads		20170306114746 0766baa7 system.tasking%s
+D s-taprob.ads		20170306114746 502249e3 system.tasking.protected_objects%s
+D s-tpoben.ads		20170306114746 b641f948 system.tasking.protected_objects.entries%s
+D s-tpobop.ads		20170306114743 5f548bb3 system.tasking.protected_objects.operations%s
+D s-tasren.ads		20170306114743 a67a9949 system.tasking.rendezvous%s
+D s-tassta.ads		20170306114746 70812003 system.tasking.stages%s
+D s-traent.ads		20170306114743 005bf670 system.traceback_entries%s
+D s-unstyp.ads		20170306114746 9d58a4c0 system.unsigned_types%s
+D s-wchcon.ads		20170306114743 1b7d22d2 system.wch_con%s
+X 1 ada.ads
+16K9*Ada 19e8 43|2r6 3r6 4r6 5r6 6r6 7r6 8r5 9r5 12r24 37r38
+X 6 a-contai.ads
+16K13*Containers 24e19 43|4r10 6r10 7r10 8r9 37r42
+19M9*Hash_Type 43|17r50 19r15
+X 13 a-cohama.ads
+41+9 Key_Type 43|39r10
+42+9 Element_Type 43|38r10
+44V18 Hash{6|19M9} 43|40r10
+45V18 Equivalent_Keys{boolean} 43|41r10
+48k24*Hashed_Maps 462e31 43|7w21 37r53
+53R9 Map<26|43R9> 43|46r61[37] 66r43[37] 67r43[37] 68r43[37] 69r43[37] 70r43[37]
+. 71r43[37] 72r43[37] 73r43[37] 74r43[37] 75r43[37] 76r44[37] 77r44[37] 78r44[37]
+. 79r44[37] 80r44[37] 81r44[37] 82r44[37] 83r44[37] 84r44[37] 85r44[37] 130r43[37]
+. 132r62[37]
+204U14 Insert 43|262s23[37] 263s23[37] 265s23[37] 266s23[37] 268s23[37] 269s23[37]
+. 270s23[37] 272s23[37] 273s23[37] 275s23[37] 276s23[37] 277s23[37] 279s23[37]
+. 280s23[37] 282s23[37] 283s23[37] 284s23[37] 286s23[37] 287s23[37] 289s23[37]
+. 290s23[37] 292s23[37] 293s23[37] 294s23[37] 296s24[37] 297s24[37] 299s24[37]
+. 300s24[37] 302s24[37] 303s24[37] 305s24[37] 306s24[37] 308s24[37] 309s24[37]
+. 310s24[37] 312s24[37] 313s24[37] 315s24[37] 316s24[37] 318s24[37] 319s24[37]
+. 320s24[37] 322s24[37] 323s24[37] 325s24[37] 326s24[37]
+X 17 a-coorma.ads
+47k24*Ordered_Maps 392e32 43|6w21
+242P9 Node_Access(241R9)
+X 18 a-coorma.adb
+55V13 Color{20|37E9} 22|45i19
+58V13 Left{17|242P9} 22|41i19
+61V13 Parent{17|242P9} 22|39i19
+64V13 Right{17|242P9} 22|43i19
+67U14 Set_Parent 22|40i19
+70U14 Set_Left 22|42i19
+73U14 Set_Right 22|44i19
+76U14 Set_Color 22|46i19
+X 23 a-convec.ads
+46k24*Vectors 518e27 43|4w21 35r33 36r44 51r36 63r33
+51I12 Extended_Index<short_short_integer>
+57R9 Vector<26|43R9> 43|52r33[51] 53r35[51] 54r35[51] 55r35[51] 56r35[51]
+. 59r52[51] 64r31[35] 65r32[35] 88r36[51] 97r53[51] 187r27[63]
+245U14 Append 43|206s16[35] 207s16[35] 208s16[35] 209s16[35] 210s16[35] 211s16[35]
+. 212s16[35] 213s16[35] 214s16[35] 215s16[35] 216s16[35] 217s16[35] 218s16[35]
+. 219s16[35] 220s16[35] 221s16[35] 222s16[35] 223s16[35] 224s16[35] 225s16[35]
+. 226s16[35] 227s16[35] 228s16[35] 229s16[35] 230s17[35] 231s17[35] 232s17[35]
+. 233s17[35] 234s17[35] 235s17[35] 236s17[35] 237s17[35] 238s17[35] 241s15[51]
+. 242s15[51] 243s15[51] 244s15[51] 245s15[51] 246s15[51] 247s15[51] 248s15[51]
+. 249s15[51] 250s15[51] 251s15[51] 252s15[51] 253s15[51] 254s15[51] 255s15[51]
+. 256s15[51] 257s15[51] 258s15[51] 259s15[51] 260s15[51] 349s17[51] 350s17[51]
+. 351s17[51] 352s17[51] 353s17[51] 354s17[51] 355s17[51] 356s17[51] 357s17[51]
+. 358s17[51] 359s17[51] 360s17[51] 361s17[51] 362s17[51] 363s17[51] 364s17[51]
+. 365s17[51] 366s17[51] 367s17[51] 368s17[51] 370s17[51] 371s17[51] 372s17[51]
+. 373s17[51] 374s17[51] 375s17[51] 376s17[51] 377s17[51] 378s17[51] 379s17[51]
+. 380s17[51] 381s17[51] 382s17[51] 383s17[51] 384s17[51] 385s17[51] 386s17[51]
+. 387s17[51] 388s17[51] 389s17[51] 391s17[51] 392s17[51] 393s17[51] 394s17[51]
+. 395s17[51] 396s17[51] 397s17[51] 398s17[51] 399s17[51] 400s17[51] 401s17[51]
+. 402s17[51] 403s17[51] 404s17[51] 405s17[51] 406s17[51] 407s17[51] 408s17[51]
+. 410s17[51] 411s17[51] 412s17[51] 413s17[51] 414s17[51] 415s17[51] 416s17[51]
+. 417s17[51] 418s17[51] 419s17[51] 420s17[51] 421s17[51] 422s17[51] 423s17[51]
+. 424s17[51] 425s17[51] 426s17[51] 427s17[51] 429s12[63] 430s12[63] 431s12[63]
+. 432s12[63]
+285V13 First_Index{43|15I10} 43|101s44[51] 102s54[51] 103s27[51] 105s49[51]
+291V13 Last_Index{51I12[43|51]} 43|105s73[51]
+X 27 a-inteio.ads
+18K13*Integer_Text_IO[37|46] 43|5w10
+X 29 a-iteint.ads
+24h9 Forward_Iterator
+32h9 Reversible_Iterator<24R9[23|72]>
+X 32 a-string.ads
+16K13*Strings 35e16 43|3r10 12r28
+X 34 a-strunb.ads
+76K21*Unbounded 489e26 43|3w18 12r36
+X 36 a-textio.ads
+49K13*Text_IO 471e16 43|2w10 9r9
+263U14*Put_Line 43|102s9 106s17 118s17 139s20 159s13 167s13
+X 43 main.adb
+11U11*Main 11b11 438l5 438t9
+12K13 SU=12:36
+13I10 Train_ID<short_short_integer> 25r46 27r39 44r48 58r32 63r41 106r44
+. 137r53 156r46 159r52 163r39 167r52
+14I10 Track_ID<short_short_integer> 22r37 35r41 159r95 168r77
+15I10 Steering_ID<short_short_integer> 17r30 19r30 36r52 39r22 43r35 44r77
+. 51r44 91r24 102r18 102r79 105r22 118r26 137r82 139r47 139r94
+16E10 Track_Type 16e49 22r62 26r47 90r24 160r25 168r38 170r47
+16n25 Stop_Track{16E10} 109r26 206r42 207r42 208r42 209r42 210r42 211r42
+. 212r42 213r42 214r42 215r42 216r43 217r43 218r43 219r43 220r43 221r43 222r43
+. 223r43 224r43 225r43 226r43 227r43 228r43 229r43
+16n37 Drive_Track{16E10} 112r26 230r43 231r43 232r43 233r43 234r43 235r43
+. 236r43 237r43 238r43
+17V14 ID_Hashed{6|19M9} 17b14 17>25 20l9 20t18 40r18
+17i25 Id{15I10} 19r47
+22W20 TrackThread 22d32 22d47 22d74 22d95 23d9 31E9 32l9 32e20 34r33 150b20
+. 186l9 186t20 206r27 207r27 208r27 209r27 210r27 211r27 212r27 213r27 214r27
+. 215r27 216r27 217r27 218r27 219r27 220r27 221r27 222r27 223r27 224r27 225r27
+. 226r27 227r27 228r27 229r27 230r28 231r28 232r28 233r28 234r28 235r28 236r28
+. 237r28 238r28
+22i32 ID{14I10} 159r110 168r92
+22e47 My_TrackType{16E10} 160r42 168r55 173r26
+22i74 Wait_Time{integer} 178r34
+22i95 Track_Max_Velocity{integer} 184r28
+23i9 Track_Length{integer} 183r23
+24Y15 Wait_For_Clear 120s26 151b15 155t12
+25Y15 Request_TravelTrough 25>36 104s18 122s26 156b15 162t12
+25i36 TrainID{13I10} 159r68
+26Y15 Check_TrackType 26<31 107s26 170b15 174t12
+26e31 TrackType{16E10} 173m13
+27Y15 Release_Track 27>29 123s34 125s18 163b15 169t12
+27i29 TrainID{13I10} 167r68
+28Y15 Wait_OnStation 28<30 110s34 175b15 179t12
+28i30 Wait_OnTrackTime{integer} 178m14
+29Y15 Drive_Trough 29<28 29<50 113s34 180b15 185t12
+29i28 Length{integer} 183m13
+29i50 MaxVelocity{integer} 184m13
+31b9 Clear{boolean} 152r14 157r14 161r13 164r18 166r13 171r18 176r18 181r18
+34P10 Track_Access(22W20) 35r51 36r65 38r26 45r27 89r20 92r28 138r38
+35K13 Track_Vector[23|46] 64r18 65r19
+36K13 SteeringToTracks_Vector[23|46]
+37K13 SteeringTrack_Map[13|48] 46r43 66r25 67r25 68r25 69r25 70r25 71r25
+. 72r25 73r25 74r25 75r25 76r26 77r26 78r26 79r26 80r26 81r26 82r26 83r26
+. 84r26 85r26 130r25 132r44
+43T15 SteeringThread 43d30 48l9 48e23 50r36 129b15 148l9 148t23 241r26 242r26
+. 243r26 244r26 245r26 246r26 247r26 248r26 249r26 250r26 251r26 252r26 253r26
+. 254r26 255r26 256r26 257r26 258r26 259r26 260r26
+43i30 ID{15I10} 101r57 102r67 117r48 139r65
+44Y15 Request_AssignTrack 44>35 44>58 45<9 103s40 119s29 137b20 141l17 141t36
+44i35 TrainID{13I10}
+44i58 Next_Steering{15I10} 139r112 140r49
+45p9 Track_InUse{34P10} 140m20 140r20
+46Y15 Init 46>20 132b16 134l13 134t17 328s18 329s18 330s18 331s18 332s18
+. 333s18 334s18 335s18 336s18 337s18 338s19 339s19 340s19 341s19 342s19 343s19
+. 344s19 345s19 346s19 347s19
+46r20 Init_MyNeighbours{13|53R9[37]} 133r30
+47Y15 Request_ReconfigSteering 121s29 143b20 145l17 145t41
+50P10 Steering_Access(43T15) 51r57
+51K13 Steering_Vector[23|46] 52r17 53r19 54r19 55r19 56r19 59r36 88r20 97r37
+52r5 Steerings{23|57R9[51]} 241m5 241r5 242m5 242r5 243m5 243r5 244m5 244r5
+. 245m5 245r5 246m5 246r5 247m5 247r5 248m5 248r5 249m5 249r5 250m5 250r5
+. 251m5 251r5 252m5 252r5 253m5 253r5 254m5 254r5 255m5 255r5 256m5 256r5
+. 257m5 257r5 258m5 258r5 259m5 259r5 260m5 260r5 328r5 329r5 330r5 331r5
+. 332r5 333r5 334r5 335r5 336r5 337r5 338r5 339r5 340r5 341r5 342r5 343r5
+. 344r5 345r5 346r5 347r5 349r24 350r24 351r24 352r24 353r24 354r24 355r24
+. 356r24 357r24 358r24 359r24 360r24 361r24 362r24 363r24 364r24 365r24 366r24
+. 367r24 368r24 370r24 371r24 372r24 373r24 374r24 375r24 376r24 377r24 378r24
+. 379r24 380r24 381r24 382r24 383r24 384r24 385r24 386r24 387r24 388r24 389r24
+. 391r24 392r24 393r24 394r24 395r24 396r24 397r24 398r24 399r24 400r24 401r24
+. 402r24 403r24 404r24 405r24 406r24 407r24 408r24 410r24 411r24 412r24 413r24
+. 414r24 415r24 416r24 417r24 418r24 419r24 420r24 421r24 422r24 423r24 424r24
+. 425r24 426r24 427r24
+53r5 Train1Route{23|57R9[51]} 349m5 349r5 350m5 350r5 351m5 351r5 352m5 352r5
+. 353m5 353r5 354m5 354r5 355m5 355r5 356m5 356r5 357m5 357r5 358m5 358r5
+. 359m5 359r5 360m5 360r5 361m5 361r5 362m5 362r5 363m5 363r5 364m5 364r5
+. 365m5 365r5 366m5 366r5 367m5 367r5 368m5 368r5 434r20
+54r5 Train2Route{23|57R9[51]} 370m5 370r5 371m5 371r5 372m5 372r5 373m5 373r5
+. 374m5 374r5 375m5 375r5 376m5 376r5 377m5 377r5 378m5 378r5 379m5 379r5
+. 380m5 380r5 381m5 381r5 382m5 382r5 383m5 383r5 384m5 384r5 385m5 385r5
+. 386m5 386r5 387m5 387r5 388m5 388r5 389m5 389r5 435r20
+55r5 Train3Route{23|57R9[51]} 391m5 391r5 392m5 392r5 393m5 393r5 394m5 394r5
+. 395m5 395r5 396m5 396r5 397m5 397r5 398m5 398r5 399m5 399r5 400m5 400r5
+. 401m5 401r5 402m5 402r5 403m5 403r5 404m5 404r5 405m5 405r5 406m5 406r5
+. 407m5 407r5 408m5 408r5 436r20
+56r5 Train4Route{23|57R9[51]} 410m5 410r5 411m5 411r5 412m5 412r5 413m5 413r5
+. 414m5 414r5 415m5 415r5 416m5 416r5 417m5 417r5 418m5 418r5 419m5 419r5
+. 420m5 420r5 421m5 421r5 422m5 422r5 423m5 423r5 424m5 424r5 425m5 425r5
+. 426m5 426r5 427m5 427r5 437r20
+58T15 TrainThread 58d27 58d42 60l9 60e20 61r33 87b15 127l9 127t20 429r23
+. 430r23 431r23 432r23
+58i27 ID{13I10} 103r60 104r39 106r60 119r49 122r47 123r48 125r32
+58i42 Velocity{integer}
+59Y15 Init 59>20 97b16 99l13 99t17 434s15 435s15 436s15 437s15
+59r20 Init_Route{23|57R9[51]} 98r25
+61P10 Train_Access(58T15) 63r51
+63K13 Train_Vector[23|46] 187r14
+64r5 StopTracks{23|57R9[35]} 206m5 206r5 207m5 207r5 208m5 208r5 209m5 209r5
+. 210m5 210r5 211m5 211r5 212m5 212r5 213m5 213r5 214m5 214r5 215m5 215r5
+. 216m5 216r5 217m5 217r5 218m5 218r5 219m5 219r5 220m5 220r5 221m5 221r5
+. 222m5 222r5 223m5 223r5 224m5 224r5 225m5 225r5 226m5 226r5 227m5 227r5
+. 228m5 228r5 229m5 229r5 262r33 263r33 265r33 266r33 268r33 269r33 273r33
+. 275r33 279r33 282r33 287r33 289r33 293r34 294r34 296r34 297r35 299r34 300r35
+. 303r35 305r35 309r35 310r35 312r35 313r35 315r35 316r35 319r35 320r35 322r35
+. 323r35 325r35 326r35
+65r5 DriveTracks{23|57R9[35]} 230m5 230r5 231m5 231r5 232m5 232r5 233m5 233r5
+. 234m5 234r5 235m5 235r5 236m5 236r5 237m5 237r5 238m5 238r5 270r33 272r33
+. 276r33 277r34 280r33 283r33 284r34 286r33 290r33 292r33 302r34 306r35 308r35
+. 318r34
+66r5 Steering0TrackMap{13|53R9[37]} 262m5 262r5 263m5 263r5 328r23
+67r5 Steering1TrackMap{13|53R9[37]} 265m5 265r5 266m5 266r5 329r23
+68r5 Steering2TrackMap{13|53R9[37]} 268m5 268r5 269m5 269r5 270m5 270r5 330r23
+69r5 Steering3TrackMap{13|53R9[37]} 272m5 272r5 273m5 273r5 331r23
+70r5 Steering4TrackMap{13|53R9[37]} 275m5 275r5 276m5 276r5 277m5 277r5 332r23
+71r5 Steering5TrackMap{13|53R9[37]} 279m5 279r5 280m5 280r5 333r23
+72r5 Steering6TrackMap{13|53R9[37]} 282m5 282r5 283m5 283r5 284m5 284r5 334r23
+73r5 Steering7TrackMap{13|53R9[37]} 286m5 286r5 287m5 287r5 335r23
+74r5 Steering8TrackMap{13|53R9[37]} 289m5 289r5 290m5 290r5 336r23
+75r5 Steering9TrackMap{13|53R9[37]} 292m5 292r5 293m5 293r5 294m5 294r5 337r23
+76r5 Steering10TrackMap{13|53R9[37]} 296m5 296r5 297m5 297r5 338r24
+77r5 Steering11TrackMap{13|53R9[37]} 299m5 299r5 300m5 300r5 339r24
+78r5 Steering12TrackMap{13|53R9[37]} 302m5 302r5 303m5 303r5 340r24
+79r5 Steering13TrackMap{13|53R9[37]} 305m5 305r5 306m5 306r5 341r24
+80r5 Steering14TrackMap{13|53R9[37]} 308m5 308r5 309m5 309r5 310m5 310r5
+. 342r24
+81r5 Steering15TrackMap{13|53R9[37]} 312m5 312r5 313m5 313r5 343r24
+82r5 Steering16TrackMap{13|53R9[37]} 315m5 315r5 316m5 316r5 344r24
+83r5 Steering17TrackMap{13|53R9[37]} 318m5 318r5 319m5 319r5 320m5 320r5
+. 345r24
+84r5 Steering18TrackMap{13|53R9[37]} 322m5 322r5 323m5 323r5 346r24
+85r5 Steering19TrackMap{13|53R9[37]} 325m5 325r5 326m5 326r5 347r24
+88r9 My_Route{23|57R9[51]} 98m13 101r26 101r35 102r36 102r45 103r9 103r18
+. 105r40 105r64 117r34 119r17 121r17
+89p9 My_Track{34P10} 103m79 103r79 104r9 107r17 110r25 113r25 116r37 119m68
+. 119r68 120r17 122r17 125r9
+90e9 My_TrackType{16E10} 107m42 108r22
+91i9 Next_Steering{15I10} 101m9 102r97 103r64 117m17 118r44 119r53
+92p9 Track_To_Release{34P10} 116m17 123r17
+93i9 Wait_Time{integer} 110m49 111r40
+94i9 Track_MaxVelocity{integer} 113m61 114r53
+95i9 Track_Length{integer} 113m47 114r40
+97r21 Init_Route{23|57R9[51]}
+105i17 I<short_short_integer> 117r43 119r26 121r26
+130r9 My_Neighbours{13|53R9[37]} 133m13 140r35
+132r21 Init_MyNeighbours{13|53R9[37]}
+137i40 TrainID{13I10}
+137i63 Next_Steering{15I10}
+138p20 Track_InUse{34P10}
+156i36 TrainID{13I10}
+163i29 TrainID{13I10}
+170e31 TrackType{16E10}
+175i30 Wait_OnTrackTime{integer}
+180i28 Length{integer}
+180i50 MaxVelocity{integer}
+187r5 Trains{23|57R9[63]} 429m5 429r5 430m5 430r5 431m5 431r5 432m5 432r5
+. 434r5 435r5 436r5 437r5
+189W20 TestType 192E9 194l9 194e17 195b20 200l9 200t17 202r41
+190U19 None 190>24 196b15 199l13 199t17
+190i24 N{natural} 196b20 198r29
+192i9 TestVariable{natural} 198r13
+193b9 Clear{boolean}
+202a9 TestType_Pool(189W20)
+X 44 system.ads
+67M9*Address
+X 61 s-memory.ads
+53V13*Alloc{44|67M9} 103i<c,__gnat_malloc>22
+68U14*Free 104i<c,__gnat_free>22
+76V13*Realloc{44|67M9} 105i<c,__gnat_realloc>22
+X 70 s-stausa.ads
+203U14*Initialize 204i<c,__gnat_stack_usage_initialize>22
+268U14*Output_Results 272i<c,__gnat_stack_usage_output_results>22
+X 72 s-stalib.adb
+93U14 Break_Start 94i<c,__gnat_break_start>22
+
