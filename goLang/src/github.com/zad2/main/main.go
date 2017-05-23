@@ -17,25 +17,33 @@ type RepairBrigadeThread struct {
 	trackEdges         []*steeringTuple
 }
 
-func (train *RepairBrigadeThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackToTrain {
-	return &AssignTrackToTrain{
+func (train *RepairBrigadeThread) buildTrainToSteeringMsg(indexOfEdge int) *AssignTrackForBrigade {
+	return &AssignTrackForBrigade{
 		edge:  train.trackEdges[indexOfEdge],
 		track: make(chan interface{})}
 }
 
-func (train *RepairBrigadeThread) startRepairTrain(positionToFix *steeringTuple) {
-	for i, _ := range train.trackEdges {
-		trainSteeringPipe := train.buildTrainToSteeringMsg(i)
-		train.trackEdges[i].from.steeringInputChanel <- trainSteeringPipe
+func (rp *RepairBrigadeThread) repairState(brokenSteering string) {
+	for _, steering := range rp.steerings {
+		if steering.steeringName != brokenSteering {
+			steering.repairOrder <- &RepairState{}
+		}
+	}
+}
+
+func (rp *RepairBrigadeThread) startRepairTrain(positionToFix *steeringTuple) {
+	for i, _ := range rp.trackEdges {
+		trainSteeringPipe := rp.buildTrainToSteeringMsg(i)
+		rp.trackEdges[i].from.repairOrder <- trainSteeringPipe
 		trackToTravel := <-trainSteeringPipe.track
 		fmt.Println("RepairBrigade received track to travel")
-		if positionToFix.to == train.trackEdges[i].to {
+		if positionToFix.to == rp.trackEdges[i].to {
 			fmt.Println("RepairBrigade fixing...")
 			time.Sleep(20 * time.Second)
 			fmt.Println("RepairBrigade fixed!")
 		}
-		steeringReconfig := &ReconfigureSteering{Resp: make(chan bool)}
-		train.trackEdges[i].from.steeringReconfChanel <- steeringReconfig
+		steeringReconfig := &ReconfigureSteeringForBrigade{Resp: make(chan bool)}
+		rp.trackEdges[i].from.repairOrder <- steeringReconfig
 		fmt.Println("RepairBrigade steering reconfiguration result", <-steeringReconfig.Resp)
 		trackPipe := &utils.TrainToTrackMsg{Resp: make(chan interface{})}
 		switch trackData := trackToTravel.(type) {
@@ -48,8 +56,7 @@ func (train *RepairBrigadeThread) startRepairTrain(positionToFix *steeringTuple)
 		case *StopTrackThread:
 			trackData.trackInputChanel <- trackPipe
 			trackType := <-trackPipe.Resp
-			fmt.Println("RepairBrigade receivec msg from StopTrack, time to wait")
-			time.Sleep(trackData.timeToRest)
+			fmt.Println("RepairBrigade receivec msg from StopTrack, no time to wait")
 			trackType.(*utils.StopTrackToTrainMsg).Resp <- "Release track"
 		}
 	}
@@ -129,20 +136,26 @@ func (rb *RepairBrigadeThread) startRepairBrigadeThread() {
 	repairOrder := <-rb.repairBrigadeInput
 	switch repair := repairOrder.(type) {
 	case *TrainBrokenOrder:
+		rb.repairState("")
 		rb.trackEdges = rb.findShortestPath(rb.startPosition.from, repair.currentEdge)
 		rb.startRepairTrain(repair.currentEdge)
 		repair.Resp <- "FIXED"
+		rb.repairState("")
 	case *SteeringBrokenOrder:
+		rb.repairState(repair.brokenSteering.steeringName)
 		rb.trackEdges = rb.findShortestPath(rb.startPosition.from,
 			&steeringTuple{repair.brokenSteering, repair.brokenSteering, 0})
 		rb.startRepairTrain(&steeringTuple{repair.brokenSteering, repair.brokenSteering, 0})
 		repair.Resp <- "FIXED"
+		rb.repairState(repair.brokenSteering.steeringName)
 	case *TrackBrokenOrder:
+		rb.repairState("")
 		rb.trackEdges = rb.findShortestPath(rb.startPosition.from,
 			&steeringTuple{rb.tracks[repair.brokenTrackId].from, rb.tracks[repair.brokenTrackId].to, 0})
 		rb.startRepairTrain(&steeringTuple{rb.tracks[repair.brokenTrackId].from,
 			rb.tracks[repair.brokenTrackId].to, 0})
 		repair.Resp <- "FIXED"
+		rb.repairState("")
 	}
 }
 
@@ -152,6 +165,7 @@ type TrainThread struct {
 	trainName   string
 	trackEdges  []*steeringTuple
 	repairOrder chan interface{}
+	id          int
 }
 
 type AssignTrackToTrain struct {
@@ -165,6 +179,7 @@ type ReconfigureSteering struct {
 type TrainBrokenOrder struct {
 	currentEdge *steeringTuple
 	Resp        chan string
+	trainId     int
 }
 
 type SteeringBrokenOrder struct {
@@ -189,7 +204,8 @@ func (train *TrainThread) generateFault(indexOfEdge int) {
 		fmt.Println("TrainThread", train.trainName, "is broken, send msg for help")
 		RepairBrigadePipe := &TrainBrokenOrder{
 			currentEdge: train.trackEdges[indexOfEdge],
-			Resp:        make(chan string)}
+			Resp:        make(chan string),
+			trainId:     train.id}
 		train.repairOrder <- RepairBrigadePipe
 		fmt.Println("TrackThread", train.trainName, <-RepairBrigadePipe.Resp)
 	}
@@ -247,20 +263,58 @@ func (steering *SteeringThread) generateFault() {
 	}
 }
 
+type StopSteering struct{}
+
+type AssignTrackForBrigade struct {
+	edge  *steeringTuple
+	track chan interface{}
+}
+
+type ReconfigureSteeringForBrigade struct {
+	Resp chan bool
+}
+type ReleaseNotNeededSteering struct {
+}
+type RepairState struct {
+}
+
+func (s *SteeringThread) handleRepairBrigadeTraffic() {
+	for {
+		inputData := <-s.repairOrder
+		switch repairBrigadeOrders := inputData.(type) {
+		case *AssignTrackForBrigade:
+			fmt.Println("SteeringThread", s.steeringName, " received request for track", repairBrigadeOrders)
+		case *ReconfigureSteeringForBrigade:
+			fmt.Println("SteeringThread", s.steeringName, " during reconfiguration")
+			break
+		case *RepairState:
+			break
+		}
+	}
+}
+
 func (s *SteeringThread) startSteeringThread() {
 	for {
 		s.generateFault()
 		select {
-		case requestFromTrain := <-s.steeringInputChanel:
-			fmt.Println("SteeringThread", s.steeringName, " received request for track")
-			requestFromTrain.track <- s.steeringEdges[requestFromTrain.edge.to]
-		case reconfigSteering := <-s.steeringReconfChanel:
-			fmt.Println("SteeringThread", s.steeringName, " during reconfiguration")
-			time.Sleep(s.timeToReconfig)
-			reconfigSteering.Resp <- true
+		case <-s.repairOrder:
+			fmt.Println("SteeringThread stoped receiving order from normal trains")
+			s.handleRepairBrigadeTraffic()
+		default:
+			select {
+			case requestFromTrain := <-s.steeringInputChanel:
+				fmt.Println("SteeringThread", s.steeringName, " received request for track")
+				requestFromTrain.track <- s.steeringEdges[requestFromTrain.edge.to]
+			case reconfigSteering := <-s.steeringReconfChanel:
+				fmt.Println("SteeringThread", s.steeringName, " during reconfiguration")
+				time.Sleep(s.timeToReconfig)
+				reconfigSteering.Resp <- true
+			}
 		}
 	}
 }
+
+type repairState struct{}
 
 type DriveTrackThread struct {
 	trackId            int
@@ -376,14 +430,13 @@ func main() {
 	go nodes[2].steeringEdges[edges[4].to].(*DriveTrackThread).startTrackThread()
 	go nodes[2].steeringEdges[edges[5].to].(*StopTrackThread).startTrackThread()
 
-	repairBrigade := &RepairBrigadeThread{repairChanel, 40 * time.Second, edges, nodes, edges[0], nil}
-
-	trains = append(trains, &TrainThread{1, 2, "train1", nil, repairChanel})
+	trains = append(trains, &TrainThread{1, 2, "train1", nil, repairChanel, 0})
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[1])
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[3])
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[5])
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[2])
 	trains[0].trackEdges = append(trains[0].trackEdges, edges[0])
+	repairBrigade := &RepairBrigadeThread{repairChanel, 40 * time.Second, edges, nodes, edges[0], nil}
 
 	go nodes[0].startSteeringThread()
 	go nodes[1].startSteeringThread()
