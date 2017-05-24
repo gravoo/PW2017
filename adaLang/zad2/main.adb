@@ -14,13 +14,22 @@ procedure Main is
     type Track_ID is range 0..100;
     type Steering_ID is range 0..100;
     type Track_Type is (Stop_Track, Drive_Track);
+    subtype Stop_Track_ID is Track_ID range 0..3;
+    subtype Drive_Track_ID is Track_ID range 0..3;
+
     function ID_Hashed (Id : Steering_ID) return Hash_Type is
     begin
        return Hash_Type'Val (Steering_ID'Pos (Id));
     end ID_Hashed;
 
-    protected type TrackThread(ID : Track_ID; My_TrackType : Track_Type; Wait_Time : Integer; Track_Max_Velocity : Integer; 
-        Track_Length : Integer) is 
+    protected type TrackThread is 
+        procedure InitDriveTrack(
+            My_ID : in Track_ID;
+            Track_Velocity : Natural; 
+            Track_Length : Natural);
+        procedure InitStopTrack(
+            My_ID : Track_ID;
+            Track_Time_To_Wait : Natural);
         entry Wait_For_Clear;
         entry Request_TravelTrough(TrainID : Train_ID);
         entry Check_TrackType(TrackType : out Track_Type);
@@ -29,6 +38,11 @@ procedure Main is
         entry Drive_Trough(Length : out Integer; MaxVelocity : out Integer);
     private
         Clear: Boolean := True;
+        ID : Track_ID := 0;
+        My_Track_Type : Track_Type := Stop_Track;
+        My_Track_Length : Natural := 20;
+        My_Track_Max_Velocity : Natural := 10; 
+        My_Track_Time_To_Wait : Natural := 10;
     end TrackThread;
 
     type Track_Access is access TrackThread;
@@ -148,6 +162,23 @@ procedure Main is
     end SteeringThread;
 
     protected body TrackThread is
+        procedure InitDriveTrack(
+            My_ID : in Track_ID;
+            Track_Velocity : Natural; 
+            Track_Length : Natural) is
+        begin 
+            ID := My_ID;
+            My_Track_Type := Drive_Track;
+            My_Track_Length := Track_Length;
+            My_Track_Max_Velocity := Track_Velocity;
+        end InitDriveTrack;
+        procedure InitStopTrack(
+            My_ID : Track_ID;
+            Track_Time_To_Wait : Natural) is
+        begin
+            ID := My_ID;
+            My_Track_Time_To_Wait := Track_Time_To_Wait;
+        end InitStopTrack;
         entry Wait_For_Clear
         when Clear is
         begin
@@ -157,7 +188,7 @@ procedure Main is
         when Clear is
         begin
             Put_Line("Track Thread task; train: "& Train_ID'Image (TrainID) & " on track: " & Track_ID'Image(ID)
-                & " " & Track_Type'Image(My_TrackType));
+                & " " & Track_Type'Image(My_Track_Type));
             Clear := False;
         end;
         entry Release_Track(TrainID : Train_ID)
@@ -165,77 +196,81 @@ procedure Main is
         begin
             Clear := True;
             Put_Line("Track Thread task; Train: "& Train_ID'Image (TrainID) &
-                " released track " & Track_Type'Image(My_TrackType) & " " & Track_ID'Image(ID));
+                " released track " & Track_Type'Image(My_Track_Type) & " " & Track_ID'Image(ID));
         end;
         entry Check_TrackType(TrackType : out Track_Type)
         when not Clear is
         begin
-            TrackType := My_TrackType;
+            TrackType := My_Track_Type;
         end;
         entry Wait_OnStation(Wait_OnTrackTime : out Integer)
         when not Clear is
         begin
-             Wait_OnTrackTime := Wait_Time;  
+             Wait_OnTrackTime := My_Track_Time_To_Wait;  
         end;
         entry Drive_Trough(Length : out Integer; MaxVelocity : out Integer)
         when not Clear is
         begin
-            Length := Track_Length;
-            MaxVelocity := Track_Max_Velocity;
+            Length := My_Track_Length;
+            MaxVelocity := My_Track_Max_Velocity;
         end;
     end TrackThread;
     Trains : Train_Vector.Vector;
 
-    protected type TestType is
-        procedure None(N : in Natural);
-    private
-        TestVariable : Natural := 0;
-        Clear: Boolean := True;
-    end TestType;
-    protected body TestType is
-    procedure None(N: in Natural) is 
-        begin
-            TestVariable := N;
-        end None;
-    end TestType;
+    type Stop_Track_Type is array (Stop_Track_ID) of TrackThread;
+    type Drive_Track_Type is array (Drive_Track_ID) of TrackThread;
+    Stop_Track_Pool : Stop_Track_Type;
+    Drive_Track_Pool : Drive_Track_Type;
 
-        TestType_Pool : array(0..15) of TestType;
-
-
+    procedure Inicialize_Stop_Track(Track_Pool_Array : in out Stop_Track_Type) is
+    begin
+        for Index in Track_Pool_Array'Range loop
+            Track_Pool_Array(Index).InitStopTrack(Index, 10);
+        end loop;
+    end Inicialize_Stop_Track;
+    procedure Inicialize_Drive_Track(Track_Pool_Array : in out Drive_Track_Type) is
+    begin
+        for Index in Track_Pool_Array'Range loop
+            Track_Pool_Array(Index).InitDriveTrack(Index, 10, 10);
+        end loop;
+    end Inicialize_Drive_Track;
 begin
-    StopTracks.Append(new TrackThread(0, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(1, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(2, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(3, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(4, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(5, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(6, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(7, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(8, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(9, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(10, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(11, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(12, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(13, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(14, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(15, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(16, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(17, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(18, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(19, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(20, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(21, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(22, Stop_Track, 5, 0, 0));
-    StopTracks.Append(new TrackThread(23, Stop_Track, 5, 0, 0));
-    DriveTracks.Append(new TrackThread(0, Drive_Track, 0, 10, 20));
-    DriveTracks.Append(new TrackThread(1, Drive_Track, 0, 10, 20));
-    DriveTracks.Append(new TrackThread(2, Drive_Track, 0, 10, 20));
-    DriveTracks.Append(new TrackThread(3, Drive_Track, 0, 10, 20));
-    DriveTracks.Append(new TrackThread(4, Drive_Track, 0, 10, 20));
-    DriveTracks.Append(new TrackThread(5, Drive_Track, 0, 10, 20));
-    DriveTracks.Append(new TrackThread(6, Drive_Track, 0, 10, 20));
-    DriveTracks.Append(new TrackThread(7, Drive_Track, 0, 10, 20));
-    DriveTracks.Append(new TrackThread(8, Drive_Track, 0, 10, 20));
+    Inicialize_Stop_Track(Stop_Track_Pool);
+    Inicialize_Drive_Track(Drive_Track_Pool);
+
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    StopTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
+    DriveTracks.Append(new TrackThread);
 
 
     Steerings.Append(new SteeringThread(0));
@@ -259,7 +294,7 @@ begin
     Steerings.Append(new SteeringThread(18));
     Steerings.Append(new SteeringThread(19));
 
-    Steering0TrackMap.Insert(0, StopTracks(0));
+    Steering0TrackMap.Insert(0, Stop_Track_Pool(0)'Access);
     Steering0TrackMap.Insert(2, StopTracks(1));
 
     Steering1TrackMap.Insert(1, StopTracks(3));
