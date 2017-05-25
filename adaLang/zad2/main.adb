@@ -11,7 +11,7 @@ use Ada.Text_IO;
 procedure Main is
     package SU renames Ada.Strings.Unbounded;
     type Train_ID is range 1..4;
-    type Track_ID is range 0..100;
+    type Track_ID is range 1..100;
     type Steering_ID is range 0..10;
     type Edge_ID is range 0..10;
     type Track_Type is (Stop_Track, Drive_Track);
@@ -22,8 +22,7 @@ procedure Main is
     begin
        return Hash_Type'Val (Steering_ID'Pos (Id));
     end ID_Hashed;
-
-    protected type TrackThread is 
+    protected type TrackThread(Curent_Track_Type:Track_Type) is 
         procedure InitDriveTrack(
             My_ID : in Track_ID;
             Track_Velocity : Natural; 
@@ -31,6 +30,7 @@ procedure Main is
         procedure InitStopTrack(
             My_ID : Track_ID;
             Track_Time_To_Wait : Natural);
+        function Get_ID return Track_ID;
         entry Wait_For_Clear;
         entry Request_TravelTrough(TrainID : Train_ID);
         entry Check_TrackType(TrackType : out Track_Type);
@@ -62,14 +62,10 @@ procedure Main is
         entry Request_ReconfigSteering;
     end SteeringThread;
 
-    type Stop_Track_Type is array (Stop_Track_ID) of TrackThread;
-    type Drive_Track_Type is array (Drive_Track_ID) of TrackThread;
     type Steering_Type is array (Steering_ID) of SteeringThread;
     type Steering_Access is access SteeringThread;
     type Route_Array_Type is array (positive range <>) of Edge_ID;
     type Route_Array_Access is access Route_Array_Type;
-    Stop_Track_Pool : Stop_Track_Type;
-    Drive_Track_Pool : Drive_Track_Type;
     Steering_Pool : Steering_Type;
 
     package Steering_Vector is new Vectors(Steering_ID, Steering_Access);
@@ -149,6 +145,10 @@ procedure Main is
             ID := My_ID;
             My_Track_Time_To_Wait := Track_Time_To_Wait;
         end InitStopTrack;
+        function Get_ID return Track_ID is
+        begin
+            return ID;
+        end;
         entry Wait_For_Clear
         when Clear is
         begin
@@ -194,35 +194,10 @@ procedure Main is
     type Edges_Type is array (Edge_ID) of Edge;
     Edges_Pool : Edges_Type;
 
-    procedure Inicialize_Stop_Track(Track_Pool_Array : in out Stop_Track_Type) is
-    begin
-        for Index in Track_Pool_Array'Range loop
-            Track_Pool_Array(Index).InitStopTrack(Index, 10);
-        end loop;
-    end Inicialize_Stop_Track;
-    procedure Inicialize_Drive_Track(Track_Pool_Array : in out Drive_Track_Type) is
-    begin
-        for Index in Track_Pool_Array'Range loop
-            Track_Pool_Array(Index).InitDriveTrack(Index, 10, 10);
-        end loop;
-    end Inicialize_Drive_Track;
-    procedure Inicialize_Steerings(Steering_Pool_Array : in out Steering_Type) is
-    begin
-        for Index in Steering_Pool_Array'Range loop
-            Steering_Pool_Array(Index).Init(Index);
-        end loop;
-    end Inicialize_Steerings;
-    
-    Route_Access : Route_Array_Access := new Route_Array_Type(1..3);
+    package Test_Vector is new Vectors(Track_ID, Track_Access);
+    Test_V : Test_Vector.Vector;
 begin
-    --Route_Access :=Route_Array_Type(1,2,3);
-    --Route_Access := new Route_Array_Type(1..3):=(1,2,3);
-    Inicialize_Stop_Track(Stop_Track_Pool);
-    Inicialize_Drive_Track(Drive_Track_Pool);
-    Inicialize_Steerings(Steering_Pool);
-    --Train_Pool(0).Init(1, Route_Access);
-    Edges_Pool(0).NeighbourSteering := 0;
-    Edges_Pool(0).Weight := 10;
-
-
+    Test_V.Append(New_Item => new TrackThread(Stop_Track), Count => 10); 
+    Test_V.Append(New_Item => new TrackThread(Drive_Track), Count => 10); 
+    Put_Line(Track_ID'Image(Test_V(19).Get_ID));
 end Main;
