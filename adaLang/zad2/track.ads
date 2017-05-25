@@ -25,4 +25,6 @@ package Track is
     end Track_Thread;
     type Track_Thread_Access is access Track_Thread;
     package Track_Container is new Vectors (Edges_ID, Track_Thread_Access);
+    function Build_Track_Pool(Count_Stop_Track : Count_Type; Count_Drive_Track : Count_Type)
+        return Track_Container.Vector;
 end Track;

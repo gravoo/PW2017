@@ -15,7 +15,8 @@ procedure Main is
 
     Track : Track_Container.Vector;
 begin
-    Track.Append(New_Item => new Track_Thread, Count => 3);
+    Track := Build_Track_Pool(1, 1);
     Put_Line("I am working, and I am not joking");
     Put_Line(Track_ID'Image(Track.Element(100).Get_ID));
+    Put_Line(Track_ID'Image(Track.Element(101).Get_ID));
 end Main;

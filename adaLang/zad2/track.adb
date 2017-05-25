@@ -1,5 +1,8 @@
 with Ada.Text_IO;
 use Ada.Text_IO;
+with Ada.Containers.Vectors;
+use Ada.Containers;
+
 package body Track is
     protected body Track_Thread is
     procedure Init_Stop_Track(ID : Track_ID ;Track_Time_To_Wait : Natural) is 
@@ -49,7 +52,12 @@ package body Track is
             Put_Line("Track_Thread id:" & Track_ID'Image(My_ID) & "released");
             My_Availablity := True;
         end;
-
-
     end Track_Thread;
+    function Build_Track_Pool(Count_Stop_Track : Count_Type; Count_Drive_Track : Count_Type)
+        return Track_Container.Vector is
+        Track : Track_Container.Vector;
+    begin
+        Track.Append(New_Item => new Track_Thread, Count => Count_Stop_Track);
+        Track.Append(New_Item => new Track_Thread, Count => Count_Drive_Track);
+    end;
 end Track;

@@ -24,3 +24,7 @@ _testmain.go
 
 # Ignore bin file
 goLang/bin/
+
+# Ignore ada compiled files
+*.ali
+*.o
