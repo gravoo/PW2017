@@ -12,6 +12,10 @@ package body Steering is
         begin
             return My_ID;
         end;
+        function Get_Time_To_Reconfigure return Duration is
+        begin 
+            return My_Time_To_Reconfigure;
+        end;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration) is
         begin
             My_ID := ID;
@@ -21,11 +25,10 @@ package body Steering is
         begin
             My_Neighbours := Neighbours;
         end;
-        entry Request_Reoncfigure_Steering(Time_To_Reconfigure : out Duration)
+        entry Request_Reoncfigure_Steering
         when My_Availablity is
         begin 
             My_Availablity := False;
-            Time_To_Reconfigure := My_Time_To_Reconfigure;
         end;
         entry Request_Release_Steering(ID : out Node_ID; Edge : in Edge_ID)
         when not My_Availablity is 

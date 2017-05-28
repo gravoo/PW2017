@@ -12,7 +12,6 @@ package body Train is
         My_ID : Train_ID;
         My_Route : Train_Route_Container.Vector;
         My_Steering : Node_ID;
-        My_Time : Duration;
     begin 
         accept Init_Train(ID : Train_ID; Steering_ID : Node_ID; Train_Route : Train_Route_Container.Vector) do 
             My_ID := ID;
@@ -24,8 +23,8 @@ package body Train is
         loop
             for My_Track of My_Route loop
                 Steering_Pool(My_Steering).Wait_For_Availalbe;
-                Steering_Pool(My_Steering).Request_Reoncfigure_Steering(My_Time);
-                delay My_Time;
+                Steering_Pool(My_Steering).Request_Reoncfigure_Steering;
+                delay Steering_Pool(My_Steering).Get_Time_To_Reconfigure;
                 Steering_Pool(My_Steering).Request_Release_Steering(My_Steering, My_Track);
                 Track_Pool(My_Track).Wait_For_Availalbe;
                 Track_Pool(My_Track).Request_Travel_Through;

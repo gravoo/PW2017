@@ -10,7 +10,6 @@ package Train is
     package Train_Route_Container is new Vectors (Natural, Edge_ID);
     task type Train_Thread is
         entry Init_Train(ID : Train_ID; Steering_ID : Node_ID; Train_Route : Train_Route_Container.Vector);
-                        
         entry Start_Train;
     end Train_Thread;
 

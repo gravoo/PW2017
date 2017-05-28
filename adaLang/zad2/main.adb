@@ -8,6 +8,7 @@ with Ada.Containers.Hashed_Maps;
 with Track; 
 with Steering;
 with Train;
+with Repair;
 use Ada.Containers;
 use Ada.Text_IO;
 use Track;
@@ -17,10 +18,12 @@ use Steering.Steering_Container;
 use Steering.Edge_To_Node_Container;
 use Train;
 use Train.Train_Route_Container;
+use Repair;
 
 procedure Main is
     package SU renames Ada.Strings.Unbounded;
     Edges_To_Seteering_Map : Steering_Neighbours.Map; 
+    Repair_Brigade : Repair_Thread;
 begin
     Track_Pool := Build_Track_Pool;
     Steering_Pool := Build_Steering_Pool;
@@ -30,6 +33,7 @@ begin
     Set_Neigbour_For_Steering(3, (201,2)&(102,4)&(103,4));
     Set_Neigbour_For_Steering(4, (102,3)&(103,3));
 
+    Repair_Brigade.Init_Repair_Thread(100, 0, Repair_Track_ID'First);
     Train_Pool.Append(new Train_Thread);
     Train_Pool(0).Init_Train(0, 0, 100&200&201&102&103&201&200&101);
     Train_Pool(0).Start_Train;

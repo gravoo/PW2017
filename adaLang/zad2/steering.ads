@@ -19,9 +19,10 @@ package Steering is
 
     protected type Steering_Thread is
         function Get_ID return Node_ID;
+        function Get_Time_To_Reconfigure return Duration;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration);
         procedure Set_Neighbour(Neighbours : Steering_Neighbours.Map);
-        entry Request_Reoncfigure_Steering(Time_To_Reconfigure : out Duration);
+        entry Request_Reoncfigure_Steering;
         entry Request_Release_Steering(ID : out Node_ID; Edge : in Edge_ID);
         entry Wait_For_Availalbe;
         private
