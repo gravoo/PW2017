@@ -12,7 +12,6 @@ use Track;
 
 procedure Main is
     package SU renames Ada.Strings.Unbounded;
-    Stop_Track_Pool : Track_Container.Vector;
 begin
     Stop_Track_Pool := Build_Track_Pool;
     Put_Line("I am working, and I am not joking");

@@ -27,4 +27,5 @@ package Track is
     type Track_Thread_Access is access Track_Thread;
     package Track_Container is new Vectors (Edge_ID, Track_Thread_Access);
     function Build_Track_Pool return Track_Container.Vector;
+    Stop_Track_Pool : Track_Container.Vector;
 end Track;
