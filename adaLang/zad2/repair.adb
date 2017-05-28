@@ -13,4 +13,7 @@ package body Repair is
             null;
         end Request_Repair_Steering;
      end Repair_Thread;
+ begin
+    Repair_Brigade.Init_Repair_Thread(100, 0, Track.Repair_Track_ID'First);
+    Repair_Brigade.Request_Repair_Steering(5);
 end Repair;

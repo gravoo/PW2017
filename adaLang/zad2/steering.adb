@@ -1,6 +1,3 @@
-with Ada.Containers.Hashed_Maps;
-use Ada.Containers;
-
 package body Steering is
     function ID_Hashed (ID : Edge_ID) return Hash_Type is
     begin

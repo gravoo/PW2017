@@ -1,8 +1,6 @@
 with Ada.Containers.Vectors;
-with Ada.Containers.Hashed_Maps;
-with Track;
-use Track;
-use Ada.Containers;
+with Ada.Containers.Hashed_Maps; use Ada.Containers;
+with Track; use Track;
 
 package Steering is
     type Node_ID is range 0..100;

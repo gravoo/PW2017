@@ -8,12 +8,13 @@ package body Fault is
          Number : Positive;
     begin
         accept Generate_Bug_On_Network do
+                Put_Line("Random number generator started");
+        end Generate_Bug_On_Network;
             loop 
                 Rand_Int.Reset(GG);
                 Number := Rand_Int.Random(GG);
                 Put_Line("Random number is: " & Positive'Image(Number));
                 delay 10.0;
             end loop;
-        end Generate_Bug_On_Network;
     end Fault_Thread;
 end Fault;

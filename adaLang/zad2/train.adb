@@ -1,11 +1,5 @@
 with Ada.Text_IO;
 use Ada.Text_IO;
-with Ada.Containers.Vectors;
-use Ada.Containers;
-with Track;
-use Track;
-with Steering;
-use Steering;
 
 package body Train is
     task body Train_Thread is
@@ -20,6 +14,7 @@ package body Train is
         end Init_Train;
         accept Start_Train do
         Put_Line("Train_Thread id:" & Train_ID'Image(My_ID) & " started route");
+        end Start_Train;
         loop
             for My_Track of My_Route loop
                 Steering_Pool(My_Steering).Wait_For_Availalbe;
@@ -39,6 +34,10 @@ package body Train is
                 Track_Pool(My_Track).Request_Release_Track;
             end loop;
         end loop;
-        end Start_Train;
     end Train_Thread;
+begin
+    Train_Pool.Append(new Train_Thread);
+    Train_Pool.Append(new Train_Thread);
+    Train_Pool(0).Init_Train(0, 0, 100&200&201&102&103&201&200&101);
+    Train_Pool(1).Init_Train(1, 4, 102&103);
 end Train;
