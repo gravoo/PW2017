@@ -5,13 +5,13 @@ use Ada.Containers;
 
 package body Track is
     protected body Track_Thread is
-    procedure Init_Stop_Track(ID : Track_ID ;Track_Time_To_Wait : Natural) is 
+    procedure Init_Stop_Track(ID : Edge_ID ;Track_Time_To_Wait : Natural) is 
     begin
         My_Type := Stop_Track;
         My_Time_To_Wait := Track_Time_To_Wait;
         My_ID := ID;
     end;
-    procedure Init_Drive_Track(ID : Track_ID ;Track_Max_Velocity : Natural; Track_Length : Natural) is
+    procedure Init_Drive_Track(ID : Edge_ID ;Track_Max_Velocity : Natural; Track_Length : Natural) is
     begin
         My_Type := Drive_Track;
         My_Max_Velocity := Track_Max_Velocity;
@@ -31,7 +31,7 @@ package body Track is
     begin
         return My_Time_To_Wait;
     end;
-    function Get_ID return Track_ID is
+    function Get_ID return Edge_ID is
     begin
         return My_ID;
     end;
@@ -43,21 +43,27 @@ package body Track is
     entry Request_Travel_Through
     when My_Availablity is
         begin
-            Put_Line("Track_Thread id:" & Track_ID'Image(My_ID) & " is taken");
+            Put_Line("Track_Thread id:" & Edge_ID'Image(My_ID) & " is taken");
             My_Availablity := False;
         end;
     entry Request_Release_Track 
     when not My_Availablity is
         begin
-            Put_Line("Track_Thread id:" & Track_ID'Image(My_ID) & "released");
+            Put_Line("Track_Thread id:" & Edge_ID'Image(My_ID) & "released");
             My_Availablity := True;
         end;
     end Track_Thread;
-    function Build_Track_Pool(Count_Stop_Track : Count_Type; Count_Drive_Track : Count_Type)
-        return Track_Container.Vector is
-        Track : Track_Container.Vector;
+    function Build_Track_Pool return Track_Container.Vector is
+        Track_Pool : Track_Container.Vector;
     begin
-        Track.Append(New_Item => new Track_Thread, Count => Count_Stop_Track);
-        Track.Append(New_Item => new Track_Thread, Count => Count_Drive_Track);
+        for I in Stop_Track_ID loop
+            Track_Pool.Append(new Track_Thread);
+            Track_Pool.Element(I).Init_Stop_Track(I, 5);
+        end loop;
+        for I in Drive_Track_ID loop
+            Track_Pool.Append(new Track_Thread);
+            Track_Pool.Element(I).Init_Drive_Track(I, 5, 5);
+        end loop;
+        return Track_Pool;
     end;
 end Track;

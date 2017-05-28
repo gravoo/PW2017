@@ -12,11 +12,10 @@ use Track;
 
 procedure Main is
     package SU renames Ada.Strings.Unbounded;
-
-    Track : Track_Container.Vector;
+    Stop_Track_Pool : Track_Container.Vector;
 begin
-    Track := Build_Track_Pool(1, 1);
+    Stop_Track_Pool := Build_Track_Pool;
     Put_Line("I am working, and I am not joking");
-    Put_Line(Track_ID'Image(Track.Element(100).Get_ID));
-    Put_Line(Track_ID'Image(Track.Element(101).Get_ID));
+    Put_Line(Edge_ID'Image(Stop_Track_Pool.Element(100).Get_ID));
+    Put_Line(Edge_ID'Image(Stop_Track_Pool.Element(200).Get_ID));
 end Main;
