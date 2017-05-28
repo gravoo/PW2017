@@ -15,5 +15,4 @@ package Train is
 
     type Train_Thread_Access is access Train_Thread;
     package Train_Container is new Vectors (Train_ID, Train_Thread_Access);
-    Train_Pool : Train_Container.Vector;
 end Train;

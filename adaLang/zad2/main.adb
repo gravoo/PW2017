@@ -9,6 +9,7 @@ with Track;
 with Steering;
 with Train;
 with Repair;
+with Fault;
 use Ada.Containers;
 use Ada.Text_IO;
 use Track;
@@ -24,6 +25,8 @@ procedure Main is
     package SU renames Ada.Strings.Unbounded;
     Edges_To_Seteering_Map : Steering_Neighbours.Map; 
     Repair_Brigade : Repair_Thread;
+    Fault_Generator : Fault.Fault_Thread;
+    Train_Pool : Train_Container.Vector;
 begin
     Track_Pool := Build_Track_Pool;
     Steering_Pool := Build_Steering_Pool;
@@ -33,10 +36,17 @@ begin
     Set_Neigbour_For_Steering(3, (201,2)&(102,4)&(103,4));
     Set_Neigbour_For_Steering(4, (102,3)&(103,3));
 
-    Repair_Brigade.Init_Repair_Thread(100, 0, Repair_Track_ID'First);
     Train_Pool.Append(new Train_Thread);
+    Train_Pool.Append(new Train_Thread);
+    --Train_Pool(0).Start_Train;
     Train_Pool(0).Init_Train(0, 0, 100&200&201&102&103&201&200&101);
+    Train_Pool(1).Init_Train(1, 4, 102&103);
     Train_Pool(0).Start_Train;
+    Train_Pool(1).Start_Train;
+
+    Repair_Brigade.Init_Repair_Thread(100, 0, Repair_Track_ID'First);
+    Repair_Brigade.Request_Repair_Steering(5);
+    Fault_Generator.Generate_Bug_On_Network;
 
     Put_Line("I am working, and I am not joking");
     Put_Line(Edge_ID'Image(Track_Pool.Element(100).Get_ID));
