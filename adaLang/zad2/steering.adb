@@ -4,6 +4,10 @@ package body Steering is
         begin
             My_ID := ID;
         end;
+        procedure Set_Neighbour(ID : Node_ID) is
+        begin
+            My_Neighbour := ID;
+        end;
     end Steering_Thread;
     function Build_Steering_Pool return Steering_Container.Vector is 
         Steering_Pool : Steering_Container.Vector;
