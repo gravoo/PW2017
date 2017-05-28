@@ -6,16 +6,16 @@ use Ada.Containers;
 
 package Steering is
     type Node_ID is range 0..100;
+    type Edge_To_Node is record
+         ID : Edge_ID;
+         Node : Node_ID;
+    end record;
     function ID_Hashed (ID : Edge_ID) return Hash_Type;
     package Steering_Neighbours is new Ada.Containers.Hashed_Maps
         (Key_Type => Edge_ID,
          Element_Type => Node_ID, 
          Hash => ID_Hashed,
          Equivalent_Keys => "=");
-    type Edge_To_Node is record
-         ID : Edge_ID;
-         Node : Node_ID;
-    end record;
 
     protected type Steering_Thread is
         function Get_ID return Node_ID;
@@ -23,6 +23,7 @@ package Steering is
         procedure Set_Neighbour(Neighbours : Steering_Neighbours.Map);
         entry Request_Reoncfigure_Steering(Time_To_Reconfigure : out Duration);
         entry Request_Release_Steering(ID : out Node_ID; Edge : in Edge_ID);
+        entry Wait_For_Availalbe;
         private
             My_ID : Node_ID;
             My_Neighbours : Steering_Neighbours.Map;
