@@ -21,14 +21,23 @@ package body Train is
         end Init_Train;
         accept Start_Train do
         Put_Line("Train_Thread id:" & Train_ID'Image(My_ID) & " started route");
-            for Track of My_Route loop
+        loop
+            for My_Track of My_Route loop
                 Steering_Pool(My_Steering).Wait_For_Availalbe;
                 Steering_Pool(My_Steering).Request_Reoncfigure_Steering(My_Time);
-                Steering_Pool(My_Steering).Request_Release_Steering(My_Steering, Track);
-                Track_Pool(Track).Wait_For_Availalbe;
-                Track_Pool(Track).Request_Travel_Through;
-                Track_Pool(Track).Request_Release_Track;
+                delay My_Time;
+                Steering_Pool(My_Steering).Request_Release_Steering(My_Steering, My_Track);
+                Track_Pool(My_Track).Wait_For_Availalbe;
+                Track_Pool(My_Track).Request_Travel_Through;
+                case Track_Pool(My_Track).Get_Track_Type is
+                    when Stop_Track => 
+                        delay Track_Pool(My_Track).Get_Time_To_Wait;
+                    when Drive_Track =>
+                        delay Duration(Track_Pool(My_Track).Get_Length/Track_Pool(My_Track).Get_Max_Velocity); 
+                end case;
+                Track_Pool(My_Track).Request_Release_Track;
             end loop;
+        end loop;
         end Start_Train;
     end Train_Thread;
 end Train;

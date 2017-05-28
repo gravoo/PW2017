@@ -5,7 +5,7 @@ use Ada.Containers;
 
 package body Track is
     protected body Track_Thread is
-    procedure Init_Stop_Track(ID : Edge_ID ;Track_Time_To_Wait : Natural) is 
+    procedure Init_Stop_Track(ID : Edge_ID ;Track_Time_To_Wait : Duration) is 
     begin
         My_Type := Stop_Track;
         My_Time_To_Wait := Track_Time_To_Wait;
@@ -18,16 +18,19 @@ package body Track is
         My_Length := Track_Length;
         My_ID := ID;
     end;
-    procedure Get_Max_Velocity_And_Length(Length : out Natural; Max_Velocity : out Natural) is
+    function Get_Max_Velocity return Natural is
     begin
-        Length := My_Length;
-        Max_Velocity := My_Max_Velocity;
+        return My_Max_Velocity;
+    end;
+    function Get_Length return Natural is
+    begin
+        return My_Length;
     end;
     function Get_Track_Type return Track_Type is
     begin
         return My_Type;
     end;
-    function Get_Time_To_Wait return Natural is
+    function Get_Time_To_Wait return Duration is
     begin
         return My_Time_To_Wait;
     end;
@@ -58,11 +61,11 @@ package body Track is
     begin
         for I in Stop_Track_ID loop
             Track_Pool.Append(new Track_Thread);
-            Track_Pool.Element(I).Init_Stop_Track(I, 5);
+            Track_Pool.Element(I).Init_Stop_Track(I, 5.0);
         end loop;
         for I in Drive_Track_ID loop
             Track_Pool.Append(new Track_Thread);
-            Track_Pool.Element(I).Init_Drive_Track(I, 5, 5);
+            Track_Pool.Element(I).Init_Drive_Track(ID => I, Track_Max_Velocity => 90, Track_Length => 900);
         end loop;
         return Track_Pool;
     end;
