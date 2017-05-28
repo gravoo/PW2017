@@ -35,9 +35,9 @@ package body Steering is
         end;
         entry Wait_For_Availalbe
         when My_Availablity is
-            begin 
-                null;
-            end;
+        begin 
+            null;
+        end;
     end Steering_Thread;
     function Build_Steering_Pool return Steering_Container.Vector is 
         Steering_Pool : Steering_Container.Vector;
