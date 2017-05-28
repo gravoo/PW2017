@@ -2,7 +2,7 @@ with Ada.Containers.Vectors;
 use Ada.Containers;
 
 package Track is
-    type Edge_ID is range 100..300;
+    type Edge_ID is range 100..299;
     subtype Stop_Track_ID is Edge_ID range 100..199;
     subtype Drive_Track_ID is Edge_ID range 200..299;
     type Track_Type is (Stop_Track, Drive_Track);

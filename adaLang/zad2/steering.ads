@@ -34,8 +34,7 @@ package Steering is
     package Steering_Container is new Vectors (Node_ID, Steering_Thread_Access);
     package Edge_To_Node_Container is new Vectors (Node_ID, Edge_To_Node);
     function Build_Steering_Pool return Steering_Container.Vector;
-    function Build_Neigbour_For_Steering(Edges_To_Node_Pool : Edge_To_Node_Container.Vector) 
-        return Steering_Neighbours.Map;
+    procedure Set_Neigbour_For_Steering(ID : Node_ID ; Edges_To_Node_Pool : Edge_To_Node_Container.Vector); 
 
     Steering_Pool : Steering_Container.Vector;
 end Steering;

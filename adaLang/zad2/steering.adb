@@ -48,13 +48,12 @@ package body Steering is
         end loop;
         return Steering_Pool;
     end;
-    function Build_Neigbour_For_Steering(Edges_To_Node_Pool : Edge_To_Node_Container.Vector) 
-        return Steering_Neighbours.Map is
-    Neigbours_Node : Steering_Neighbours.Map;
+    procedure Set_Neigbour_For_Steering(ID : Node_ID ; Edges_To_Node_Pool : Edge_To_Node_Container.Vector) is 
+        Neigbours_Node : Steering_Neighbours.Map;
     begin
         for Edges of Edges_To_Node_Pool loop
             Neigbours_Node.Insert(Edges.ID, Edges.Node);
         end loop;
-        return Neigbours_Node; 
+        Steering_Pool(ID).Set_Neighbour(Neigbours_Node);
     end;
 end Steering;
