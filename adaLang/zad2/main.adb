@@ -24,11 +24,15 @@ procedure Main is
 begin
     Track_Pool := Build_Track_Pool;
     Steering_Pool := Build_Steering_Pool;
-    Set_Neigbour_For_Steering(0, (100,0)&(101,0)&(102,0));
-    Set_Neigbour_For_Steering(1, (100,0)&(101,0)&(102,0));
+    Set_Neigbour_For_Steering(0, (100,1)&(101,1));
+    Set_Neigbour_For_Steering(1, (200,2)&(101,0)&(100,0));
+    Set_Neigbour_For_Steering(2, (200,1)&(201,3));
+    Set_Neigbour_For_Steering(3, (201,2)&(102,4)&(103,4));
+    Set_Neigbour_For_Steering(4, (102,3)&(103,3));
 
     Train_Pool.Append(new Train_Thread);
-    Train_Pool(0).Init_Train(0, 100&200&299&200&100);
+    Train_Pool(0).Init_Train(0, 0, 100&200&201&102&103&201&200&101);
+    Train_Pool(0).Start_Train;
 
     Put_Line("I am working, and I am not joking");
     Put_Line(Edge_ID'Image(Track_Pool.Element(100).Get_ID));

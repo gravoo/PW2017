@@ -43,13 +43,13 @@ package body Track is
     entry Request_Travel_Through
     when My_Availablity is
         begin
-            Put_Line("Track_Thread id:" & Edge_ID'Image(My_ID) & " is taken");
+            Put_Line("Track_Thread id: " & Edge_ID'Image(My_ID) & " is taken");
             My_Availablity := False;
         end;
     entry Request_Release_Track 
     when not My_Availablity is
         begin
-            Put_Line("Track_Thread id:" & Edge_ID'Image(My_ID) & "released");
+            Put_Line("Track_Thread id: " & Edge_ID'Image(My_ID) & " released");
             My_Availablity := True;
         end;
     end Track_Thread;
