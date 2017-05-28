@@ -34,6 +34,8 @@ package body Train is
                         delay Track_Pool(My_Track).Get_Time_To_Wait;
                     when Drive_Track =>
                         delay Duration(Track_Pool(My_Track).Get_Length/Track_Pool(My_Track).Get_Max_Velocity); 
+                    when Repair_Track =>
+                        null;
                 end case;
                 Track_Pool(My_Track).Request_Release_Track;
             end loop;

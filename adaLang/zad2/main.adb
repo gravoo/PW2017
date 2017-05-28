@@ -24,7 +24,7 @@ procedure Main is
 begin
     Track_Pool := Build_Track_Pool;
     Steering_Pool := Build_Steering_Pool;
-    Set_Neigbour_For_Steering(0, (100,1)&(101,1));
+    Set_Neigbour_For_Steering(0, (100,1)&(101,1)&(300,0));
     Set_Neigbour_For_Steering(1, (200,2)&(101,0)&(100,0));
     Set_Neigbour_For_Steering(2, (200,1)&(201,3));
     Set_Neigbour_For_Steering(3, (201,2)&(102,4)&(103,4));

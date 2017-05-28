@@ -18,6 +18,11 @@ package body Track is
         My_Length := Track_Length;
         My_ID := ID;
     end;
+    procedure Init_Repair_Track(ID : Edge_ID) is
+    begin
+        My_ID := ID;
+        My_Type := Repair_Track;
+    end;
     function Get_Max_Velocity return Natural is
     begin
         return My_Max_Velocity;
@@ -67,6 +72,8 @@ package body Track is
             Track_Pool.Append(new Track_Thread);
             Track_Pool.Element(I).Init_Drive_Track(ID => I, Track_Max_Velocity => 90, Track_Length => 900);
         end loop;
+            Track_Pool.Append(new Track_Thread);
+            Track_Pool.Element(Repair_Track_ID'First).Init_Repair_Track(ID => Repair_Track_ID'First);
         return Track_Pool;
     end;
 end Track;
