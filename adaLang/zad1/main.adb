@@ -14,9 +14,9 @@ procedure Main is
     type Track_ID is range 0..100;
     type Steering_ID is range 0..100;
     type Track_Type is (Stop_Track, Drive_Track);
-    function ID_Hashed (Id : Steering_ID) return Hash_Type is
+    function ID_Hashed (ID : Node_ID) return Hash_Type is
     begin
-       return Hash_Type'Val (Steering_ID'Pos (Id));
+       return Hash_Type'Val (Node_ID'Pos (Id));
     end ID_Hashed;
 
     protected type TrackThread(ID : Track_ID; My_TrackType : Track_Type; Wait_Time : Integer; Track_Max_Velocity : Integer; 
