@@ -22,7 +22,7 @@ begin
     Set_Neigbour_For_Steering(4, (102,3)&(103,3));
 
     Train_Pool(0).Start_Train;
-    --Train_Pool(1).Start_Train;
+    Train_Pool(1).Start_Train;
 
     Fault_Generator.Generate_Bug_On_Network;
 

@@ -21,11 +21,10 @@ package Steering is
         function Get_Time_To_Reconfigure return Duration;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration);
         procedure Set_Neighbour(Neighbours : Steering_Neighbours.Map);
+        procedure Rise_Alarm;
         entry Request_Reoncfigure_Steering;
         entry Request_Release_Steering(ID : out Node_ID; Edge : in Edge_ID);
         entry Wait_For_Availalbe;
-        entry Rise_Alarm;
-        entry Fix_Steering;
         entry Request_Set_Fix_Mode;
         entry Request_Unset_Fix_Mode;
         private
@@ -33,7 +32,6 @@ package Steering is
             My_Neighbours : Steering_Neighbours.Map;
             My_Time_To_Reconfigure : Duration;
             My_Availablity : Boolean := True;
-            My_Broken_State : Boolean := False;
             My_Fix_Mode : Boolean := False;
     end Steering_Thread;
     type Steering_Thread_Access is access Steering_Thread;
