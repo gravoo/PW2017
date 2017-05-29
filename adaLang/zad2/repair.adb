@@ -33,14 +33,12 @@ package body Repair is
     procedure For_All_Network_Set_Fix_Mode is
     begin
         for Steering of Steering_Pool loop
-            Steering.Wait_For_Availalbe;
             Steering.Request_Set_Fix_Mode;
         end loop;
     end;
     procedure For_All_Network_Unset_Fix_Mode is
     begin
         for Steering of Steering_Pool loop
-            Steering.Wait_For_Availalbe;
             Steering.Request_Unset_Fix_Mode;
         end loop;
     end;

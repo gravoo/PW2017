@@ -38,7 +38,7 @@ package body Steering is
             ID := My_Neighbours(Edge);
         end;
         entry Wait_For_Availalbe
-        when My_Availablity is
+        when My_Availablity and not My_Broken_State and not My_Fix_Mode is
         begin 
             null;
         end;
@@ -59,13 +59,13 @@ package body Steering is
         when not My_Fix_Mode is
         begin
             Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " in fix mode");
-            My_Broken_State := True;
+            My_Fix_Mode := True;
         end;
         entry Request_Unset_Fix_Mode
         when My_Fix_Mode is
         begin
             Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " is free to go");
-            My_Broken_State := False;
+            My_Fix_Mode := False;
         end;
     end Steering_Thread;
     function Build_Steering_Pool return Steering_Container.Vector is 
