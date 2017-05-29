@@ -25,23 +25,25 @@ package body Steering is
             My_Neighbours := Neighbours;
         end;
         entry Request_Reoncfigure_Steering
-        when My_Availablity and not My_Broken_State is
+        when My_Availablity and not My_Broken_State and not My_Fix_Mode is
         begin 
+            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " is taken ");
             My_Availablity := False;
         end;
         entry Request_Release_Steering(ID : out Node_ID; Edge : in Edge_ID)
-        when not My_Availablity and not My_Broken_State is 
+        when not My_Availablity is
         begin
+            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " released ");
             My_Availablity := True;
             ID := My_Neighbours(Edge);
         end;
         entry Wait_For_Availalbe
-        when My_Availablity and not My_Broken_State is
+        when My_Availablity is
         begin 
             null;
         end;
         entry Rise_Alarm
-        when not My_Broken_State  is
+        when not My_Broken_State is
         begin
             Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " broken");
             My_Broken_State := True;
@@ -51,6 +53,18 @@ package body Steering is
         when My_Broken_State is
         begin
             Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " fixed");
+            My_Broken_State := False;
+        end;
+        entry Request_Set_Fix_Mode
+        when not My_Fix_Mode is
+        begin
+            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " in fix mode");
+            My_Broken_State := True;
+        end;
+        entry Request_Unset_Fix_Mode
+        when My_Fix_Mode is
+        begin
+            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " is free to go");
             My_Broken_State := False;
         end;
     end Steering_Thread;

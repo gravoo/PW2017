@@ -5,7 +5,7 @@ package body Fault is
     task body Fault_Thread is
          GG : Rand_Int.Generator;
          Rand_Number : Natural;
-         Time_For_New_Fault : Duration := 10.0;
+         Time_For_New_Fault : Duration := 100.0;
          Fault_For_Type : Count_Of_Types;
          Broken_Steering : Steering.Node_ID;
     begin
@@ -13,7 +13,6 @@ package body Fault is
                 Put_Line("Random Fault generator started");
         end Generate_Bug_On_Network;
             loop 
-                delay Time_For_New_Fault;
                 Rand_Int.Reset(GG);
                 Rand_Number := Rand_Int.Random(GG);
                 Fault_For_Type  := Count_Of_Types(Rand_Number mod Natural(Count_Of_Types'Last + 1));
@@ -25,6 +24,7 @@ package body Fault is
                              Steering.Steering_Pool(Broken_Steering).Rise_Alarm;
                    when 2 => Put_Line("Fault generated for Track");
                 end case;
+                delay Time_For_New_Fault;
             end loop;
     end Fault_Thread;
     function Get_Broken_Steering_ID(Number : Positive) return Steering.Node_ID is

@@ -23,11 +23,27 @@ package body Repair is
                 case My_Type_Of_Fix is
                    when 0 => Put_Line("Init procedure for fixing Train");
                    when 1 => Put_Line("Init procedure for fixing Steering");
+                             For_All_Network_Set_Fix_Mode;
+                             For_All_Network_Unset_Fix_Mode;
                              Steering.Steering_Pool(My_Broken_Steering).Fix_Steering;
                    when 2 => Put_Line("Init procedure for fixing Track");
                 end case;
         end loop;
      end Repair_Thread;
+    procedure For_All_Network_Set_Fix_Mode is
+    begin
+        for Steering of Steering_Pool loop
+            Steering.Wait_For_Availalbe;
+            Steering.Request_Set_Fix_Mode;
+        end loop;
+    end;
+    procedure For_All_Network_Unset_Fix_Mode is
+    begin
+        for Steering of Steering_Pool loop
+            Steering.Wait_For_Availalbe;
+            Steering.Request_Unset_Fix_Mode;
+        end loop;
+    end;
  begin
     Repair_Brigade.Init_Repair_Thread(100, Steering.Node_ID'First, Track.Repair_Track_ID'First);
 end Repair;

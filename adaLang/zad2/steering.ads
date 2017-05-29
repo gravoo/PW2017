@@ -3,7 +3,7 @@ with Ada.Containers.Hashed_Maps; use Ada.Containers;
 with Track; use Track;
 
 package Steering is
-    type Node_ID is range 0..100;
+    type Node_ID is range 0..4;
     type Edge_To_Node is record
          ID : Edge_ID;
          Node : Node_ID;
@@ -26,12 +26,15 @@ package Steering is
         entry Wait_For_Availalbe;
         entry Rise_Alarm;
         entry Fix_Steering;
+        entry Request_Set_Fix_Mode;
+        entry Request_Unset_Fix_Mode;
         private
             My_ID : Node_ID;
             My_Neighbours : Steering_Neighbours.Map;
             My_Time_To_Reconfigure : Duration;
             My_Availablity : Boolean := True;
             My_Broken_State : Boolean := False;
+            My_Fix_Mode : Boolean := False;
     end Steering_Thread;
     type Steering_Thread_Access is access Steering_Thread;
     package Steering_Container is new Vectors (Node_ID, Steering_Thread_Access);
