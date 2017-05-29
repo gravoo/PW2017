@@ -8,6 +8,7 @@ package Steering is
          ID : Edge_ID;
          Node : Node_ID;
     end record;
+    Count_Of_Steering : constant  Positive := 4;
     function ID_Hashed (ID : Edge_ID) return Hash_Type;
     package Steering_Neighbours is new Ada.Containers.Hashed_Maps
         (Key_Type => Edge_ID,
@@ -23,11 +24,14 @@ package Steering is
         entry Request_Reoncfigure_Steering;
         entry Request_Release_Steering(ID : out Node_ID; Edge : in Edge_ID);
         entry Wait_For_Availalbe;
+        entry Rise_Alarm;
+        entry Fix_Steering;
         private
             My_ID : Node_ID;
             My_Neighbours : Steering_Neighbours.Map;
             My_Time_To_Reconfigure : Duration;
             My_Availablity : Boolean := True;
+            My_Broken_State : Boolean := False;
     end Steering_Thread;
     type Steering_Thread_Access is access Steering_Thread;
     package Steering_Container is new Vectors (Node_ID, Steering_Thread_Access);

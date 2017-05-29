@@ -9,10 +9,12 @@ with Repair;
 with Fault;
 
 procedure Main is
-    Fault_Generator : Fault.Fault_Thread;
+    Fault_Generator : Fault.Fault_Thread(
+        Train_Pool.Length, Steering_Pool.Length, Track.Track_Pool.Length);
 begin
     Steering_Pool := Steering.Build_Steering_Pool;
     Track.Track_Pool := Track.Build_Track_Pool;
+    Put_Line("I am working, and I am not joking");
     Set_Neigbour_For_Steering(0, (100,1)&(101,1)&(300,0));
     Set_Neigbour_For_Steering(1, (200,2)&(101,0)&(100,0));
     Set_Neigbour_For_Steering(2, (200,1)&(201,3));

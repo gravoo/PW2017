@@ -1,3 +1,5 @@
+with Ada.Text_IO; use Ada.Text_IO;
+with Repair;
 package body Steering is
     function ID_Hashed (ID : Edge_ID) return Hash_Type is
     begin
@@ -23,20 +25,33 @@ package body Steering is
             My_Neighbours := Neighbours;
         end;
         entry Request_Reoncfigure_Steering
-        when My_Availablity is
+        when My_Availablity and not My_Broken_State is
         begin 
             My_Availablity := False;
         end;
         entry Request_Release_Steering(ID : out Node_ID; Edge : in Edge_ID)
-        when not My_Availablity is 
+        when not My_Availablity and not My_Broken_State is 
         begin
             My_Availablity := True;
             ID := My_Neighbours(Edge);
         end;
         entry Wait_For_Availalbe
-        when My_Availablity is
+        when My_Availablity and not My_Broken_State is
         begin 
             null;
+        end;
+        entry Rise_Alarm
+        when not My_Broken_State  is
+        begin
+            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " broken");
+            My_Broken_State := True;
+            Repair.Repair_Brigade.Request_Repair_Steering(My_ID);
+        end;
+        entry Fix_Steering
+        when My_Broken_State is
+        begin
+            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " fixed");
+            My_Broken_State := False;
         end;
     end Steering_Thread;
     function Build_Steering_Pool return Steering_Container.Vector is 
