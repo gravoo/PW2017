@@ -1,7 +1,4 @@
-with Steering; use Steering;
-with Track; use Track; 
-with Train; use Train; 
-with Fault;
+with Constants; use Constants;
 package Repair is
     procedure For_All_Network_Set_Fix_Mode(Broken_Steering_ID : Node_ID);
     procedure For_All_Network_Unset_Fix_Mode(Broken_Steering_ID : Node_ID);
@@ -15,7 +12,7 @@ package Repair is
         My_Steering : Node_ID;
         My_Repair_Track_ID : Repair_Track_ID;
         My_Broken_Steering : Node_ID;
-        My_Type_Of_Fix : Fault.Count_Of_Types; 
+        My_Type_Of_Fix : Count_Of_Types; 
     end Repair_Thread;
     Repair_Brigade : Repair_Thread;
 end Repair;

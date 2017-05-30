@@ -23,16 +23,16 @@ badd +2 repair_train.adb
 argglobal
 silent! argdel *
 argadd fault.adb
-argadd main.adb
-argadd repair.adb
-argadd steering.adb
-argadd track.adb
-argadd train.adb
-argadd fault.ads
-argadd repair.ads
-argadd steering.ads
-argadd track.ads
 argadd train.ads
+argadd track.ads
+argadd steering.ads
+argadd repair.ads
+argadd fault.ads
+argadd train.adb
+argadd track.adb
+argadd steering.adb
+argadd repair.adb
+argadd main.adb
 edit repair_train.adb
 set splitbelow splitright
 wincmd t
@@ -48,19 +48,18 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 11 - ((10 * winheight(0) + 18) / 37)
+let s:l = 1 - ((0 * winheight(0) + 19) / 39)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-11
-normal! 049|
-lcd ~/PWR/PW2017/adaLang/zad2
+1
+normal! 0
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
 endif
 unlet! s:wipebuf
-set winheight=1 winwidth=20 winminheight=1 winminwidth=1 shortmess=filnxtToO
+set winheight=1 winwidth=20 winminheight=1 winminwidth=1 shortmess=aoO
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)

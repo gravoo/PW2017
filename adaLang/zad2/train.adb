@@ -1,5 +1,7 @@
 with Ada.Text_IO;
 use Ada.Text_IO;
+with Track; use Track;
+with Steering; use Steering;
 
 package body Train is
     task body Train_Thread is

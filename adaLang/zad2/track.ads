@@ -1,14 +1,7 @@
-with Ada.Containers.Vectors;
-use Ada.Containers;
+with Ada.Containers.Vectors; use Ada.Containers;
+with Constants; use Constants;
 
 package Track is
-    type Edge_ID is range 100..300;
-    subtype Stop_Track_ID is Edge_ID range 100..199;
-    subtype Drive_Track_ID is Edge_ID range 200..299;
-    Count_Of_Stop_Track : constant Count_Type := 4;
-    Count_Of_Drive_Track : constant Count_Type := 2;
-    subtype Repair_Track_ID is Edge_ID range 300..300;
-    type Track_Type is (Stop_Track, Drive_Track, Repair_Track);
         protected type Track_Thread is
         procedure Init_Stop_Track(ID : Edge_ID ; Track_Time_To_Wait : Duration);
         procedure Init_Drive_Track(ID : Edge_ID ;Track_Max_Velocity : Natural; Track_Length : Natural);

@@ -1,14 +1,8 @@
 with Ada.Containers.Vectors;
 with Ada.Containers.Hashed_Maps; use Ada.Containers;
-with Track; use Track;
+with Constants; use Constants;
 
 package Steering is
-    type Node_ID is range 0..4;
-    type Edge_To_Node is record
-         ID : Edge_ID;
-         Node : Node_ID;
-    end record;
-    Count_Of_Steering : constant  Positive := 4;
     function ID_Hashed (ID : Edge_ID) return Hash_Type;
     package Steering_Neighbours is new Ada.Containers.Hashed_Maps
         (Key_Type => Edge_ID,
@@ -19,6 +13,7 @@ package Steering is
     protected type Steering_Thread is
         function Get_ID return Node_ID;
         function Get_Time_To_Reconfigure return Duration;
+        function Get_Neigbours return Steering_Neighbours.Map;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration);
         procedure Set_Neighbour(Neighbours : Steering_Neighbours.Map);
         procedure Rise_Alarm;
@@ -39,6 +34,5 @@ package Steering is
     package Edge_To_Node_Container is new Vectors (Node_ID, Edge_To_Node);
     function Build_Steering_Pool return Steering_Container.Vector;
     procedure Set_Neigbour_For_Steering(ID : Node_ID ; Edges_To_Node_Pool : Edge_To_Node_Container.Vector); 
-
     Steering_Pool : Steering_Container.Vector;
 end Steering;

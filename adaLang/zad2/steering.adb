@@ -15,6 +15,10 @@ package body Steering is
         begin 
             return My_Time_To_Reconfigure;
         end;
+        function Get_Neigbours return Steering_Neighbours.Map is
+        begin
+            return My_Neighbours;
+        end;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration) is
         begin
             My_ID := ID;

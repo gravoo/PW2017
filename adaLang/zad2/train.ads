@@ -1,10 +1,7 @@
 with Ada.Containers.Vectors; use Ada.Containers;
-with Track; use Track;
-with Steering; use Steering;
+with Constants; use Constants;
 
 package Train is
-    type Train_ID is range 0 .. 100;
-    Count_Of_Train : constant Count_Type := 2;
     package Train_Route_Container is new Vectors (Natural, Edge_ID);
     use Train_Route_Container;
     task type Train_Thread is

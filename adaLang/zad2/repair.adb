@@ -1,4 +1,6 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with Steering; use Steering;
+with Track; use Track; 
 package body Repair is
     protected body Repair_Thread is
         procedure Init_Repair_Thread( ID : Train_ID; Steering_ID : Node_ID; Track : Repair_Track_ID ) is
@@ -45,5 +47,5 @@ package body Repair is
         end loop;
     end;
  begin
-    Repair_Brigade.Init_Repair_Thread(100, Steering.Node_ID'First, Track.Repair_Track_ID'First);
+    Repair_Brigade.Init_Repair_Thread(100, Node_ID'First, Repair_Track_ID'First);
 end Repair;

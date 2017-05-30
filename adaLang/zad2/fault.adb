@@ -1,13 +1,14 @@
 --with Ada.Numerics.discrete_Random;
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Numerics.discrete_Random;
+with Steering;
 package body Fault is
     task body Fault_Thread is
          GG : Rand_Int.Generator;
          Rand_Number : Natural;
          Time_For_New_Fault : Duration := 10.0;
          Fault_For_Type : Count_Of_Types;
-         Broken_Steering : Steering.Node_ID;
+         Broken_Steering : Node_ID;
     begin
         accept Generate_Bug_On_Network do
                 Put_Line("Random Fault generator started");
@@ -21,16 +22,15 @@ package body Fault is
                 case Fault_For_Type is
                    when 0 => Put_Line("Fault generated for Train");
                    when 1 => Broken_Steering := Get_Broken_Steering_ID(Rand_Number);
-                             Put_Line("Fault generated for Steering" & Steering.Node_ID'Image(Broken_Steering));
+                             Put_Line("Fault generated for Steering" & Node_ID'Image(Broken_Steering));
                              Steering.Steering_Pool(Broken_Steering).Rise_Alarm;
                    when 2 => Put_Line("Fault generated for Track");
                 end case;
             end loop;
     end Fault_Thread;
-    function Get_Broken_Steering_ID(Number : Positive) return Steering.Node_ID is
-        Broken_Steering : Steering.Node_ID := Steering.Node_ID'First;
-        use Steering;
+    function Get_Broken_Steering_ID(Number : Positive) return Node_ID is
+        Broken_Steering : Node_ID := Node_ID'First;
     begin
-        return Steering.Node_ID(Number mod Steering.Count_Of_Steering) + Broken_Steering;
+        return Node_ID(Number mod Count_Of_Steering) + Broken_Steering;
     end;
 end Fault;
