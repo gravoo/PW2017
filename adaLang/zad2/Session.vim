@@ -7,38 +7,47 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +8 fault.adb
-badd +25 main.adb
-badd +5 repair.adb
-badd +7 steering.adb
-badd +1 track.adb
-badd +1 train.adb
-badd +1 fault.ads
-badd +7 repair.ads
-badd +6 steering.ads
-badd +13 track.ads
-badd +1 train.ads
-badd +4 repair_train.ads
-badd +2 repair_train.adb
+badd +0 fault.adb
+badd +0 main.adb
+badd +0 path_finder.adb
+badd +0 repair.adb
+badd +0 repair_train.adb
+badd +0 steering.adb
+badd +0 test_suite.adb
+badd +0 track.adb
+badd +0 train.adb
+badd +0 constants.ads
+badd +0 fault.ads
+badd +0 path_finder.ads
+badd +0 repair.ads
+badd +0 repair_train.ads
+badd +0 steering.ads
+badd +0 track.ads
+badd +0 train.ads
 argglobal
 silent! argdel *
 argadd fault.adb
-argadd train.ads
-argadd track.ads
-argadd steering.ads
-argadd repair.ads
-argadd fault.ads
-argadd train.adb
-argadd track.adb
-argadd steering.adb
-argadd repair.adb
 argadd main.adb
-edit repair_train.adb
+argadd path_finder.adb
+argadd repair.adb
+argadd repair_train.adb
+argadd steering.adb
+argadd test_suite.adb
+argadd track.adb
+argadd train.adb
+argadd constants.ads
+argadd fault.ads
+argadd path_finder.ads
+argadd repair.ads
+argadd repair_train.ads
+argadd steering.ads
+argadd track.ads
+argadd train.ads
+edit fault.adb
 set splitbelow splitright
 wincmd t
 set winminheight=1 winminwidth=1 winheight=1 winwidth=1
 argglobal
-edit repair_train.adb
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -48,7 +57,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 19) / 39)
+let s:l = 1 - ((0 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -59,7 +68,7 @@ if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
 endif
 unlet! s:wipebuf
-set winheight=1 winwidth=20 winminheight=1 winminwidth=1 shortmess=aoO
+set winheight=1 winwidth=20 winminheight=1 winminwidth=1 shortmess=filnxtToO
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)

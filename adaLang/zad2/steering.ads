@@ -16,7 +16,8 @@ package Steering is
         function Get_Neigbours return Steering_Neighbours.Map;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration);
         procedure Set_Neighbour(Neighbours : Steering_Neighbours.Map);
-        procedure Rise_Alarm;
+        entry Request_Rise_Alarm;
+        entry Request_Call_Of_Alarm;
         entry Request_Reoncfigure_Steering;
         entry Request_Release_Steering(ID : out Node_ID; Edge : in Edge_ID);
         entry Wait_For_Availalbe;
@@ -28,6 +29,7 @@ package Steering is
             My_Time_To_Reconfigure : Duration;
             My_Availablity : Boolean := True;
             My_Fix_Mode : Boolean := False;
+            My_Broken_State : Boolean := False;
     end Steering_Thread;
     type Steering_Thread_Access is access Steering_Thread;
     package Steering_Container is new Vectors (Node_ID, Steering_Thread_Access);

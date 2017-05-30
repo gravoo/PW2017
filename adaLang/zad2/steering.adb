@@ -42,15 +42,21 @@ package body Steering is
             ID := My_Neighbours(Edge);
         end;
         entry Wait_For_Availalbe
-        when My_Availablity and not My_Fix_Mode is
+        when My_Availablity and not My_Fix_Mode and not My_Broken_State is
         begin 
             null;
         end;
-        procedure Rise_Alarm is
+        entry Request_Rise_Alarm
+        when not My_Broken_State is
         begin
             Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " broken");
-            Repair.Repair_Brigade.Request_Repair_Steering(My_ID);
-            Repair.Repair_Brigade.Request_Repair_Completed;
+            My_Broken_State := True;
+        end;
+        entry Request_Call_Of_Alarm 
+        when My_Broken_State is
+        begin
+            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & "fixed");
+            My_Broken_State := False;
         end;
         entry Request_Set_Fix_Mode
         when not My_Fix_Mode is

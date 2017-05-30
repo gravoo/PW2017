@@ -6,10 +6,10 @@ with Steering; use Steering.Edge_To_Node_Container; use Steering;
 with Track; 
 with Train; use Train;
 with Repair;
-with Fault;
+with Fault_Coordinator;
 
 procedure Main is
-    Fault_Generator : Fault.Fault_Thread(
+    Fault_Generator : Fault_Coordinator.Fault_Coordinator_Thread(
         Train_Pool.Length, Steering_Pool.Length, Track.Track_Pool.Length);
 begin
     Steering_Pool := Steering.Build_Steering_Pool;
