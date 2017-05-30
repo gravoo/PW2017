@@ -16,8 +16,10 @@ begin
     for Node of Result loop
         Put(Node_ID'Image(Node) & " ");
     end loop;
-
-    --Put_Line("dfs result " & Boolean'Image(Result));
+    Result := Get_Path_To_Node(2, 4);
+    for Node of Result loop
+        Put(Node_ID'Image(Node) & " ");
+    end loop;
 end Test_Suite;
 
 
