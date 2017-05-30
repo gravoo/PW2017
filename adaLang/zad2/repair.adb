@@ -1,6 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Steering; use Steering;
 with Track; use Track; 
+with Repair_Train;
 package body Repair is
     protected body Repair_Thread is
         procedure Init_Repair_Thread( ID : Train_ID; Steering_ID : Node_ID; Track : Repair_Track_ID ) is
@@ -9,10 +10,9 @@ package body Repair is
             My_Steering := Steering_ID;
             My_Repair_Track_ID := Track;
         end;
-        entry Request_Repair_Steering(Broken_Steering_ID : Node_ID)
-        when not My_Fix_Order is 
+        procedure Request_Repair_Steering(Broken_Steering_ID : Node_ID) is
+            My_Repair_Brigade : Repair_Train.Repair_Train_Thread;
         begin
-            My_Fix_Order:= True;
             Put_Line("Repair_Thread receive repair order from node" & Node_ID'Image(Broken_Steering_ID));
             My_Broken_Steering := Broken_Steering_ID;
             My_Type_Of_Fix := 1;
@@ -20,6 +20,7 @@ package body Repair is
                when 0 => Put_Line("Init procedure for fixing Train");
                when 1 => Put_Line("Init procedure for fixing Steering");
                          For_All_Network_Set_Fix_Mode(My_Broken_Steering);
+                         My_Repair_Brigade.Request_Repair_Broken_Node(My_Broken_Steering);
                          For_All_Network_Unset_Fix_Mode(My_Broken_Steering);
                when 2 => Put_Line("Init procedure for fixing Track");
             end case;
