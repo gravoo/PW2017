@@ -2,24 +2,15 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Containers.Vectors; use Ada.Containers;
 with Ada.Integer_Text_IO;
-with Steering; use Steering.Edge_To_Node_Container; use Steering;
-with Track; 
 with Train; use Train;
-with Repair;
+with Repair_Manager;
 with Fault_Coordinator;
+with Core_Manager; use Core_Manager;
 
 procedure Main is
     Fault_Generator : Fault_Coordinator.Fault_Coordinator_Thread(
-        Train_Pool.Length, Steering_Pool.Length, Track.Track_Pool.Length);
+        Train_Pool.Length, Core_Manager.Steering_Pool.Length, Core_Manager.Track_Pool.Length);
 begin
-    Steering_Pool := Steering.Build_Steering_Pool;
-    Track.Track_Pool := Track.Build_Track_Pool;
-    Put_Line("I am working, and I am not joking");
-    Set_Neigbour_For_Steering(0, (100,1)&(101,1)&(300,0));
-    Set_Neigbour_For_Steering(1, (200,2)&(101,0)&(100,0));
-    Set_Neigbour_For_Steering(2, (200,1)&(201,3));
-    Set_Neigbour_For_Steering(3, (201,2)&(102,4)&(103,4));
-    Set_Neigbour_For_Steering(4, (102,3)&(103,3));
 
     Train_Pool(0).Start_Train;
     Train_Pool(1).Start_Train;

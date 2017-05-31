@@ -1,6 +1,6 @@
 with Ada.Containers.Vectors;
 with Ada.Containers.Hashed_Maps; use Ada.Containers;
-with Constants; use Constants;
+with Constants_And_Types; use Constants_And_Types;
 
 package Steering is
     function ID_Hashed (ID : Edge_ID) return Hash_Type;
@@ -32,9 +32,4 @@ package Steering is
             My_Broken_State : Boolean := False;
     end Steering_Thread;
     type Steering_Thread_Access is access Steering_Thread;
-    package Steering_Container is new Vectors (Node_ID, Steering_Thread_Access);
-    package Edge_To_Node_Container is new Vectors (Node_ID, Edge_To_Node);
-    function Build_Steering_Pool return Steering_Container.Vector;
-    procedure Set_Neigbour_For_Steering(ID : Node_ID ; Edges_To_Node_Pool : Edge_To_Node_Container.Vector); 
-    Steering_Pool : Steering_Container.Vector;
 end Steering;

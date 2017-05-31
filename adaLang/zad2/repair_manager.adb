@@ -2,8 +2,9 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Steering; use Steering;
 with Track; use Track; 
 with Repair_Train;
-package body Repair is
-    protected body Repair_Thread is
+with Core_Manager; use Core_Manager;
+package body Repair_Manager is
+    protected body Repair_Manager_Thread is
         procedure Init_Repair_Thread( ID : Train_ID; Steering_ID : Node_ID; Track : Repair_Track_ID ) is
         begin
             My_ID := ID;
@@ -30,7 +31,7 @@ package body Repair is
         begin
             My_Fix_Order := False;
         end;
-     end Repair_Thread;
+     end Repair_Manager_Thread;
     procedure For_All_Network_Set_Fix_Mode(Broken_Steering_ID : Node_ID) is
     begin
         for Steering of Steering_Pool loop
@@ -48,5 +49,5 @@ package body Repair is
         end loop;
     end;
  begin
-    Repair_Brigade.Init_Repair_Thread(100, Node_ID'First, Repair_Track_ID'First);
-end Repair;
+    Repair_Headquarter.Init_Repair_Thread(100, Node_ID'First, Repair_Track_ID'First);
+end Repair_Manager;

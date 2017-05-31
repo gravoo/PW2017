@@ -1,5 +1,6 @@
 with Ada.Containers;
-package Constants is
+with Ada.Containers.Vectors;  use Ada.Containers;
+package Constants_And_Types is
     type Node_ID is range 0..4;
     type Edge_ID is range 100..300;
     type Train_ID is range 0 .. 100;
@@ -17,4 +18,5 @@ package Constants is
     Count_Of_Train : constant Containers.Count_Type := 2;
     Count_Of_Stop_Track : constant Containers.Count_Type := 4;
     Count_Of_Drive_Track : constant Containers.Count_Type := 2;
-end Constants;
+    package Edge_To_Node_Container is new Vectors (Node_ID, Edge_To_Node);
+end Constants_And_Types;

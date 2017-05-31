@@ -2,7 +2,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Path_Finder; use Path_Finder;
 with Steering; use Steering.Edge_To_Node_Container; use Steering;
 with Ada.Containers.Doubly_Linked_Lists; use Ada.Containers;
-with Constants; use Constants;
+with Constants_And_Types; use Constants_And_Types;
 procedure Test_Suite is
     Result : Stack_Container.List;
 begin 

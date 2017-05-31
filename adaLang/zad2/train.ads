@@ -1,5 +1,5 @@
 with Ada.Containers.Vectors; use Ada.Containers;
-with Constants; use Constants;
+with Constants_And_Types; use Constants_And_Types;
 
 package Train is
     package Train_Route_Container is new Vectors (Natural, Edge_ID);

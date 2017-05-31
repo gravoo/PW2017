@@ -1,5 +1,5 @@
 with Ada.Numerics.discrete_Random;
-with Constants; use Constants;
+with Constants_And_Types; use Constants_And_Types;
 package Fault_Coordinator is
     subtype Rand_Range is Natural;
     package Rand_Int is new Ada.Numerics.Discrete_Random(Rand_Range);

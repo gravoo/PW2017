@@ -1,8 +1,8 @@
 with Ada.Containers.Vectors; use Ada.Containers;
-with Constants; use Constants;
+with Constants_And_Types; use Constants_And_Types;
 
 package Track is
-        protected type Track_Thread is
+    protected type Track_Thread is
         procedure Init_Stop_Track(ID : Edge_ID ; Track_Time_To_Wait : Duration);
         procedure Init_Drive_Track(ID : Edge_ID ;Track_Max_Velocity : Natural; Track_Length : Natural);
         procedure Init_Repair_Track(ID : Edge_ID);
@@ -23,7 +23,4 @@ package Track is
             My_ID : Edge_ID;
     end Track_Thread;
     type Track_Thread_Access is access Track_Thread;
-    package Track_Container is new Vectors (Edge_ID, Track_Thread_Access);
-    function Build_Track_Pool return Track_Container.Vector;
-    Track_Pool : Track_Container.Vector;
 end Track;

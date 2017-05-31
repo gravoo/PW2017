@@ -1,5 +1,4 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Repair;
 package body Steering is
     function ID_Hashed (ID : Edge_ID) return Hash_Type is
     begin
@@ -71,21 +70,4 @@ package body Steering is
             My_Fix_Mode := False;
         end;
     end Steering_Thread;
-    function Build_Steering_Pool return Steering_Container.Vector is 
-        Steering_Pool : Steering_Container.Vector;
-    begin
-        for I in Node_ID loop
-            Steering_Pool.Append(new Steering_Thread);
-            Steering_Pool.Element(I).Init_Steering(I, 10.0);
-        end loop;
-        return Steering_Pool;
-    end;
-    procedure Set_Neigbour_For_Steering(ID : Node_ID ; Edges_To_Node_Pool : Edge_To_Node_Container.Vector) is 
-        Neigbours_Node : Steering_Neighbours.Map;
-    begin
-        for Edges of Edges_To_Node_Pool loop
-            Neigbours_Node.Insert(Edges.ID, Edges.Node);
-        end loop;
-        Steering_Pool(ID).Set_Neighbour(Neigbours_Node);
-    end;
 end Steering;

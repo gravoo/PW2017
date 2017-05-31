@@ -2,7 +2,8 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Numerics.discrete_Random;
 with Steering;
-with Repair;
+with Repair_Manager;
+with Core_Manager; use Core_Manager;
 package body Fault_Coordinator is
     task body Fault_Coordinator_Thread is
          GG : Rand_Int.Generator;
@@ -24,9 +25,9 @@ package body Fault_Coordinator is
                    when 0 => Put_Line("Fault generated for Train");
                    when 1 => Broken_Steering := Get_Broken_Steering_ID(Rand_Number);
                              Put_Line("Fault generated for Steering" & Node_ID'Image(Broken_Steering));
-                             Steering.Steering_Pool(Broken_Steering).Request_Rise_Alarm;
-                             Repair.Repair_Brigade.Request_Repair_Steering(Broken_Steering);
-                             Steering.Steering_Pool(Broken_Steering).Request_Call_Of_Alarm;
+                             Steering_Pool(Broken_Steering).Request_Rise_Alarm;
+                             Repair_Manager.Repair_Headquarter.Request_Repair_Steering(Broken_Steering);
+                             Steering_Pool(Broken_Steering).Request_Call_Of_Alarm;
                    when 2 => Put_Line("Fault generated for Track");
                 end case;
             end loop;

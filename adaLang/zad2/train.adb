@@ -2,6 +2,7 @@ with Ada.Text_IO;
 use Ada.Text_IO;
 with Track; use Track;
 with Steering; use Steering;
+with Core_Manager; use Core_Manager;
 
 package body Train is
     task body Train_Thread is

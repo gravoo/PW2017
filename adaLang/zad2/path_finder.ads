@@ -1,5 +1,5 @@
 with Ada.Containers.Doubly_Linked_Lists; use Ada.Containers;
-with Constants; use Constants;
+with Constants_And_Types; use Constants_And_Types;
 package Path_Finder is
     type Visited_Array is array (Node_ID) of Boolean;
     package Stack_Container is new Doubly_Linked_Lists(Node_ID);
