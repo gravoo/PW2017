@@ -7,7 +7,6 @@ package Core_Manager is
     pragma Elaborate_Body;
     package Track_Container is new Vectors (Edge_ID, Track_Thread_Access);
     package Steering_Container is new Vectors (Node_ID, Steering_Thread_Access);
-    package Edge_To_Node_Container is new Vectors (Node_ID, Edge_To_Node);
     use Edge_To_Node_Container;
     function Build_Steering_Pool return Steering_Container.Vector;
     function Build_Track_Pool return Track_Container.Vector;
