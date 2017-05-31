@@ -1,7 +1,4 @@
-with Ada.Text_IO;
-use Ada.Text_IO;
-with Track; use Track;
-with Steering; use Steering;
+with Ada.Text_IO; use Ada.Text_IO;
 with Core_Manager; use Core_Manager;
 
 package body Train is
@@ -38,9 +35,4 @@ package body Train is
             end loop;
         end loop;
     end Train_Thread;
-begin
-    Train_Pool.Append(new Train_Thread);
-    Train_Pool.Append(new Train_Thread);
-    Train_Pool(0).Init_Train(0, 0, 100&200&201&102&103&201&200&101);
-    Train_Pool(1).Init_Train(1, 4, 102&103);
 end Train;

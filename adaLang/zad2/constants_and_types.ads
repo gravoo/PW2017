@@ -19,4 +19,5 @@ package Constants_And_Types is
     Count_Of_Stop_Track : constant Containers.Count_Type := 4;
     Count_Of_Drive_Track : constant Containers.Count_Type := 2;
     package Edge_To_Node_Container is new Vectors (Node_ID, Edge_To_Node);
+    package Train_Route_Container is new Vectors (Natural, Edge_ID);
 end Constants_And_Types;

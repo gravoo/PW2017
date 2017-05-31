@@ -1,7 +1,4 @@
-with Ada.Text_IO;
-use Ada.Text_IO;
-with Ada.Containers.Vectors;
-use Ada.Containers;
+with Ada.Text_IO; use Ada.Text_IO;
 
 package body Track is
     protected body Track_Thread is
