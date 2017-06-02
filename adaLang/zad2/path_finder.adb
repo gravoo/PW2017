@@ -4,15 +4,17 @@ function Get_Path_To_Node(Current_Node, Target_Node : Node_ID) return Stack_Cont
     Result : Boolean;
 begin
     Visited := (others => False);
-    Stack.Clear;
+    Node_Stack.Clear;
+    Edge_Stack.Clear;
     Result := DFS(Current_Node, Target_Node);
-    return Stack;
+    return Node_Stack;
 end;
 
 function DFS(Current_Node, Target_Node : Node_ID) return Boolean is
 begin
     Visited( Current_Node ) := True;
-    Stack.Append( Current_Node );
+    Node_Stack.Append( Current_Node );
+    Edge_Stack.Append( Current_Node );
     if Current_Node = Target_Node then
         return True;
     end if;
@@ -23,7 +25,8 @@ begin
             end if;
         end if;
     end loop;
-    Stack.Delete_Last;
+    Node_Stack.Delete_Last;
+    Edge_Stack.Delete_Last;
     return False;
 end;
 end path_finder;

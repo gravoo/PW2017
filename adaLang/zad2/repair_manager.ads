@@ -1,7 +1,9 @@
 with Constants_And_Types; use Constants_And_Types;
+
 package Repair_Manager is
     procedure For_All_Network_Set_Fix_Mode(Broken_Steering_ID : Node_ID);
     procedure For_All_Network_Unset_Fix_Mode(Broken_Steering_ID : Node_ID);
+
     protected type Repair_Manager_Thread is
         procedure Init_Repair_Thread(ID : Train_ID; Steering_ID : Node_ID; Track : Repair_Track_ID);
         procedure Request_Repair_Steering(Broken_Steering_ID : Node_ID);

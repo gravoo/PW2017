@@ -8,8 +8,8 @@ with Core_Manager; use Core_Manager;
 with Constants_And_Types; use Constants_And_Types.Train_Route_Container;
 
 procedure Main is
---    Fault_Generator : Fault_Coordinator.Fault_Coordinator_Thread(
---        Train_Pool.Length, Core_Manager.Steering_Pool.Length, Core_Manager.Track_Pool.Length);
+    Fault_Generator : Fault_Coordinator.Fault_Coordinator_Thread(
+        Train_Pool.Length, Core_Manager.Steering_Pool.Length, Core_Manager.Track_Pool.Length);
 begin
     Train_Pool := Build_Train_Pool(1);
     Train_Pool(0).Init_Train(0, 0, 100&200&201&102&103&201&200&101);

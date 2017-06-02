@@ -6,6 +6,7 @@ package Path_Finder is
     function Get_Path_To_Node(Current_Node, Target_Node : Node_ID) return Stack_Container.List;
     private
     function DFS(Current_Node, Target_Node : Node_ID) return Boolean;
-    Stack : Stack_Container.List;
+    Node_Stack : Stack_Container.List;
+    Edge_Stack : Stack_Container.List;
     Visited : Visited_Array := (others => False);
 end Path_Finder;
