@@ -32,10 +32,11 @@ package body Core_Manager is
             Track_Pool.Element(Repair_Track_ID'First).Init_Repair_Track(ID => Repair_Track_ID'First);
         return Track_Pool;
     end;
-    function Build_Train_Pool return Train_Container.Vector is
-        Track_Pool : Track_Container.Vector;
+    function Build_Train_Pool(Count_Of_Trains : Count_Type ) return Train_Container.Vector is
+        Train_Pool : Train_Container.Vector;
     begin
-        Track_Pool.Append(new Train_Thread);
+        Train_Pool.Append(New_Item => new Train_Thread, Count => Count_Of_Trains );
+        return Train_Pool;
     end;
 begin
     Track_Pool := Build_Track_Pool;
@@ -45,10 +46,5 @@ begin
     Set_Neigbour_For_Steering(2, (200,1)&(201,3));
     Set_Neigbour_For_Steering(3, (201,2)&(102,4)&(103,4));
     Set_Neigbour_For_Steering(4, (102,3)&(103,3));
-
-    --Train_Pool.Append(new Train_Thread);
-    --Train_Pool.Append(new Train_Thread);
-    --Train_Pool(0).Init_Train(0, 0, 100&200&201&102&103&201&200&101);
-    --Train_Pool(1).Init_Train(1, 4, 102&103);
 end Core_Manager;
 
