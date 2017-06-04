@@ -25,6 +25,7 @@ package Steering is
         entry Wait_For_Availalbe;
         entry Request_Set_Fix_Mode;
         entry Request_Unset_Fix_Mode;
+        entry Wait_For_Fixed_Status;
         private
             My_ID : Node_ID;
             My_Neighbours : Steering_Neighbours.Map;

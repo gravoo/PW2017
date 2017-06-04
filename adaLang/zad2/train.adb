@@ -18,8 +18,10 @@ package body Train is
         loop
             for My_Track of My_Route loop
                 Steering_Pool(My_Steering).Wait_For_Availalbe;
+                Steering_Pool(My_Steering).Wait_For_Fixed_Status;
                 Steering_Pool(My_Steering).Request_Reoncfigure_Steering;
                 delay Steering_Pool(My_Steering).Get_Time_To_Reconfigure;
+                Steering_Pool(My_Steering).Wait_For_Fixed_Status;
                 Steering_Pool(My_Steering).Request_Release_Steering(My_Steering, My_Track);
                 Track_Pool(My_Track).Wait_For_Availalbe;
                 Track_Pool(My_Track).Request_Travel_Through;

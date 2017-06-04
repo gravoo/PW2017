@@ -27,7 +27,6 @@ package body Fault_Coordinator is
                              Put_Line("Fault generated for Steering" & Node_ID'Image(Broken_Steering));
                              Steering_Pool(Broken_Steering).Request_Rise_Alarm;
                              Repair_Manager.Repair_Headquarter.Request_Repair_Steering(Broken_Steering);
-                             Steering_Pool(Broken_Steering).Request_Call_Of_Alarm;
                    when 2 => Put_Line("Fault generated for Track");
                 end case;
             end loop;

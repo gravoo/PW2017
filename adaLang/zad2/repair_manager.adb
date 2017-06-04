@@ -20,9 +20,8 @@ package body Repair_Manager is
             case My_Type_Of_Fix is
                when 0 => Put_Line("Init procedure for fixing Train");
                when 1 => Put_Line("Init procedure for fixing Steering");
-                         For_All_Network_Set_Fix_Mode(My_Broken_Steering);
+                         For_All_Network_Set_Fix_Mode;
                          My_Repair_Brigade.Request_Repair_Broken_Node(My_Broken_Steering);
-                         For_All_Network_Unset_Fix_Mode(My_Broken_Steering);
                when 2 => Put_Line("Init procedure for fixing Track");
             end case;
         end;
@@ -32,12 +31,10 @@ package body Repair_Manager is
             My_Fix_Order := False;
         end;
      end Repair_Manager_Thread;
-    procedure For_All_Network_Set_Fix_Mode(Broken_Steering_ID : Node_ID) is
+    procedure For_All_Network_Set_Fix_Mode is
     begin
         for Steering of Steering_Pool loop
-            if Steering /= Steering_Pool(Broken_Steering_ID) then
                 Steering.Request_Set_Fix_Mode;
-            end if;
         end loop;
     end;
     procedure For_All_Network_Unset_Fix_Mode(Broken_Steering_ID : Node_ID) is

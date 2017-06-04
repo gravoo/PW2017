@@ -50,8 +50,13 @@ package body Steering is
             My_Availablity := True;
             ID := My_Neighbours(Edge);
         end;
+        entry Wait_For_Fixed_Status
+        when not My_Broken_State or not My_Fix_Mode is
+        begin 
+            null;
+        end;
         entry Wait_For_Availalbe
-        when My_Availablity and not My_Fix_Mode and not My_Broken_State is
+        when My_Availablity is
         begin 
             null;
         end;
@@ -64,7 +69,7 @@ package body Steering is
         entry Request_Call_Of_Alarm 
         when My_Broken_State is
         begin
-            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & "fixed");
+            Put_Line("Steering_Thread id: " & Node_ID'Image(My_ID) & " fixed");
             My_Broken_State := False;
         end;
         entry Request_Set_Fix_Mode
