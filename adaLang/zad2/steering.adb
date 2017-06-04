@@ -14,6 +14,12 @@ package body Steering is
         begin 
             return My_Time_To_Reconfigure;
         end;
+        function Get_Edge_To_Node(ID : Node_ID) return Edge_ID is
+            A_Cursor : Cursor;
+        begin
+            A_Cursor := My_Neighbours.Find(ID);
+            return My_Neighbours.Key(A_Cursor);
+        end;
         function Get_Neigbours return Steering_Neighbours.Map is
         begin
             return My_Neighbours;

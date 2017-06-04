@@ -7,8 +7,12 @@ package body Repair_Train is
     begin
         accept Request_Repair_Broken_Node(Broken_Node : Node_ID)  do
             Put_Line("Received repair order for node" & Node_ID'Image(Broken_Node));
-            My_Track := Get_Path_To_Node(My_First_Steering, Broken_Node);
         end Request_Repair_Broken_Node;
+            My_Track := Get_Path_To_Node(My_First_Steering, Broken_Node);
+            for Nodes of My_Track loop 
+                Nodes.Request_Reoncfigure_Steering;
+
+            end loop;
     end;
 end Repair_Train;
     

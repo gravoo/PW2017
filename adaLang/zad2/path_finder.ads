@@ -7,6 +7,5 @@ package Path_Finder is
     private
     function DFS(Current_Node, Target_Node : Node_ID) return Boolean;
     Node_Stack : Stack_Container.List;
-    Edge_Stack : Stack_Container.List;
     Visited : Visited_Array := (others => False);
 end Path_Finder;
