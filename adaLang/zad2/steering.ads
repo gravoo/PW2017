@@ -15,7 +15,7 @@ package Steering is
         function Get_ID return Node_ID;
         function Get_Time_To_Reconfigure return Duration;
         function Get_Neigbours return Steering_Neighbours.Map;
-        function Get_Edge_To_Node(ID : Node_ID) return Edge_ID;
+        function Get_First_Available_Track_For_Steering(Destination_Node : in Node_ID) return Edge_ID;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration);
         procedure Set_Neighbour(Neighbours : Steering_Neighbours.Map);
         entry Request_Rise_Alarm;

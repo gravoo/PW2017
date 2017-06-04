@@ -14,15 +14,19 @@ package body Steering is
         begin 
             return My_Time_To_Reconfigure;
         end;
-        function Get_Edge_To_Node(ID : Node_ID) return Edge_ID is
-            A_Cursor : Cursor;
-        begin
-            A_Cursor := My_Neighbours.Find(ID);
-            return My_Neighbours.Key(A_Cursor);
-        end;
         function Get_Neigbours return Steering_Neighbours.Map is
         begin
             return My_Neighbours;
+        end;
+        function Get_First_Available_Track_For_Steering(Destination_Node : in Node_ID) return Edge_ID is
+            A_Cursor  : Cursor := My_Neighbours.First;
+        begin
+            for Node in My_Neighbours.Iterate loop
+                if Destination_Node = Element(Node) then
+                    return Key(Node);
+                end if;
+            end loop;
+            return Key(A_Cursor);
         end;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration) is
         begin

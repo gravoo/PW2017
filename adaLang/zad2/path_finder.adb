@@ -6,7 +6,7 @@ begin
     Visited := (others => False);
     Node_Stack.Clear;
     Result := DFS(Current_Node, Target_Node);
-    return Edge_Stack;
+    return Node_Stack;
 end;
 
 function DFS(Current_Node, Target_Node : Node_ID) return Boolean is
