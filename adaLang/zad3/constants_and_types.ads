@@ -4,8 +4,8 @@ package Constants_And_Types is
     type Node_ID is range 0..4;
     type Edge_ID is range 100..300;
     type Train_ID is range 0 .. 100;
-    type Worker_ID is range 0 .. 100;
-    type Station_ID is range 0 .. 100;
+    type Worker_ID is range 0 .. 10;
+    type Station_ID is range 0 .. 10;
     type Track_Type is (Stop_Track, Drive_Track, Repair_Track);
     type Count_Of_Types is range 0..2;
     type Edge_To_Node is record

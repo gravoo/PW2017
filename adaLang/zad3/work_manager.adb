@@ -11,6 +11,7 @@ package body Work_Manager is
         end Generate_Work_For_Random_Station;
             while Count_Of_Needed_Workers > 0 loop
                Count_Of_Available_Workers := Station_Pool(0).Get_Workers(Count_Of_Needed_Workers);
+               Station_Pool(0).Prepapre_Workers(Count_Of_Needed_Workers);
                Count_Of_Needed_Workers := Count_Of_Needed_Workers - Count_Of_Available_Workers;
             end loop;
     end Work_Thread_Generator;
