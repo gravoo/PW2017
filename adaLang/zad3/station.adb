@@ -2,7 +2,7 @@ package body Station is
     protected body Station_Thread is
         procedure Generate_Workers_For_Station is
         begin
-            My_Workers.Append(New_Item => My_ID, Count => 100);
+            My_Workers.Append(New_Item => My_ID, Count => Count_Type(Worker_ID'Last));
         end;
         procedure Prepapre_Workers(Count_Of_Used_Workers : Containers.Count_Type) is
         begin
