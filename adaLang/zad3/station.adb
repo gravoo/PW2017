@@ -9,6 +9,10 @@ package body Station is
             My_Workers.Delete(Index => 0, Count => Count_Of_Used_Workers);
             My_Workers_To_Leave.Append(New_Item => My_ID, Count => Count_Of_Used_Workers);
         end;
+        procedure Set_My_Steering(ID : Node_ID) is
+        begin
+            My_Steering := ID;
+        end;
         function Get_Workers( Num_Of_Worker : Containers.Count_Type) return Containers.Count_Type is
             Available_Workers : Containers.Count_Type := Containers.Count_Type'Min(My_Workers.Length, Num_Of_Worker);
         begin
