@@ -15,5 +15,8 @@ package body Work_Manager is
                Station_Pool(Station_Pool.Last_Index).Prepapre_Workers(Count_Of_Needed_Workers, Random_Station_ID);
                Count_Of_Needed_Workers := Count_Of_Needed_Workers - Count_Of_Available_Workers;
             end loop;
+            while not Station_Pool(Station_Pool.Last_Index).Ready_To_Get_Job_Done(Count_Of_Needed_Workers) loop
+                delay 20.0;
+            end loop;
     end Work_Thread_Generator;
 end Work_Manager;

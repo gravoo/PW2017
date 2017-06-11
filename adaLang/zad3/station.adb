@@ -34,6 +34,7 @@ package body Station is
         begin
             for worker of Passengers loop 
                 if worker.Route.Is_Empty then
+                    My_Peasant.Append(worker);
                     Passengers.Delete_First;
                 end if;
             end loop;
@@ -48,6 +49,13 @@ package body Station is
                 end if;
                 exit when Passengers.Length >= Capacity;
             end loop;
+        end;
+        function Ready_To_Get_Job_Done(Count_Of_Workers : Containers.Count_Type) return Boolean is
+        begin
+            if Count_Of_Workers < My_Peasant.Length then
+                return True;
+            end if;
+            return False;
         end;
     end Station_Thread;
 end Station;
