@@ -21,5 +21,9 @@ package body Station is
         begin
             return Num_Of_Worker - Available_Workers;
         end;
+        function Get_Pasangers(Capacity : Natural; Next_Node : Node_ID) return Natural is
+        begin
+            return 5;
+        end;
     end Station_Thread;
 end Station;

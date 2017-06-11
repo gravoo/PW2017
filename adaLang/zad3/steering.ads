@@ -18,6 +18,9 @@ package Steering is
         function Get_First_Available_Track_For_Steering(Destination_Node : in Node_ID) return Edge_ID;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration);
         procedure Set_Neighbour(Neighbours : Steering_Neighbours.Map);
+        procedure Set_Steering_On_Station(ID : Station_ID);
+        function IS_Steering_On_Station return Boolean;
+        function Get_Station_ID return Station_ID;
         entry Request_Rise_Alarm;
         entry Request_Call_Of_Alarm;
         entry Request_Reoncfigure_Steering;
@@ -33,6 +36,8 @@ package Steering is
             My_Availablity : Boolean := True;
             My_Fix_Mode : Boolean := False;
             My_Broken_State : Boolean := False;
+            My_Station_ID : Station_ID;
+            On_Station : Boolean := False;
     end Steering_Thread;
     type Steering_Thread_Access is access Steering_Thread;
 end Steering;

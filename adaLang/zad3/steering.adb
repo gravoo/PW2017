@@ -28,6 +28,14 @@ package body Steering is
             end loop;
             return Key(A_Cursor);
         end;
+        function IS_Steering_On_Station return Boolean is
+        begin
+            return On_Station;
+        end;
+        function Get_Station_ID return Station_ID is
+        begin 
+            return My_Station_ID;
+        end;
         procedure Init_Steering(ID : Node_ID; Time_To_Reconfigure: Duration) is
         begin
             My_ID := ID;
@@ -36,6 +44,11 @@ package body Steering is
         procedure Set_Neighbour(Neighbours : Steering_Neighbours.Map) is
         begin
             My_Neighbours := Neighbours;
+        end;
+        procedure Set_Steering_On_Station(ID : Station_ID) is
+        begin
+            My_Station_ID := ID;
+            On_Station := True;
         end;
         entry Request_Reoncfigure_Steering
         when My_Availablity is

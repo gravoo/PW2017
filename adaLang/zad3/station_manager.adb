@@ -10,4 +10,5 @@ package body Station_Manager is
     end;
 begin
     Station_Pool := Build_Station_Pool;
+    Station_Pool(0).Set_My_Steering(0);
 end Station_Manager;
