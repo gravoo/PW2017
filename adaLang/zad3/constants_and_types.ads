@@ -27,6 +27,7 @@ package Constants_And_Types is
     type Worker is record
         ID : Node_ID;
         Route : Stack_Container.List;
+        Reverse_Route : Stack_Container.List;
     end record;
     package Local_Workers_Container is new Vectors (Natural, Worker);
 end Constants_And_Types;

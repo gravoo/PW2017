@@ -11,6 +11,7 @@ package Station is
         procedure Drop_Passengers(Passengers : out Vector);
         procedure Get_Passangers(Passengers : out Vector; Capacity : Containers.Count_Type; Next_Node : Node_ID);
         procedure Set_My_Steering(ID : Node_ID);
+        procedure Finish_Job;
     private
         My_Steering : Node_ID;
         My_Workers : Containers.Count_Type;

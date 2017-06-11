@@ -7,10 +7,13 @@ package body Station is
         end;
         procedure Prepapre_Workers(Count_Of_Used_Workers : Containers.Count_Type; Node_With_Work_ID : Node_ID) is
             Path : Stack_Container.List;
+            Reverse_Path : Stack_Container.List;
         begin
             My_Workers := My_Workers - Count_Of_Used_Workers;
             Path := path_finder.Get_Path_To_Node(My_Steering, Node_With_Work_ID);
-            My_Workers_To_Leave.Append((My_Steering, Path), Count => Count_Of_Used_Workers);
+            Reverse_Path := Path;
+            Reverse_Path.Reverse_Elements;
+            My_Workers_To_Leave.Append((My_Steering, Path, Reverse_Path), Count => Count_Of_Used_Workers);
         end;
         procedure Set_My_Steering(ID : Node_ID) is
         begin
@@ -36,6 +39,7 @@ package body Station is
                 if worker.Route.Is_Empty then
                     My_Peasant.Append(worker);
                     Passengers.Delete_First;
+                    My_Workers := My_Workers + 1;
                 end if;
             end loop;
         end;
@@ -56,6 +60,13 @@ package body Station is
                 return True;
             end if;
             return False;
+        end;
+        procedure Finish_Job is
+        begin
+            for workers of My_Peasant loop
+                workers.Route := workers.Reverse_Route;
+            end loop;
+            My_Workers_To_Leave.Move(source => My_Peasant);
         end;
     end Station_Thread;
 end Station;
