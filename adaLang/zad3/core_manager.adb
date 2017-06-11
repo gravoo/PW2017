@@ -32,12 +32,6 @@ package body Core_Manager is
             Track_Pool.Element(Repair_Track_ID'First).Init_Repair_Track(ID => Repair_Track_ID'First);
         return Track_Pool;
     end;
-    function Build_Train_Pool(Count_Of_Trains : Count_Type ) return Train_Container.Vector is
-        Train_Pool : Train_Container.Vector;
-    begin
-        Train_Pool.Append(New_Item => new Train_Thread, Count => Count_Of_Trains );
-        return Train_Pool;
-    end;
 begin
     Track_Pool := Build_Track_Pool;
     Steering_Pool := Build_Steering_Pool;
