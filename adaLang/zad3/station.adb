@@ -21,12 +21,21 @@ package body Station is
         begin
             return Num_Of_Worker - Available_Workers;
         end;
-        procedure Get_Pasangers(Passengers : out Vector; Capacity : Containers.Count_Type; Next_Node : Node_ID) is
+        procedure Drop_Passengers(Passengers : out Vector; Next_Node : Node_ID) is
+        begin
+            for worker of Passengers loop 
+                if Next_Node /= worker.Route.First_Element then
+                    My_Workers_To_Leave.Append(worker);
+                    Passengers.Delete_First;
+                end if;
+            end loop;
+        end;
+        procedure Get_Passangers(Passengers : out Vector; Capacity : Containers.Count_Type; Next_Node : Node_ID) is
         begin
             for worker of My_Workers_To_Leave loop 
                 if Next_Node = worker.Route.First_Element then
-                    worker.Route.Delete_First;
                     Passengers.Append(worker);
+                    My_Workers_To_Leave.Delete_First;
                 end if;
                 exit when Passengers.Length >= Capacity;
             end loop;

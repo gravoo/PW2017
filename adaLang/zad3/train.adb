@@ -31,7 +31,8 @@ package body Train is
                 case Steering_Pool(My_Steering).IS_Steering_On_Station is
                     when True =>
                         My_Station := Steering_Pool(My_Steering).Get_Station_ID;
-                        Station_Pool(My_Station).Get_Pasangers(My_Passengers, My_Capacity, My_Next_Steering);
+                        Station_Pool(My_Station).Drop_Passengers(My_Passengers, My_Next_Steering);
+                        Station_Pool(My_Station).Get_Passangers(My_Passengers, My_Capacity, My_Next_Steering);
                     when False => 
                         null;
                 end case;
