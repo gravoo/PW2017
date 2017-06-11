@@ -21,9 +21,15 @@ package body Station is
         begin
             return Num_Of_Worker - Available_Workers;
         end;
-        function Get_Pasangers(Capacity : Natural; Next_Node : Node_ID) return Natural is
+        procedure Get_Pasangers(Passengers : out Vector; Capacity : Containers.Count_Type; Next_Node : Node_ID) is
         begin
-            return 5;
+            for worker of My_Workers_To_Leave loop 
+                if Next_Node = worker.Route.First_Element then
+                    worker.Route.Delete_First;
+                    Passengers.Append(worker);
+                end if;
+                exit when Passengers.Length >= Capacity;
+            end loop;
         end;
     end Station_Thread;
 end Station;

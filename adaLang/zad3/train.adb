@@ -9,7 +9,8 @@ package body Train is
         My_Steering : Node_ID;
         My_Next_Steering : Node_ID;
         My_Station : Station_ID;
-        My_Capacity : Natural := 100;
+        My_Capacity : Containers.Count_Type := 100;
+        My_Passengers : Local_Workers_Container.Vector; 
     begin 
         accept Init_Train(ID : Train_ID; Steering_ID : Node_ID; Train_Route : Train_Route_Container.Vector) do 
             My_ID := ID;
@@ -30,7 +31,7 @@ package body Train is
                 case Steering_Pool(My_Steering).IS_Steering_On_Station is
                     when True =>
                         My_Station := Steering_Pool(My_Steering).Get_Station_ID;
-                        My_Capacity := Station_Pool(My_Station).Get_Pasangers(My_Capacity, My_Next_Steering);
+                        Station_Pool(My_Station).Get_Pasangers(My_Passengers, My_Capacity, My_Next_Steering);
                     when False => 
                         null;
                 end case;
