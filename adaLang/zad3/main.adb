@@ -7,6 +7,7 @@ with Fault_Coordinator;
 with Core_Manager; use Core_Manager;
 with Constants_And_Types; use Constants_And_Types.Train_Route_Container;
 with Work_Manager; use Work_Manager;
+with Station_Manager; use Station_Manager;
 
 procedure Main is
     --Time_Without_Flaws : Duration := 5.0;

@@ -9,7 +9,7 @@ package Station is
         procedure Set_My_Steering(ID : Node_ID);
     private
         My_Steering : Node_ID;
-        My_Workers : Vector;
+        My_Workers : Containers.Count_Type;
         My_Workers_To_Leave : Vector; 
     end Station_Thread;
     type Station_Thread_Access is access Station_Thread;

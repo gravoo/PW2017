@@ -1,3 +1,4 @@
+with Ada.Containers.Doubly_Linked_Lists;
 with Ada.Containers;
 with Ada.Containers.Vectors;  use Ada.Containers;
 package Constants_And_Types is
@@ -22,5 +23,10 @@ package Constants_And_Types is
     Count_Of_Drive_Track : constant Containers.Count_Type := 2;
     package Edge_To_Node_Container is new Vectors (Node_ID, Edge_To_Node);
     package Train_Route_Container is new Vectors (Natural, Edge_ID);
-    package Local_Workers_Container is new Vectors (Natural, Station_ID);
+    package Stack_Container is new Doubly_Linked_Lists(Node_ID);
+    type Worker is record
+        ID : Node_ID;
+        Route : Stack_Container.List;
+    end record;
+    package Local_Workers_Container is new Vectors (Natural, Worker);
 end Constants_And_Types;

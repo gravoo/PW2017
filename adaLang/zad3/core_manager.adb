@@ -38,19 +38,9 @@ package body Core_Manager is
         Train_Pool.Append(New_Item => new Train_Thread, Count => Count_Of_Trains );
         return Train_Pool;
     end;
-    function Build_Station_Pool return Station_Container.Vector is
-        Station_Pool : Station_Container.Vector;
-    begin
-        for I in Station_ID loop
-            Station_Pool.Append(new Station_Thread(I));
-            Station_Pool(Station_Pool.Last_Index).Generate_Workers_For_Station;
-        end loop;
-        return Station_Pool;
-    end;
 begin
     Track_Pool := Build_Track_Pool;
     Steering_Pool := Build_Steering_Pool;
-    Station_Pool := Build_Station_Pool;
     Set_Neigbour_For_Steering(0, (100,1)&(101,1)&(300,0));
     Set_Neigbour_For_Steering(1, (200,2)&(101,0)&(100,0));
     Set_Neigbour_For_Steering(2, (200,1)&(201,3));
