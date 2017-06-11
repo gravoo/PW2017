@@ -1,4 +1,4 @@
-with Core_Manager;
+with Steering_Builder; use Steering_Builder;
 package body path_finder is
 function Get_Path_To_Node(Current_Node, Target_Node : Node_ID) return Stack_Container.List is
     Result : Boolean;
@@ -16,7 +16,7 @@ begin
     if Current_Node = Target_Node then
         return True;
     end if;
-    for Node of Core_Manager.Steering_Pool(Current_Node).Get_Neigbours loop
+    for Node of Steering_Pool(Current_Node).Get_Neigbours loop
         if Visited( Node ) = False then
             if DFS(Node, Target_Node) = True then
                 return True;

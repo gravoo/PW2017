@@ -2,7 +2,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Steering; use Steering;
 with Track; use Track; 
 with Repair_Train;
-with Core_Manager; use Core_Manager;
+with Steering_Builder; use Steering_Builder;
 package body Repair_Manager is
     protected body Repair_Manager_Thread is
         procedure Init_Repair_Thread( ID : Train_ID; Steering_ID : Node_ID; Track : Repair_Track_ID ) is

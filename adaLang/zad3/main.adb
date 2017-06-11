@@ -4,10 +4,9 @@ with Ada.Containers.Vectors; use Ada.Containers;
 with Ada.Integer_Text_IO;
 with Repair_Manager;
 with Fault_Coordinator;
-with Core_Manager; use Core_Manager;
 with Constants_And_Types; use Constants_And_Types.Train_Route_Container;
 with Work_Manager; use Work_Manager;
-with Station_Manager; use Station_Manager;
+with Station_Builder; use Station_Builder;
 with Train_Builder; use Train_Builder;
 
 procedure Main is

@@ -1,4 +1,4 @@
-package body Station_Manager is
+package body Station_Builder is
     function Build_Station_Pool return Station_Container.Vector is
         Station_Pool : Station_Container.Vector;
     begin
@@ -11,4 +11,4 @@ package body Station_Manager is
 begin
     Station_Pool := Build_Station_Pool;
     Station_Pool(0).Set_My_Steering(0);
-end Station_Manager;
+end Station_Builder;

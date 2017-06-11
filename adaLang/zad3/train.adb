@@ -1,6 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Core_Manager; use Core_Manager;
-with Station_Manager; use Station_Manager;
+with Steering_Builder; use Steering_Builder;
+with Station_Builder; use Station_Builder;
+with Track_Builder; use Track_Builder;
 
 package body Train is
     task body Train_Thread is

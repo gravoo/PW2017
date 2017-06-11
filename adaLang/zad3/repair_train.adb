@@ -1,5 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Core_Manager; use Core_Manager;
+with Steering_Builder; use Steering_Builder;
+with Track_Builder; use Track_Builder;
+
 package body Repair_Train is
     procedure Unset_Fix_Mode_For_Not_Used_Steerings(Used_Steerings : Stack_Container.List) is
         type Not_Used_Steerings_Type is array (Node_ID) of Boolean;

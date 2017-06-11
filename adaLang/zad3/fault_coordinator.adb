@@ -3,7 +3,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Numerics.discrete_Random;
 with Steering;
 with Repair_Manager;
-with Core_Manager; use Core_Manager;
+with Steering_Builder; use Steering_Builder;
 package body Fault_Coordinator is
     task body Fault_Coordinator_Thread is
          GG : Rand_Int.Generator;
