@@ -14,9 +14,9 @@ package body Work_Manager is
                Count_Of_Available_Workers := stations.Get_Workers(Count_Of_Needed_Workers);
                stations.Prepapre_Workers(Count_Of_Needed_Workers, Random_Station_ID);
                Count_Of_Needed_Workers := Count_Of_Needed_Workers - Count_Of_Available_Workers;
-               exit when Count_Of_Needed_Workers > 0;
+               exit when Count_Of_Needed_Workers >= 0;
             end loop;
-            while not Station_Pool(Station_Pool.Last_Index).Ready_To_Get_Job_Done(Count_Of_Needed_Workers) loop
+            while not Station_Pool(Station_ID(Random_Station_ID)).Ready_To_Get_Job_Done(Count_Of_Needed_Workers) loop
                 delay 20.0;
             end loop;
            Station_Pool(Station_Pool.Last_Index).Finish_Job;

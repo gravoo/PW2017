@@ -1,18 +1,11 @@
 --Bartlomiej Sadowski 204392
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Containers.Vectors; use Ada.Containers;
-with Ada.Integer_Text_IO;
-with Repair_Manager;
-with Fault_Coordinator;
 with Constants_And_Types; use Constants_And_Types.Train_Route_Container;
 with Work_Manager; use Work_Manager;
-with Station_Builder; use Station_Builder;
 with Train_Builder; use Train_Builder;
 
 procedure Main is
-    --Time_Without_Flaws : Duration := 5.0;
-    --Fault_Generator : Fault_Coordinator.Fault_Coordinator_Thread(
-    --    Train_Pool.Length, Core_Manager.Steering_Pool.Length, Core_Manager.Track_Pool.Length);
     Work_Generator : Work_Thread_Generator;
 begin
     Train_Pool(0).Init_Train(0, 0, 100&200&201&102&103&201&200&101);
