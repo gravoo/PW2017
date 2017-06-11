@@ -4,7 +4,7 @@ package Station is
     use Local_Workers_Container;
     protected type Station_Thread(My_ID : Station_ID) is
         procedure Generate_Workers_For_Station;
-        procedure Prepapre_Workers( Count_Of_Used_Workers : Containers.Count_Type );
+        procedure Prepapre_Workers( Count_Of_Used_Workers : Containers.Count_Type; Node_With_Work_ID : Node_ID);
         function Get_Workers( Num_Of_Worker : Containers.Count_Type) return Containers.Count_Type;
         procedure Set_My_Steering(ID : Node_ID);
     private

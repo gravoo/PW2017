@@ -5,10 +5,11 @@ package body Station is
         begin
             My_Workers := Containers.Count_Type( Worker_ID'Last );
         end;
-        procedure Prepapre_Workers(Count_Of_Used_Workers : Containers.Count_Type) is
+        procedure Prepapre_Workers(Count_Of_Used_Workers : Containers.Count_Type; Node_With_Work_ID : Node_ID) is
             Path : Stack_Container.List;
         begin
             My_Workers := My_Workers - Count_Of_Used_Workers;
+            Path := path_finder.Get_Path_To_Node(My_Steering, Node_With_Work_ID);
             My_Workers_To_Leave.Append((My_Steering, Path), Count => Count_Of_Used_Workers);
         end;
         procedure Set_My_Steering(ID : Node_ID) is
