@@ -21,7 +21,7 @@ package body Station is
         begin
             return Num_Of_Worker - Available_Workers;
         end;
-        procedure Drop_Passengers(Passengers : out Vector; Next_Node : Node_ID) is
+        procedure Check_Passangers_Route(Passengers : out Vector; Next_Node : Node_ID) is
         begin
             for worker of Passengers loop 
                 if Next_Node /= worker.Route.First_Element then
@@ -30,10 +30,19 @@ package body Station is
                 end if;
             end loop;
         end;
+        procedure Drop_Passengers(Passengers : out Vector) is
+        begin
+            for worker of Passengers loop 
+                if worker.Route.Is_Empty then
+                    Passengers.Delete_First;
+                end if;
+            end loop;
+        end;
         procedure Get_Passangers(Passengers : out Vector; Capacity : Containers.Count_Type; Next_Node : Node_ID) is
         begin
             for worker of My_Workers_To_Leave loop 
                 if Next_Node = worker.Route.First_Element then
+                    worker.Route.Delete_First;
                     Passengers.Append(worker);
                     My_Workers_To_Leave.Delete_First;
                 end if;
