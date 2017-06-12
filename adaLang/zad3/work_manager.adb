@@ -8,7 +8,6 @@ package body Work_Manager is
         Count_Of_Aquired_Workers : Containers.Count_Type := 0;
         Random_Station_ID : Station_ID;
     begin
-        loop
         accept Generate_Work_For_Random_Station(Needed_Workers : Containers.Count_Type; ID : Station_ID) do
             Put_Line("Work_Manager_Thread: Received work for Station" & Station_ID'Image(ID));
             Count_Of_Needed_Workers := Needed_Workers;
@@ -29,6 +28,5 @@ package body Work_Manager is
             end loop;
            Station_Pool(Random_Station_ID).Finish_Job;
            Put_Line("Work_Manager_Thread: Job is done");
-        end loop;
     end Work_Thread_Generator;
 end Work_Manager;

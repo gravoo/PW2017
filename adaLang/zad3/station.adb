@@ -15,6 +15,7 @@ package body Station is
             Reverse_Path := Path;
             Reverse_Path.Reverse_Elements;
             My_Workers_To_Leave.Append((My_Steering, Path, Reverse_Path), Count => Count_Of_Used_Workers);
+            Put_Line("Prepapre_Workers: " & My_Workers_To_Leave.Length'Img);
         end;
         procedure Set_My_Steering(ID : Node_ID) is
         begin
@@ -26,7 +27,7 @@ package body Station is
             return Available_Workers;
         end;
         procedure Check_Passangers_Route(Passengers : out Vector; Next_Node : Node_ID) is
-            Passengers_Tmp : Vector := Passengers;
+            Passengers_Tmp : Vector;
         begin
             for worker in Passengers.First_Index .. Passengers.Last_Index loop 
                 if Next_Node /= Passengers(worker).Route.First_Element then
@@ -37,10 +38,11 @@ package body Station is
                     Passengers_Tmp.Append(Passengers(worker));
                 end if;
             end loop;
-            Passengers := Passengers_Tmp;
+            Put_Line("Check_Passangers_Route: " & Passengers.Length'Img);
+            Passengers.Move(source => Passengers_Tmp);
         end;
         procedure Drop_Passengers(Passengers : out Vector) is
-            Passengers_Tmp : Vector := Passengers;
+            Passengers_Tmp : Vector;
         begin
             for worker in Passengers.First_Index .. Passengers.Last_Index loop 
                 if Passengers(worker).Route.Is_Empty then
@@ -50,10 +52,11 @@ package body Station is
                     Passengers_Tmp.Append(Passengers(worker));
                 end if;
             end loop;
-            Passengers := Passengers_Tmp;
+            Passengers.Move(source => Passengers_Tmp);
+            Put_Line("Drop_Passengers: " & Passengers.Length'Img);
         end;
         procedure Get_Passangers(Passengers : out Vector; Capacity : Containers.Count_Type; Next_Node : Node_ID) is
-            My_Workers_To_Leave_Tmp : Vector := My_Workers_To_Leave; 
+            My_Workers_To_Leave_Tmp : Vector;
         begin
             for worker in My_Workers_To_Leave.First_Index .. My_Workers_To_Leave.Last_Index loop
                 if Next_Node = My_Workers_To_Leave(worker).Route.First_Element then
@@ -64,7 +67,8 @@ package body Station is
                 end if;
                 exit when Passengers.Length >= Capacity;
             end loop;
-            My_Workers_To_Leave := My_Workers_To_Leave_Tmp;
+            Put_Line("Get_Passangers: " & Passengers.Length'Img);
+            My_Workers_To_Leave.Move(source => My_Workers_To_Leave_Tmp);
         end;
         function Ready_To_Get_Job_Done(Count_Of_Workers : Containers.Count_Type) return Boolean is
         begin
@@ -82,6 +86,7 @@ package body Station is
                 workers.Route := workers.Reverse_Route;
             end loop;
             My_Workers_To_Leave.Append(My_Peasant);
+            My_Peasant.Clear;
         end;
         function Get_Steering_ID return Node_ID is
         begin
