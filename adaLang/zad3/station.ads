@@ -7,6 +7,7 @@ package Station is
         procedure Prepapre_Workers( Count_Of_Used_Workers : Containers.Count_Type; Node_With_Work_ID : Node_ID);
         function Get_Workers( Num_Of_Worker : Containers.Count_Type) return Containers.Count_Type;
         function Ready_To_Get_Job_Done(Count_Of_Workers : Containers.Count_Type) return Boolean;
+        function Get_Steering_ID return Node_ID;
         procedure Check_Passangers_Route(Passengers : out Vector; Next_Node : Node_ID);
         procedure Drop_Passengers(Passengers : out Vector);
         procedure Get_Passangers(Passengers : out Vector; Capacity : Containers.Count_Type; Next_Node : Node_ID);

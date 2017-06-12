@@ -8,6 +8,6 @@ with Train_Builder; use Train_Builder;
 procedure Main is
     Work_Generator : Work_Thread_Generator;
 begin
-    Work_Generator.Generate_Work_For_Random_Station(Needed_Workers => 10, ID => 3);
-    Put_Line("Started all components");
+    Work_Generator.Generate_Work_For_Random_Station(Needed_Workers => 10, ID => 2);
+    Put_Line("All components ready, starting train");
 end Main;
