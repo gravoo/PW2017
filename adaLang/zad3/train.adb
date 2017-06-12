@@ -34,9 +34,9 @@ package body Train is
                         Put_Line("Train_Thread id:" & Train_ID'Image(My_ID) & " on station");
                         My_Station := Steering_Pool(My_Steering).Get_Station_ID;
                         Station_Pool(My_Station).Drop_Passengers(My_Passengers);
+                        Put_Line("Train_Thread id:" & Node_ID'Image(My_Next_Steering)& " destination");
                         Station_Pool(My_Station).Check_Passangers_Route(My_Passengers, My_Next_Steering);
                         Station_Pool(My_Station).Get_Passangers(My_Passengers, My_Capacity, My_Next_Steering);
-                        Put_Line("wait for it");
                     when False => 
                         null;
                 end case;

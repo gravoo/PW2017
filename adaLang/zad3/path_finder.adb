@@ -6,6 +6,7 @@ begin
     Visited := (others => False);
     Node_Stack.Clear;
     Result := DFS(Current_Node, Target_Node);
+    Node_Stack.Delete_First;
     return Node_Stack;
 end;
 

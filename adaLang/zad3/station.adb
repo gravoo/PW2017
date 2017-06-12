@@ -23,7 +23,7 @@ package body Station is
         function Get_Workers( Num_Of_Worker : Containers.Count_Type) return Containers.Count_Type is
             Available_Workers : Containers.Count_Type := Containers.Count_Type'Min(My_Workers, Num_Of_Worker);
         begin
-            return Num_Of_Worker - Available_Workers;
+            return Available_Workers;
         end;
         procedure Check_Passangers_Route(Passengers : out Vector; Next_Node : Node_ID) is
         begin
@@ -59,7 +59,7 @@ package body Station is
         end;
         function Ready_To_Get_Job_Done(Count_Of_Workers : Containers.Count_Type) return Boolean is
         begin
-            if Count_Of_Workers < My_Peasant.Length then
+            if Count_Of_Workers <= My_Peasant.Length then
                 Put_Line("Station_Thread: station is ready for geting job done");
                 return True;
             end if;
