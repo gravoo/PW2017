@@ -31,10 +31,12 @@ package body Train is
                 Steering_Pool(My_Steering).Request_Release_Steering(My_Next_Steering, My_Track);
                 case Steering_Pool(My_Steering).IS_Steering_On_Station is
                     when True =>
+                        Put_Line("Train_Thread id:" & Train_ID'Image(My_ID) & " on station");
                         My_Station := Steering_Pool(My_Steering).Get_Station_ID;
                         Station_Pool(My_Station).Drop_Passengers(My_Passengers);
                         Station_Pool(My_Station).Check_Passangers_Route(My_Passengers, My_Next_Steering);
                         Station_Pool(My_Station).Get_Passangers(My_Passengers, My_Capacity, My_Next_Steering);
+                        Put_Line("wait for it");
                     when False => 
                         null;
                 end case;

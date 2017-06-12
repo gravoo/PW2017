@@ -7,4 +7,6 @@ package body Train_Builder is
     end;
 begin
     Train_Pool := Build_Train_Pool(1);
+    Train_Pool(0).Init_Train(0, 0, 100&200&201&101&201&200&100);
+    Train_Pool(0).Start_Train;
 end Train_Builder;

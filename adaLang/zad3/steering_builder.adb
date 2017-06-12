@@ -13,16 +13,16 @@ package body Steering_Builder is
     begin
         for I in Node_ID loop
             Steering_Pool.Append(new Steering_Thread);
-            Steering_Pool.Element(I).Init_Steering(I, 10.0);
+            Steering_Pool.Element(I).Init_Steering(I, 2.0);
         end loop;
         return Steering_Pool;
     end;
 begin
     Steering_Pool := Build_Steering_Pool;
-    Set_Neigbour_For_Steering(0, (100,1)&(101,1)&(300,0));
-    Set_Neigbour_For_Steering(1, (200,2)&(101,0)&(100,0));
-    Set_Neigbour_For_Steering(2, (200,1)&(201,3));
-    Set_Neigbour_For_Steering(3, (201,2)&(102,4)&(103,4));
-    Set_Neigbour_For_Steering(4, (102,3)&(103,3));
+    Set_Neigbour_For_Steering(0, (100,0)&(200,1));
+    Steering_Pool(0).Set_Steering_On_Station(0);
+    Set_Neigbour_For_Steering(1, (200,0)&(201,2));
+    Set_Neigbour_For_Steering(2, (201,1)&(101,2));
+    Steering_Pool(2).Set_Steering_On_Station(1);
 end Steering_Builder;
 

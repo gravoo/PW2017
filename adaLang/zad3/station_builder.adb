@@ -11,4 +11,5 @@ package body Station_Builder is
 begin
     Station_Pool := Build_Station_Pool;
     Station_Pool(0).Set_My_Steering(0);
+    Station_Pool(1).Set_My_Steering(2);
 end Station_Builder;

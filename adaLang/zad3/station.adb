@@ -1,3 +1,4 @@
+with Ada.Text_IO; use Ada.Text_IO;
 with path_finder;
 package body Station is
     protected body Station_Thread is
@@ -26,18 +27,20 @@ package body Station is
         end;
         procedure Check_Passangers_Route(Passengers : out Vector; Next_Node : Node_ID) is
         begin
-            for worker of Passengers loop 
-                if Next_Node /= worker.Route.First_Element then
-                    My_Workers_To_Leave.Append(worker);
+            for worker in Passengers.First_Index .. Passengers.Last_Index loop 
+                if Next_Node /= Passengers(worker).Route.First_Element then
+                    My_Workers_To_Leave.Append(Passengers(worker));
                     Passengers.Delete_First;
+                else
+                    Passengers(worker).Route.Delete_First;
                 end if;
             end loop;
         end;
         procedure Drop_Passengers(Passengers : out Vector) is
         begin
-            for worker of Passengers loop 
-                if worker.Route.Is_Empty then
-                    My_Peasant.Append(worker);
+            for worker in Passengers.First_Index .. Passengers.Last_Index loop 
+                if Passengers(worker).Route.Is_Empty then
+                    My_Peasant.Append(Passengers(worker));
                     Passengers.Delete_First;
                     My_Workers := My_Workers + 1;
                 end if;
@@ -45,10 +48,10 @@ package body Station is
         end;
         procedure Get_Passangers(Passengers : out Vector; Capacity : Containers.Count_Type; Next_Node : Node_ID) is
         begin
-            for worker of My_Workers_To_Leave loop 
-                if Next_Node = worker.Route.First_Element then
-                    worker.Route.Delete_First;
-                    Passengers.Append(worker);
+            for worker in My_Workers_To_Leave.First_Index .. My_Workers_To_Leave.Last_Index loop
+                if Next_Node = My_Workers_To_Leave(worker).Route.First_Element then
+                    My_Workers_To_Leave(worker).Route.Delete_First;
+                    Passengers.Append(My_Workers_To_Leave(worker));
                     My_Workers_To_Leave.Delete_First;
                 end if;
                 exit when Passengers.Length >= Capacity;
@@ -57,8 +60,10 @@ package body Station is
         function Ready_To_Get_Job_Done(Count_Of_Workers : Containers.Count_Type) return Boolean is
         begin
             if Count_Of_Workers < My_Peasant.Length then
+                Put_Line("Station_Thread: station is ready for geting job done");
                 return True;
             end if;
+            Put_Line("Station_Thread: station is still not ready");
             return False;
         end;
         procedure Finish_Job is
